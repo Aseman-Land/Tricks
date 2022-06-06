@@ -1,0 +1,164 @@
+name: CI
+
+on: [push]
+
+jobs:
+  
+  build-linux-android:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: Setup
+      run: |
+        cd ..
+        WROOT=$(readlink -f .)
+        echo "::set-env name=WORK::${WROOT}"
+        echo "::set-env name=ANDROID_SDK_HOME::${WROOT}/sdk"
+        echo "::set-env name=ANDROID_NDK_HOME::${WROOT}/ndk"
+        echo "::set-env name=ANDROID_NDK_VERSION::r20b"
+        echo "::set-env name=ANDROID_VERSION::28"
+        echo "::set-env name=ANDROID_BUILD_TOOLS_VERSION::28.0.3"
+        echo "::set-env name=GRADLE_VERSION::4.10.3"
+    
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2.1.0
+      with:
+        version: 5.12.6
+        target: android
+        arch: android_armv7 
+
+    - name: Install Android NDK
+      run: |
+        cd ..
+        curl -L https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip -o ndk.zip
+        unzip ndk.zip
+        mv android-ndk-${ANDROID_NDK_VERSION} ndk
+        
+    - name: Install Android SDK
+      run: |
+        cd ..
+        curl -L https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -o sdk.zip
+        unzip sdk.zip
+        yes | ./tools/bin/sdkmanager --licenses --sdk_root=${ANDROID_SDK_HOME}
+        ./tools/bin/sdkmanager --update
+        yes | ./tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" "platforms;android-${ANDROID_VERSION}" "platform-tools" --sdk_root=${ANDROID_SDK_HOME}
+
+    - name: Install Gradle
+      run: |
+        cd ..
+        curl -L https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-all.zip -o gradle.zip
+        unzip gradle.zip
+        mv gradle-${GRADLE_VERSION} gradle
+
+    - name: Install Firebase C++ SDK
+      run: |
+        cd ..
+        curl -L https://firebase.google.com/download/cpp -o firebase_cpp_sdk.zip
+        unzip firebase_cpp_sdk.zip
+
+    #- name: Install QtFirebase
+    #  run: |
+    #    cd ..
+    #    git clone https://github.com/Larpon/QtFirebase.git
+
+    - name: Install QtFirebaseExample
+      run: |
+        cd ..
+        git clone https://github.com/Larpon/QtFirebaseExample.git
+
+    - name: Connect projects
+      run: |
+        cd ..
+        ln -s ${WORK}/firebase_cpp_sdk ${WORK}/QtFirebase/firebase_cpp_sdk
+        ln -s ${WORK}/QtFirebase ${WORK}/QtFirebaseExample/extensions/QtFirebase
+        
+    - name: Setup ENV
+      run: |
+        echo "--- Setup PATH ---"
+        PATH=${PATH}:${WORK}/gradle/bin:${WORK}/ndk
+        echo "::set-env name=PATH::${PATH}"
+        echo "PATH: ${PATH}"
+        
+        echo "--- Set ANDROID ENV ---"
+        
+        echo "::set-env name=ANDROID_HOME::${ANDROID_SDK_HOME}"
+        echo "::set-env name=ANDROID_SDK_ROOT::${ANDROID_SDK_HOME}"
+        echo "::set-env name=ANDROID_NDK_ROOT::${ANDROID_NDK_HOME}"
+        echo "${ANDROID_NDK_ROOT}"
+        #echo "::set-env name=ANDROID_NDK_HOST::linux-x86_64"
+        #echo "::set-env name=ANDROID_NDK_PLATFORM::android-28"
+        #echo "::set-env name=ANDROID_NDK_TOOLCHAIN_PREFIX::arm-linux-androideabi"
+        #echo "::set-env name=ANDROID_NDK_TOOLCHAIN_VERSION::4.9"
+        #echo "::set-env name=ANDROID_NDK_TOOLS_PREFIX::arm-linux-androideabi"
+        
+    - name: Run QMake
+      run: |
+        cd ..
+        echo "--- Run QMake ---"
+        cd "QtFirebaseExample/"
+        mkdir build && cd build
+        ${Qt5_Dir}/bin/qmake ../
+        
+    - name: Run Make
+      run: |
+        cd ..
+        cd QtFirebaseExample/build
+        make
+  
+  build-linux-desktop:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: Setup
+      run: |
+        cd ..
+        WROOT=$(readlink -f .)
+        echo "::set-env name=WORK::${WROOT}"
+    
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2.1.0
+      with:
+        version: 5.12.6
+        target: desktop
+
+    - name: Install Firebase C++ SDK
+      run: |
+        cd ..
+        curl -L https://firebase.google.com/download/cpp -o firebase_cpp_sdk.zip
+        unzip firebase_cpp_sdk.zip
+
+    #- name: Install QtFirebase
+    #  run: |
+    #    cd ..
+    #    git clone https://github.com/Larpon/QtFirebase.git
+
+    - name: Install QtFirebaseExample
+      run: |
+        cd ..
+        git clone https://github.com/Larpon/QtFirebaseExample.git
+
+    - name: Connect projects
+      run: |
+        cd ..
+        ln -s ${WORK}/firebase_cpp_sdk ${WORK}/QtFirebase/firebase_cpp_sdk
+        ln -s ${WORK}/QtFirebase ${WORK}/QtFirebaseExample/extensions/QtFirebase
+        
+    - name: Run QMake
+      run: |
+        cd ..
+        echo "--- Run QMake ---"
+        cd "QtFirebaseExample/"
+        mkdir build && cd build
+        ${Qt5_Dir}/bin/qmake ../
+        
+    - name: Run Make
+      run: |
+        cd ..
+        cd QtFirebaseExample/build
+        make

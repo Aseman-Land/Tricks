@@ -1,0 +1,3 @@
+
+RESOURCES += \
+    $$PWD/globals.qrc

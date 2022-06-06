@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Microsoft Visual C++ Redistributable</DisplayName>
+    <Description>The Visual C++ Redistributable installs Microsoft C and C++ (MSVC) runtime libraries. These libraries are required by many applications built by using Microsoft C and C++ tools. If your app uses those libraries, a Microsoft Visual C++ Redistributable package must be installed on the target system before you install your app. The Redistributable package architecture must match your app's target architecture.</Description>
+    <Version>12</Version>
+    <ReleaseDate>2022-04-24</ReleaseDate>
+    <Name>com.microsoft.vc</Name>
+    <ForcedInstallation>false</ForcedInstallation>
+    <ForcedUpdate>false</ForcedUpdate>
+    <Default>true</Default>
+    <Operations>
+        <Operation name="Execute">
+            <Argument>@TargetDir@/tools/VC_redist.x64.exe</Argument>
+            <Argument>/quiet</Argument>
+            <Argument>/norestart</Argument>
+        </Operation>
+<!--        <Operation name="Delete">
+            <Argument>@TargetDir@/tools/VC_redist.x64.exe</Argument>
+        </Operation>-->
+    </Operations>
+</Package>

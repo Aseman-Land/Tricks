@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/imports/globals">
+        <file>App.qml</file>
+        <file>logo.png</file>
+    </qresource>
+</RCC>

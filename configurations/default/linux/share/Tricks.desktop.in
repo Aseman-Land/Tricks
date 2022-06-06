@@ -1,0 +1,11 @@
+[Desktop Entry]
+Categories=Network;InstantMessaging;Chat;
+Comment=Programmers Social Network
+Exec=$$SHORTCUT
+GenericName=Tricks
+Icon=tricks
+Name=tricks
+StartupNotify=true
+Type=Application
+MimeType=application/x-xdg-protocol-tg;x-scheme-handler/tg;
+Version=1.0
