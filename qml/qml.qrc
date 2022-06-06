@@ -206,5 +206,6 @@
         <file>imports/globals/fonts/Ubuntu-B.ttf</file>
         <file>imports/globals/fonts/Vazir-Regular-FD.ttf</file>
         <file>imports/requests/Bootstrap.qml</file>
+        <file>imports/components/TDesktopWheelArea.qml</file>
     </qresource>
 </RCC>

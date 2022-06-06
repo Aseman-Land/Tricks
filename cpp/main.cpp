@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<AppOptions>("Tricks", 1, 0, "AppOptions");
     qmlRegisterSingletonType<TricksTools>("Tricks", 1, 0, "TricksTools", create_trickstoole_singleton);
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS) || (defined(Q_OS_LINUX) && defined(QT_DEBUG))
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     qmlRegisterType(QUrl("qrc:/imports/components/TScrollViewMobile.qml"), "components", 1, 0, "TScrollView");
 #elif defined(Q_OS_MACOS)
     qmlRegisterType(QUrl("qrc:/imports/components/TScrollViewDesktopClassic.qml"), "components", 1, 0, "TScrollView");

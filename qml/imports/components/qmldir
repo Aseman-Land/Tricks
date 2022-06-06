@@ -43,3 +43,4 @@ TFooter 1.0 TFooter.qml
 TListRefresher 1.0 TListRefresher.qml
 THeaderBackButton 1.0 THeaderBackButton.qml
 CommunityCombo 1.0 CommunityCombo.qml
+TDesktopWheelArea 1.0 TDesktopWheelArea.qml

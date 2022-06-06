@@ -17,7 +17,6 @@ linux: !android {
     INSTALLS += target shortcut icons pixmaps
 
     DISTFILES += \
-        $$PWD/share/Tricks.desktop \
         $$PWD/share/Tricks.desktop.in \
         $$PWD/share/hicolor/128x128/apps/tricks.png \
         $$PWD/share/hicolor/16x16/apps/tricks.png \
