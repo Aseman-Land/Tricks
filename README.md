@@ -32,8 +32,9 @@ Tricks client depended on below library and modules.
 
 You have two choice to get token.
 
-- **If you build tricks for your personal usage**, You can use your `username` instead of token to build it. It works only for you and your account. Also you can separate up to 10 username using `|` character to build Tricks for your friends also. `user1|user2|user3`
-- **If you build tricks for public usage**, Just contact us. We'll create and send you a token to use for public build.
+- **If you build Tricks for personal usages**, You do not needs any token. Just build it and use it for your personal usage. Trick server will generate a personal and limited token for you automatically and linked it to your account.
+- **If you want to build Tricks for you and don't allow others to use it**, use your username instaed of token.
+- **If you build Tricks for public usage**, Just contact us. We'll create and send you a token to use for public build.
 
 ### Setup Firebase (Android/iOS)
 
@@ -54,10 +55,10 @@ export FIREBASE_FRAMEWORKS_ROOT=/path/to/firebase_ios_sdk
 To build Tricks just clone it and build it using QtCreator. You can also build it from command line using below commands:
 
 ```bash
-git clone https://github.com/Aseman-Land/Tricks --recursive --depth 1
+git clone https://github.com/Aseman-Land/Tricks
 cd Tricks
 mkdir build && cd build
-qmake -r .. APP_SECRET_ID="YOUR_API_TOKEN" CONFIG+="qtquickcompiler"
+qmake -r .. APP_SECRET_ID="YOUR_API_TOKEN" CONFIG+="qtquickcompiler" --recursive --depth 1
 make -j4
 make install
 ```

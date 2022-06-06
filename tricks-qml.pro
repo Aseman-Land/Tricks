@@ -20,7 +20,7 @@ ios {
     !isEmpty(APP_SECRET_ID_INCLUDE) {
         DEFINES += APP_SECRET_ID_INCLUDE='\\"$${APP_SECRET_ID_INCLUDE}\\"'
     } else {
-        error(Please set APP_SECRET_ID on qmake input. Example: qmake APP_SECRET_ID="app-secret-id")
+        warning(If you build a public package or installer for tricks, please get a token and set APP_SECRET_ID on qmake input. Example: qmake APP_SECRET_ID="app-secret-id")
     }
 }
 

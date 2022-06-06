@@ -8,8 +8,10 @@
 #include "appoptions.h"
 #include "trickstools.h"
 
-#ifndef APP_SECRET_ID
+#if !defined(APP_SECRET_ID) && defined(APP_SECRET_ID_INCLUDE)
 #include APP_SECRET_ID_INCLUDE
+#else
+#define APP_SECRET_ID ""
 #endif
 
 static QObject *create_trickstoole_singleton(QQmlEngine *, QJSEngine *)
