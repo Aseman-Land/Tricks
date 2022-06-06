@@ -55,10 +55,10 @@ export FIREBASE_FRAMEWORKS_ROOT=/path/to/firebase_ios_sdk
 To build Tricks just clone it and build it using QtCreator. You can also build it from command line using below commands:
 
 ```bash
-git clone https://github.com/Aseman-Land/Tricks
+git clone https://github.com/Aseman-Land/Tricks --recursive --depth 1
 cd Tricks
 mkdir build && cd build
-qmake -r .. APP_SECRET_ID="YOUR_API_TOKEN" CONFIG+="qtquickcompiler" --recursive --depth 1
+qmake -r .. APP_SECRET_ID="YOUR_API_TOKEN" CONFIG+="qtquickcompiler"
 make -j4
 make install
 ```
