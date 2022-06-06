@@ -8,7 +8,7 @@ CachedImage {
     asynchronous: true
     source: remoteUrl.length? Constants.baseUrl + "/" + remoteUrl : ""
     fillMode: Image.PreserveAspectFit
-    ignoreSslErrors: GlobalSettings.ignoreSslErrors
+    ignoreSslErrors: GlobalSettings.ignoreSslErrors || GlobalSettings.ignoreSslErrorsPerment
 
     property string remoteUrl
 

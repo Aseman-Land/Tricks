@@ -10,7 +10,7 @@ NetworkRequest {
     contentType: 0//NetworkRequest.TypeJson
     ignoreKeys: ["baseUrl", "refreshingState", "allowGlobalBusy", "allowShowErrors", "forceAllowUnreachable", "accessToken"]
     ignoreRegExp: /^_\w+$/
-    ignoreSslErrors: GlobalSettings.ignoreSslErrors
+    ignoreSslErrors: GlobalSettings.ignoreSslErrors || GlobalSettings.ignoreSslErrorsPerment
     headers: {
         "Device-ID": Devices.deviceId,
         "Device-Platform": Devices.platformName,
@@ -57,10 +57,12 @@ NetworkRequest {
         if (GlobalSettings.ignoreSslErrorsViewed)
             return;
 
-        var dlg = GlobalMethods.viewController.trigger("dialog:/general/error", {"title": qsTr("SSL Error"), "body": qsTr("You have connection security issue:%1Do you want to ignore it? If tap on No, all next network requests stop working.").arg("\n" + sslErrors.trim() + "\n"), "buttons": [qsTr("Yes"), qsTr("No")]})
-        dlg.itemClicked.connect(function(index){
+        var dlg = GlobalMethods.viewController.trigger("dialog:/general/error", {"dontAskAgain": true, "title": qsTr("SSL Error"), "body": qsTr("You have connection security issue:%1Do you want to ignore it? If tap on No, all next network requests stop working.").arg("\n" + sslErrors.trim() + "\n"), "buttons": [qsTr("Yes"), qsTr("No")]})
+        dlg.itemClicked.connect(function(index, title, user, dontAsk){
             if (index == 0) {
                 GlobalSettings.ignoreSslErrors = true;
+                if (dontAsk)
+                    GlobalSettings.ignoreSslErrorsPerment = true;
                 req.doRequest()
             }
 

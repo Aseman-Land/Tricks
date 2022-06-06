@@ -10,7 +10,7 @@ CachedImage {
     implicitWidth: 42 * Devices.density
     width: height
     radius: width/2
-    ignoreSslErrors: GlobalSettings.ignoreSslErrors
+    ignoreSslErrors: GlobalSettings.ignoreSslErrors || GlobalSettings.ignoreSslErrorsPerment
 
     source: remoteUrl.length? Constants.baseUrl + "/" + remoteUrl : ""
     fillMode: Image.PreserveAspectCrop

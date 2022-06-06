@@ -11,8 +11,10 @@ AsemanObject {
     property int waitCount
     property bool languageInited: false
     property bool mobileView: true
+
     property bool ignoreSslErrorsViewed
-    property bool ignoreSslErrors: App.ignoreSslErrors
+    property bool ignoreSslErrors
+    property alias ignoreSslErrorsPerment: _settings.ignoreSslErrorsPerment
 
     property alias accessToken: _auth.accessToken
     property alias userId: _auth.userId
@@ -65,6 +67,7 @@ AsemanObject {
 
     Component.onCompleted: {
         if (!initialized) {
+            ignoreSslErrorsPerment = App.ignoreSslErrors;
             initialized = true;
         }
     }
@@ -107,6 +110,7 @@ AsemanObject {
         property bool notificationAsked: false
 
         property bool initialized: false
+        property bool ignoreSslErrorsPerment: false
 
         property real width: 1280
         property real height: 700

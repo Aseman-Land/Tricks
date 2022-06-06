@@ -16,8 +16,9 @@ Item {
     property string title
     property string body
     property bool superPermission
+    property bool dontAskAgain
 
-    signal itemClicked(int index, string title, string username)
+    signal itemClicked(int index, string title, string username, bool dontAsk)
 
     Rectangle {
         anchors.fill: parent
@@ -56,6 +57,14 @@ Item {
                 horizontalAlignment: Devices.isAndroid ? Text.AlignLeft : Text.AlignHCenter
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: element.body
+            }
+
+            CheckBox {
+                id: dontAskCheck
+                Layout.fillWidth: true
+                font.pixelSize: 9 * Devices.fontDensity
+                text: qsTr("Don't ask again") + Translations.refresher
+                visible: dontAskAgain
             }
 
             TTextField {
@@ -105,7 +114,7 @@ Item {
                             if (!buttons && model.index == 0)
                                 Viewport.viewport.closeLast()
                             else
-                                element.itemClicked(model.index, modelData, usernameFields.text)
+                                element.itemClicked(model.index, modelData, usernameFields.text, dontAskCheck.checked)
                         }
                     }
                 }
