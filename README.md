@@ -65,7 +65,7 @@ make install
 
 #### Build from AUR
 
-To build the project from AUR, simply install the [tricks](https://aur.archlinux.org/packages/tricks) package.
+To build the project from AUR, simply install the [tricks](https://aur.archlinux.org/packages/tricks) package. It will clone and build the project with it's dependencies and package them for you on your computer.
 
 ```bash
 yay -S tricks
