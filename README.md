@@ -63,3 +63,10 @@ make -j4
 make install
 ```
 
+#### Build from AUR
+
+To build the project from AUR, simply install the [tricks](https://aur.archlinux.org/packages/tricks) package.
+
+```bash
+yay -S tricks
+```
