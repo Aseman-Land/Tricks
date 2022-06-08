@@ -15,6 +15,7 @@ TButton {
     property real materialOpacity: 1
     property color materialColor: flat && highlighted? Colors.accent : "#fff"
     property real materialIconSize: 12 * Devices.fontDensity
+    property bool materialBold: false
 
     RowLayout {
         id: rowLyt
@@ -27,6 +28,7 @@ TButton {
             text: materialIcon
             color: materialColor
             font.pixelSize: materialIconSize
+            font.bold: materialBold
             visible: text.length
         }
 

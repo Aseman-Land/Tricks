@@ -20,11 +20,13 @@ TItemDelegate {
     focusPolicy: Qt.ClickFocus
     clip: true
 
+    readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && quoteId
     readonly property real defaultHeight: columnLyt.height + columnLyt.y + (actionsRow.visible? 0 : columnLyt.y)
 
     property int mainId: isRetrick? quoteId : trickId
     property int trickId
     property int ownerId
+    property int originalOwnerId
     property int ownerRole: 0
     property alias fullname: fullnameLbl.text
     property alias username: usernameLbl.text
@@ -83,6 +85,7 @@ TItemDelegate {
         dis.fullname = data.owner.fullname;
         dis.username = "@" + data.owner.username;
         dis.ownerId = data.owner.id;
+        dis.originalOwnerId = data.owner.id;
         dis.avatar = data.owner.avatar;
         try {
             dis.language = data.programing_language.name;
@@ -183,10 +186,10 @@ TItemDelegate {
         pushView.restart();
     }
 
-    function deleteRequest() {
+    function deleteRequest(retrickMode) {
         var args = {
             "title": qsTr("Warning"),
-            "body" : qsTr("Do you realy want to delete this trick?") ,
+            "body" : retrickMode? qsTr("Do you realy want undo retrick?") : qsTr("Do you realy want to delete this trick?") ,
             "buttons": [qsTr("Yes"), qsTr("No")]
         };
         var obj = Viewport.controller.trigger("dialog:/general/warning", args);
@@ -682,8 +685,14 @@ TItemDelegate {
                         TIconButton {
                             materialIcon: MaterialIcons.mdi_repeat
                             visible: !globalViewMode && quote.length == 0
-                            materialColor: Colors.buttonsColor
-                            onClicked: GlobalSignals.retrickRequest(trickData)
+                            materialBold: myRetrick
+                            materialColor: myRetrick? Colors.accent : Colors.buttonsColor
+                            onClicked: {
+                                if (myRetrick)
+                                    deleteRequest(true);
+                                else
+                                    GlobalSignals.retrickRequest(trickData)
+                            }
                         }
 
                         Item {
@@ -778,7 +787,7 @@ TItemDelegate {
                         Viewport.controller.trigger("float:/tricks/report", {"trickId": dis.mainId, "title": dis.title});
                         ViewportType.open = false;
                     } else {
-                        deleteRequest()
+                        deleteRequest(myRetrick);
                     }
                     break;
                 }
@@ -811,7 +820,7 @@ TItemDelegate {
                         }
                     ];
 
-                    if (GlobalSettings.userId != ownerId) {
+                    if (GlobalSettings.userId != originalOwnerId) {
                         res[res.length] = {
                             title: qsTr("Report"),
                             icon: "mdi_pen",
@@ -819,7 +828,7 @@ TItemDelegate {
                         };
                     } else {
                         res[res.length] = {
-                            title: qsTr("Delete Trick"),
+                            title: myRetrick? qsTr("Undo Retrick") : qsTr("Delete Trick"),
                             icon: "mdi_trash_can",
                             enabled: true
                         };
