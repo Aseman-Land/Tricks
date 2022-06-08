@@ -31,6 +31,7 @@ TItemDelegate {
     property alias fullname: fullnameLbl.text
     property alias username: usernameLbl.text
     property string body
+    property string originalBody
     property string language
     property string avatar
     property string dateTime
@@ -92,7 +93,8 @@ TItemDelegate {
         } catch (e) {}
         dis.dateTime = data.datetime;
         dis.viewCount = data.views;
-        dis.body = styleText(data.body);
+        dis.originalBody = data.body;
+        dis.body = styleText(dis.originalBody);
         dis.trickImage = data.filename;
         dis.imageWidth = data.image_size.width;
         dis.imageHeight = data.image_size.height;
@@ -772,7 +774,7 @@ TItemDelegate {
                     GlobalSignals.snackRequest(qsTr("Link copied to the clipboard"));
                     break;
                 case 1:
-                    Devices.clipboard = (quote.length? quote : dis.body);
+                    Devices.clipboard = (quote.length? quote : dis.originalBody);
                     GlobalSignals.snackRequest(qsTr("Message copied to the clipboard"));
                     break;
                 case 2:
@@ -780,7 +782,7 @@ TItemDelegate {
                     GlobalSignals.snackRequest(qsTr("Code copied to the clipboard"));
                     break;
                 case 3:
-                    Devices.share(dis.fullname + " from " + AsemanApp.applicationName, (dis.quoteId? dis.quote : dis.body) + "\n" + dis.share_link)
+                    Devices.share(dis.fullname + " from " + AsemanApp.applicationName, (dis.quoteId? dis.quote : dis.originalBody) + "\n" + dis.share_link)
                     break;
                 case 4:
                     if (GlobalSettings.userId != ownerId) {
