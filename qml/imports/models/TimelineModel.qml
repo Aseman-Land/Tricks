@@ -55,7 +55,9 @@ AsemanListModel {
                 if (t.id == GlobalSettings.lastTimelineId)
                     unreadCount = counter;
 
-                let sortId = ("" + Date.parse(t.datetime)).padStart(20, '0') + (t.id + "").padStart(20, '0');
+                let rid = t.refred_trick_id? t.refred_trick_id : t.id;
+                let rid2 = t.refred_trick_id? t.refred_trick_id+1 : t.id;
+                let sortId = (rid + "").padStart(20, '0') + (rid2 + "").padStart(20, '0');
                 sortingMap.remove(sortId);
                 sortingMap.insert(sortId, t);
                 counter++;
@@ -67,9 +69,28 @@ AsemanListModel {
             }
 
             let list = sortingMap.values.reverse();
-            model.change(list);
-            if (list.length)
-                GlobalSettings.lastTimelineId = list[0].id;
+            let linkes = new Array;
+            let last_link_id = 0;
+            list.forEach(function(l){
+                var m = l;
+                if (m.refred_trick_id) {
+                    last_link_id = m.id;
+                    m["link_id"] = m.refred_trick_id;
+                } else if (last_link_id) {
+                    m["link_id"] = last_link_id;
+                    last_link_id = 0;
+                } else {
+                    m["link_id"] = null;
+                    last_link_id = 0;
+                }
+
+                linkes[linkes.length] = m;
+            })
+            model.change(linkes);
+            if (list.length) {
+                var t = list[0];
+                GlobalSettings.lastTimelineId = (t.refred_trick_id? t.refred_trick_id : t.id);
+            }
         }
     }
 

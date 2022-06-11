@@ -145,6 +145,7 @@ Item {
                 THListSeprator {
                     width: parent.width
                     anchors.bottom: parent.bottom
+                    visible: (loader.link_id == 0 || loader.link_id < loader.trickId)
                 }
 
                 Component.onCompleted: {

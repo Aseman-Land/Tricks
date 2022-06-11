@@ -25,6 +25,7 @@ TItemDelegate {
 
     property int mainId: isRetrick? quoteId : trickId
     property int trickId
+    property int link_id
     property int ownerId
     property int originalOwnerId
     property int ownerRole: 0
@@ -98,6 +99,14 @@ TItemDelegate {
         dis.trickImage = data.filename;
         dis.imageWidth = data.image_size.width;
         dis.imageHeight = data.image_size.height;
+
+        if (data.link_id) {
+            link_id = data.link_id;
+            if (link_id < trickId)
+                commentLineTop = true;
+            if (link_id > trickId)
+                commentLineBottom = true
+        }
 
         try {
             dis.code = data.code;
@@ -309,7 +318,7 @@ TItemDelegate {
 
         RowLayout {
             spacing: 4 * Devices.density
-            visible: dis.parentId && stateHeaderVisible && !commentMode
+            visible: dis.parentId && stateHeaderVisible && !commentMode && (link_id == 0 || link_id > trickId)
             Layout.bottomMargin: Constants.margins / 2
 
             TMaterialIcon {
