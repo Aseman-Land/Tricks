@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import AsemanQml.Base 2.0
 import AsemanQml.Labs 2.0
 import QtGraphicalEffects 1.0
 import Tricks 1.0
@@ -17,34 +18,46 @@ Item {
         return edit.getText(from, to);
     }
 
-    TTextEdit {
-        id: edit
+    Item {
+        id: scene
         anchors.left: parent.left
         anchors.right: parent.right
-        readOnly: true
+        height: edit.height
         visible: false
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        horizontalAlignment: TricksTools.directionOf(getText(0, length)) == Qt.RightToLeft? Text.AlignRight : Text.AlignLeft
+        anchors.margins: -10 * Devices.density
 
-        onTextChanged: {
-            directionHandler.textDocument = textDocument;
-            directionHandler.currentText = getText(0, length);
-            directionHandler.refresh();
-        }
+        TTextEdit {
+            id: edit
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 10 * Devices.density
+            readOnly: true
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            horizontalAlignment: TricksTools.directionOf(getText(0, length)) == Qt.RightToLeft? Text.AlignRight : Text.AlignLeft
 
-        TextDirectionHandler {
-            id: directionHandler
+            onTextChanged: {
+                directionHandler.textDocument = textDocument;
+                directionHandler.currentText = getText(0, length);
+                directionHandler.refresh();
+            }
+
+            TextDirectionHandler {
+                id: directionHandler
+            }
         }
     }
 
     LevelAdjust {
-        source: edit
-        anchors.fill: edit
+        source: scene
+        anchors.fill: scene
         cached: true
     }
 
     TMouseArea {
-        anchors.fill: edit
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: 10 * Devices.density
+        height: edit.height
         onPressed: {
             if (getLink().length)
                 mouse.accepted = true;
