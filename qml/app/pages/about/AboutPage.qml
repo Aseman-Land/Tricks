@@ -376,6 +376,9 @@ TPage {
 //                                        res[res.length] = {"title": "Firebase", "license": "Apache 2.0", "link": "https://github.com/firebase", "description": qsTr("Firebase is an app development platform with tools to help you build, grow and monetize your app.")};
                                     }
 
+                                    if (qzxing)
+                                        res[res.length] = {"title": "QZXing ", "license": "Apache 2.0", "link": "https://github.com/ftylitak/qzxing", "description": qsTr("Qt/QML wrapper library for the ZXing barcode image processing library.")};
+
                                     res[res.length] = {"title": "OpenSSL", "license": "Apache 2.0", "link": "http://openssl.org", "description": qsTr("OpenSSL is a software library for applications that secure communications over computer networks against eavesdropping or need to identify the party at the other end.")};
                                     res[res.length] = {"title": "Ubuntu Font", "license": "Ubuntu Font License", "link": "https://design.ubuntu.com/font/", "description": qsTr("The Ubuntu font family are a set of matching new libre/open fonts. The development is being funded by Canonical on behalf the wider Free Software community and the Ubuntu project.")};
                                     res[res.length] = {"title": "Vazirmatn Font", "license": "OFL 1.1", "link": "https://github.com/rastikerdar/vazirmatn", "description": qsTr("Vazirmatn is a Persian/Arabic font project that started in 2015 under the name of Vazir with the idea of a new simple and legible typeface suitable for web pages and applications.")};

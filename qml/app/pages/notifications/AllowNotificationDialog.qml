@@ -32,6 +32,7 @@ Item {
         anchors.top: headerItem.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: Devices.navigationBarHeight
         anchors.left: parent.left
         flickableDirection: Flickable.VerticalFlick
         contentWidth: scene.width

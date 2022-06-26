@@ -43,7 +43,9 @@ TItemDelegate {
     property string code
     property int rates
     property int comments
+    property int tips_sat
     property bool rateState
+    property int tipState
     property bool bookmarked
     property string share_link
     property variant references: new Array
@@ -111,8 +113,10 @@ TItemDelegate {
         try {
             dis.code = data.code;
             dis.rates = data.rates;
+            dis.tips_sat = Math.floor(data.tips / 1000);
             dis.comments = data.comments;
             dis.rateState = (GlobalSettings.likedsHash.contains(trickId)? GlobalSettings.likedsHash.value(trickId) : data.rate_state);
+            dis.tipState = data.tip_state;
             dis.share_link = data.share_link;
             dis.references = data.references;
             dis.tags = data.tags;
@@ -154,6 +158,7 @@ TItemDelegate {
                 dis.dateTime = trk.datetime;
                 dis.viewCount = trk.views;
                 dis.rates = trk.rates;
+                dis.tips_sat = Math.floor(trk.tips / 1000);
                 dis.comments = trk.comments;
 
                 dis.fullname = trk.fullname;
@@ -709,6 +714,36 @@ TItemDelegate {
                         Item {
                             Layout.preferredHeight: 1
                             Layout.fillWidth: true
+                        }
+                        TIconButton {
+                            materialIcon: MaterialIcons.mdi_bitcoin
+                            materialIconSize: 13 * Devices.fontDensity
+                            materialOpacity: 1
+                            materialColor: tipState? Colors.accent : Colors.buttonsColor
+                            materialText: {
+                                if (tips_sat == 0)
+                                    return ""
+                                else if (tips_sat < 1000)
+                                    return tips_sat;
+                                else if (tips_sat < 1000000)
+                                    return Math.floor(tips_sat/100) / 10 + "K";
+                                else
+                                    return Math.floor(tips_sat/100000) / 10 + "M";
+                            }
+                            visible: GlobalSettings.userId != ownerId && !globalViewMode
+                            onClicked: {
+                                if (globalViewMode)
+                                    return;
+
+                                Viewport.controller.trigger("bottomdrawer:/tricks/tip", {"trickId": dis.mainId, "trickData": dis.trickData})
+                            }
+
+                            TBusyIndicator {
+                                anchors.centerIn: parent
+                                width: 18 * Devices.density
+                                IOSStyle.foreground: IOSStyle.accent
+                                running: addBookmarkReq.refreshing || deleteBookmarkReq.refreshing
+                            }
                         }
                         TIconButton {
                             materialIcon: dis.bookmarked? MaterialIcons.mdi_star : MaterialIcons.mdi_star_outline

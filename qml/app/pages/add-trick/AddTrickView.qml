@@ -57,6 +57,8 @@ Item {
 
     function quote(trick) {
         quoteItem.pushData(trick);
+        quoteItem.commentLineTop = false;
+        quoteItem.commentLineBottom = false;
         quoteAction.active = true;
     }
 
@@ -64,6 +66,8 @@ Item {
         replyItem.pushData(trickData);
         replyItem.parentId = 0;
         replyItem.quoteId = 0;
+        replyItem.commentLineTop = false;
+        replyItem.commentLineBottom = false;
     }
     onParentIdChanged: postReq.parent_id = parentId
 

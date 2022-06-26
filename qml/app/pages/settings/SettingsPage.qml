@@ -16,6 +16,20 @@ TPage {
     ViewportType.maximumWidth: Viewport.viewport.width > Viewport.viewport.height && !Devices.isMobile? 500 * Devices.density : 0
     ViewportType.touchToClose: true
 
+    property int balance: {
+        try {
+            return valcanoReq.response.result.balance;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    GetVolcanoWalletRequest {
+        id: valcanoReq
+        allowShowErrors: true
+        Component.onCompleted: doRequest()
+    }
+
     TScrollView {
         anchors.left: parent.left
         anchors.right: parent.right
@@ -196,6 +210,77 @@ TPage {
                                             Notifications.allow();
                                         else
                                             Notifications.disAllow();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    TLabel {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 10 * Devices.density
+                        font.pixelSize: 12 * Devices.fontDensity
+                        text: qsTr("Your Tips") + Translations.refresher
+                        color: Colors.darkAccent
+                        visible: GlobalSettings.accessToken.length
+                    }
+
+                    RowLayout {
+                        spacing: 8 * Devices.density
+                        visible: GlobalSettings.accessToken.length
+
+                        Rectangle {
+                            Layout.leftMargin: 8 * Devices.density
+                            Layout.preferredWidth: 2 * Devices.density
+                            color: Colors.darkAccent
+                        }
+
+                        ColumnLayout {
+                            Layout.topMargin: 8 * Devices.density
+                            spacing: -5 * Devices.density
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+
+                                TLabel {
+                                    text: qsTr("Balance:") + Translations.refresher
+                                }
+
+                                TLabel {
+                                    text: valcanoReq.refreshing? qsTr("Loading...") : qsTr("%1 SAT").arg(formater.output) + Translations.refresher
+                                    color: Colors.accent
+                                    Layout.fillWidth: true
+
+                                    TextFormater {
+                                        id: formater
+                                        delimiter: ","
+                                        count: 3
+                                        input: "" + Math.floor(dis.balance / 1000)
+                                    }
+                                }
+
+                                TBusyIndicator {
+                                    running: valcanoReq.refreshing
+                                    Layout.preferredWidth: 16 * Devices.density
+                                    Layout.preferredHeight: 16 * Devices.density
+                                }
+
+                                TIconButton {
+                                    visible: !valcanoReq.refreshing
+                                    materialIcon: MaterialIcons.mdi_plus
+                                    materialText: qsTr("Deposit") + Translations.refresher
+                                    materialColor: Colors.accent
+                                    onClicked: dialog = Viewport.controller.trigger("bottomdrawer:/volcano/deposit")
+
+                                    property Item dialog
+                                    onDialogChanged: if (!dialog) valcanoReq.doRequest()
+                                }
+                                TIconButton {
+                                    visible: !valcanoReq.refreshing
+                                    materialIcon: MaterialIcons.mdi_minus
+                                    materialText: qsTr("Withdraw") + Translations.refresher
+                                    materialColor: Colors.accent
+                                    onClicked: {
                                     }
                                 }
                             }

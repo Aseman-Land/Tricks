@@ -86,7 +86,7 @@ NetworkRequest {
     }
 
     function _showError(title, body) {
-//        console.debug(req, url, body)
+        console.debug(req, url, body)
         if (testMode)
             return;
         if (!allowShowErrors)

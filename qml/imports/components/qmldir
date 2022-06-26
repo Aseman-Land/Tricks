@@ -44,3 +44,6 @@ TListRefresher 1.0 TListRefresher.qml
 THeaderBackButton 1.0 THeaderBackButton.qml
 CommunityCombo 1.0 CommunityCombo.qml
 TDesktopWheelArea 1.0 TDesktopWheelArea.qml
+TModernSlider 1.0 TModernSlider.qml
+TNumberField 1.0 TNumberField.qml
+TPriceField 1.0 TPriceField.qml

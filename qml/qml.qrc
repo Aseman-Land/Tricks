@@ -207,5 +207,17 @@
         <file>imports/globals/fonts/Vazir-Regular-FD.ttf</file>
         <file>imports/requests/Bootstrap.qml</file>
         <file>imports/components/TDesktopWheelArea.qml</file>
+        <file>app/pages/timeline/AddTipDialog.qml</file>
+        <file>imports/components/TModernSlider.qml</file>
+        <file>imports/requests/GetTrickTipsRequest.qml</file>
+        <file>imports/requests/GetVolcanoPaymentsRequest.qml</file>
+        <file>imports/requests/GetVolcanoWalletRequest.qml</file>
+        <file>imports/requests/SubmitTipRequest.qml</file>
+        <file>imports/requests/SubmitVolcanoDecodeRequest.qml</file>
+        <file>imports/requests/SubmitVolcanoDepositRequest.qml</file>
+        <file>imports/requests/SubmitVolcanoWhitdrawRequest.qml</file>
+        <file>app/pages/volcano/DepositDialog.qml</file>
+        <file>imports/components/TPriceField.qml</file>
+        <file>imports/components/TNumberField.qml</file>
     </qresource>
 </RCC>

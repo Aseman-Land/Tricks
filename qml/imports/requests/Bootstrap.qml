@@ -10,6 +10,7 @@ BootstrapRequest {
 
     property alias tag: tag
     property alias trick: trick
+    property alias tips: tips
     property alias user: user
     property alias signup: signup
     property alias timeline: timeline
@@ -59,6 +60,18 @@ BootstrapRequest {
         property int tags_min_count: { try { return limits.trick.tags_min_count; } catch (e) { return 0; } }
         property int allowed_edit_time: { try { return limits.trick.allowed_edit_time; } catch (e) { return 0; } }
         property int max_post_tricks: { try { return limits.trick.max_post_tricks; } catch (e) { return 0; } }
+    }
+
+    QtObject {
+        id: tips
+        property int min_tip: { try { return limits.tips.min_tip; } catch (e) { return 100; } }
+        property int max_tip: { try { return limits.tips.max_tip; } catch (e) { return 100000000; } }
+        property int min_account_balance: { try { return limits.tips.min_account_balance; } catch (e) { return 0; } }
+        property int max_account_balance: { try { return limits.tips.max_account_balance; } catch (e) { return 1000000000; } }
+        property int min_account_deposit: { try { return limits.tips.min_account_deposit; } catch (e) { return 1000000; } }
+        property int max_account_deposit: { try { return limits.tips.max_account_deposit; } catch (e) { return 1000000000; } }
+        property int min_account_withdraw: { try { return limits.tips.min_account_withdraw; } catch (e) { return 0; } }
+        property int max_account_withdraw: { try { return limits.tips.max_account_withdraw; } catch (e) { return 1000000000; } }
     }
 
     QtObject {

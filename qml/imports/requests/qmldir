@@ -64,3 +64,10 @@ RegisterFCMToken 1.0 RegisterFCMToken.qml
 UnregisterFCMToken 1.0 UnregisterFCMToken.qml
 DismissNotificationsRequest 1.0 DismissNotificationsRequest.qml
 GetSmartNotificationsRequest 1.0 GetSmartNotificationsRequest.qml
+GetTrickTipsRequest 1.0 GetTrickTipsRequest.qml
+GetVolcanoPaymentsRequest 1.0 GetVolcanoPaymentsRequest.qml
+GetVolcanoWalletRequest 1.0 GetVolcanoWalletRequest.qml
+SubmitTipRequest 1.0 SubmitTipRequest.qml
+SubmitVolcanoDecodeRequest 1.0 SubmitVolcanoDecodeRequest.qml
+SubmitVolcanoDepositRequest 1.0 SubmitVolcanoDepositRequest.qml
+SubmitVolcanoWhitdrawRequest 1.0 SubmitVolcanoWhitdrawRequest.qml

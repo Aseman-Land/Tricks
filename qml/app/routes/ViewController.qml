@@ -50,6 +50,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/tricks\/tip/
+        source: "qrc:/app/pages/timeline/AddTipDialog.qml"
+        viewportType: "bottomdrawer"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/users/
 //        source: "qrc:/app/pages/timeline/ProfilePage.qml"
         source: "qrc:/app/pages/timeline/MyProfilePage.qml"
@@ -155,6 +161,13 @@ ViewportController {
     ViewportControllerRoute {
         route: /\w+:\/notifications\/allow/
         source: "qrc:/app/pages/notifications/AllowNotificationDialog.qml"
+        viewportType: "bottomdrawer"
+    }
+
+    ViewportControllerRoute {
+        route: /\w+:\/volcano\/deposit/
+        source: "qrc:/app/pages/volcano/DepositDialog.qml"
+        viewportType: "bottomdrawer"
     }
 }
 

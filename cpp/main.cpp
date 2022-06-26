@@ -8,6 +8,10 @@
 #include "appoptions.h"
 #include "trickstools.h"
 
+#ifdef QZXING_AVAILABLE
+#include "QZXing.h"
+#endif
+
 #if !defined(APP_SECRET_ID) && defined(APP_SECRET_ID_INCLUDE)
 #include APP_SECRET_ID_INCLUDE
 #else
@@ -68,6 +72,17 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("qtVersion", qVersion());
     engine.rootContext()->setContextProperty("testMode", false);
     engine.rootContext()->setContextProperty("isAndroidStyle", false);
+
+    auto qzxing = false;
+
+#ifdef QZXING_AVAILABLE
+    QZXing::registerQMLTypes();
+    QZXing::registerQMLImageProvider(engine);
+    qzxing = true;
+#endif
+
+    engine.rootContext()->setContextProperty("qzxing", qzxing);
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
