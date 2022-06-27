@@ -13,7 +13,7 @@ AppOptions {
     readonly property int bundleVersion: appBundleVersion
 
     // Connection
-    readonly property string domain: "https://tricks.aseman.io"
+    readonly property string domain: "https://trickstest.aseman.io"
     readonly property string sslCertificate: "" // If Any and If Qt Framework built with SSL_SUPPORT
     readonly property bool ignoreSslErrors: false
     readonly property string salt: "92bcd38b-9aae-4528-a5b0-4c38489db279"

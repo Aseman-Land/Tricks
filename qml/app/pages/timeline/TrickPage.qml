@@ -28,7 +28,7 @@ TPage {
             if (data.id == trickId) {
                 item.pushData(data);
                 tags.model = data.tags;
-                trickTime.text = CalendarConv.convertDateTimeToString( GlobalMethods.unNormalizeDate(data.datetime) );
+                trickTime.text = CalendarConv.convertDateTimeToString( GlobalMethods.unNormalizeDate(data.datetime), "yyyy/MM/dd hh:mm:ss" );
                 parentsModel.change(data.parent_tricks.reverse());
                 if (data.app)
                     trickApp.text = data.app.title;
@@ -145,6 +145,19 @@ TPage {
                     font.pixelSize: 8 * Devices.fontDensity
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     color: Colors.accent
+                }
+
+                Item {
+                    Layout.preferredWidth: tipsBtn.width
+                    Layout.preferredHeight: 2
+                    visible: item.tips_sat > 0
+
+                    TIconButton {
+                        id: tipsBtn
+                        anchors.verticalCenter: parent.verticalCenter
+                        materialText: qsTr("%1 Tips").arg(item.tipsText) + Translations.refresher
+                        onClicked: Viewport.controller.trigger("page:/tricks/tips", {"trickId": dis.trickId})
+                    }
                 }
 
                 Item {

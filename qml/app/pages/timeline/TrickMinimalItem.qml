@@ -23,6 +23,17 @@ TItemDelegate {
     readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && quoteId
     readonly property real defaultHeight: columnLyt.height + columnLyt.y + (actionsRow.visible? 0 : columnLyt.y)
 
+    readonly property string tipsText: {
+        if (tips_sat == 0)
+            return ""
+        else if (tips_sat < 1000)
+            return tips_sat;
+        else if (tips_sat < 1000000)
+            return Math.floor(tips_sat/100) / 10 + "K";
+        else
+            return Math.floor(tips_sat/100000) / 10 + "M";
+    }
+
     property int mainId: isRetrick? quoteId : trickId
     property int trickId
     property int link_id
@@ -716,20 +727,12 @@ TItemDelegate {
                             Layout.fillWidth: true
                         }
                         TIconButton {
+                            id: tipsBtn
                             materialIcon: MaterialIcons.mdi_bitcoin
                             materialIconSize: 13 * Devices.fontDensity
                             materialOpacity: 1
                             materialColor: tipState? Colors.accent : Colors.buttonsColor
-                            materialText: {
-                                if (tips_sat == 0)
-                                    return ""
-                                else if (tips_sat < 1000)
-                                    return tips_sat;
-                                else if (tips_sat < 1000000)
-                                    return Math.floor(tips_sat/100) / 10 + "K";
-                                else
-                                    return Math.floor(tips_sat/100000) / 10 + "M";
-                            }
+                            materialText: dis.tipsText
                             visible: GlobalSettings.userId != ownerId && !globalViewMode
                             onClicked: {
                                 if (globalViewMode)

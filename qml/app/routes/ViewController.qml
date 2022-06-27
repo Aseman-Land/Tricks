@@ -111,6 +111,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/tricks\/tips/
+        source: "qrc:/app/pages/timeline/TricksTipsDialog.qml"
+        viewportType: GlobalSettings.mobileView? "float" : "popup"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/users\/report/
         source: "qrc:/app/pages/report/ReportUserDialog.qml"
         viewportType: GlobalSettings.mobileView? "float" : "popup"
@@ -174,6 +180,12 @@ ViewportController {
         route: /\w+:\/volcano\/withdraw/
         source: "qrc:/app/pages/volcano/WithdrawDialog.qml"
         viewportType: "bottomdrawer"
+    }
+
+    ViewportControllerRoute {
+        route: /\w+:\/volcano\/payments/
+        source: "qrc:/app/pages/volcano/PaymentsDialog.qml"
+        viewportType: GlobalSettings.mobileView? "float" : "popup"
     }
 }
 

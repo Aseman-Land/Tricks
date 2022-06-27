@@ -2,6 +2,7 @@ import QtQuick 2.0
 import AsemanQml.Base 2.0
 import AsemanQml.Controls 2.0
 import AsemanQml.Viewport 2.0
+import AsemanQml.Models 2.0
 import AsemanQml.MaterialIcons 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.IOSStyle 2.0
@@ -23,6 +24,13 @@ TPage {
             return 0;
         }
     }
+
+    property Item withdrawDlg
+    property Item depositDlg
+    property Item paymentsDlg
+
+    onWithdrawDlgChanged: if (!withdrawDlg) valcanoReq.doRequest()
+    onDepositDlgChanged: if (!depositDlg) valcanoReq.doRequest()
 
     GetVolcanoWalletRequest {
         id: valcanoReq
@@ -259,34 +267,28 @@ TPage {
                                     }
                                 }
 
-                                TIconButton {
-                                    enabled: !valcanoReq.refreshing
-                                    opacity: valcanoReq.refreshing? 0 : 1
-                                    materialIcon: MaterialIcons.mdi_plus
-                                    materialText: qsTr("Deposit") + Translations.refresher
-                                    materialColor: Colors.accent
-                                    onClicked: dialog = Viewport.controller.trigger("bottomdrawer:/volcano/deposit")
-
-                                    property Item dialog
-                                    onDialogChanged: if (!dialog) valcanoReq.doRequest()
-                                }
-                                TIconButton {
-                                    enabled: !valcanoReq.refreshing
-                                    opacity: valcanoReq.refreshing? 0 : 1
-                                    materialIcon: MaterialIcons.mdi_minus
-                                    materialText: qsTr("Withdraw") + Translations.refresher
-                                    materialColor: Colors.accent
-                                    onClicked: dialog = Viewport.controller.trigger("bottomdrawer:/volcano/withdraw")
-
-                                    property Item dialog
-                                    onDialogChanged: if (!dialog) valcanoReq.doRequest()
-                                }
-
                                 TBusyIndicator {
                                     running: valcanoReq.refreshing
                                     visible: valcanoReq.refreshing
                                     Layout.preferredWidth: 16 * Devices.density
                                     Layout.preferredHeight: 16 * Devices.density
+                                }
+
+                                TIconButton {
+                                    id: moreBtn
+                                    materialIcon: MaterialIcons.mdi_dots_vertical
+                                    materialColor: Colors.accent
+                                    onClicked: {
+                                        var pos = Qt.point(dis.LayoutMirroring.enabled? Constants.radius : moreBtn.width - Constants.radius, moreBtn.height/2);
+                                        var parent = moreBtn;
+                                        while (parent && parent != Viewport.viewport) {
+                                            pos.x += parent.x;
+                                            pos.y += parent.y;
+                                            parent = parent.parent;
+                                        }
+
+                                        Viewport.viewport.append(menuComponent, {"pointPad": pos}, "menu");
+                                    }
                                 }
                             }
                         }
@@ -376,5 +378,60 @@ TPage {
     THeaderBackButton {
         color: IOSStyle.foreground
         onClicked: dis.ViewportType.open = false
+    }
+
+    Component {
+        id: menuComponent
+        MenuView {
+            id: menuItem
+            x: pointPad.x - width
+            y: pointPad.y + (openFromTop? 10 * Devices.density : - height - 10 * Devices.density)
+            width: 220 * Devices.density
+            ViewportType.transformOrigin: {
+                var y = openFromTop? 0 : height;
+                var x = dis.LayoutMirroring.enabled? 0 : width;
+                return Qt.point(x, y);
+            }
+
+            property point pointPad
+            property int index
+            property bool openFromTop: pointPad.y < Viewport.viewport.height/2
+
+            onItemClicked: {
+                switch (index) {
+                case 0:
+                    paymentsDlg = Viewport.controller.trigger("float:/volcano/payments");
+                    break;
+                case 1:
+                    depositDlg = Viewport.controller.trigger("bottomdrawer:/volcano/deposit");
+                    break;
+                case 2:
+                    withdrawDlg = Viewport.controller.trigger("bottomdrawer:/volcano/withdraw");
+                    break;
+                }
+
+                ViewportType.open = false;
+            }
+
+            model: AsemanListModel {
+                data: [
+                    {
+                        title: qsTr("Payments"),
+                        icon: "mdi_view_list",
+                        enabled: true
+                    },
+                    {
+                        title: qsTr("Deposit"),
+                        icon: "mdi_plus",
+                        enabled: true
+                    },
+                    {
+                        title: qsTr("Withdraw"),
+                        icon: "mdi_minus",
+                        enabled: true
+                    }
+                ]
+            }
+        }
     }
 }

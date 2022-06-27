@@ -11,6 +11,7 @@ TItemDelegate {
 
     property string fullname
     property string username
+    property string extraText
     property string avatar
     property int userId
     property int ownerRole
@@ -62,6 +63,12 @@ TItemDelegate {
                 elide: Text.ElideRight
                 maximumLineCount: 1
             }
+        }
+
+        TLabel {
+            text: extraText
+            visible: text.length
+            color: Colors.accent
         }
     }
 }

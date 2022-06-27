@@ -221,5 +221,9 @@
         <file>imports/components/TNumberField.qml</file>
         <file>app/pages/volcano/WithdrawDialog.qml</file>
         <file>app/pages/volcano/QRScannerDialog.qml</file>
+        <file>app/pages/volcano/PaymentsDialog.qml</file>
+        <file>imports/models/VolcanoPaymentsModel.qml</file>
+        <file>imports/models/TricksTipsModel.qml</file>
+        <file>app/pages/timeline/TricksTipsDialog.qml</file>
     </qresource>
 </RCC>

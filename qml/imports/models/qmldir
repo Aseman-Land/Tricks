@@ -19,3 +19,5 @@ FindUsersModel 1.0 FindUsersModel.qml
 GlobalNonAuthTimelineModel 1.0 GlobalNonAuthTimelineModel.qml
 BookmarksModel 1.0 BookmarksModel.qml
 CommunitiesModel 1.0 CommunitiesModel.qml
+VolcanoPaymentsModel 1.0 VolcanoPaymentsModel.qml
+TricksTipsModel 1.0 TricksTipsModel.qml

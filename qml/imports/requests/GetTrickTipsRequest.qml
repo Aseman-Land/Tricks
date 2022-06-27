@@ -6,9 +6,9 @@ import globals 1.0
 BaseRequest {
     id: req
     contentType: NetworkRequest.TypeJson
-    url: baseUrl + "/tricks/" + _trick_id + "/tips"
+    url: baseUrl + "/tricks/" + _id + "/tips"
 
-    property int _trick_id
+    property int _id
 
     property int offset: 0
     property int limit: 20
