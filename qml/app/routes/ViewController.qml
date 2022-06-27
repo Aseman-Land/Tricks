@@ -169,5 +169,11 @@ ViewportController {
         source: "qrc:/app/pages/volcano/DepositDialog.qml"
         viewportType: "bottomdrawer"
     }
+
+    ViewportControllerRoute {
+        route: /\w+:\/volcano\/withdraw/
+        source: "qrc:/app/pages/volcano/WithdrawDialog.qml"
+        viewportType: "bottomdrawer"
+    }
 }
 

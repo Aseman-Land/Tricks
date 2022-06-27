@@ -219,5 +219,7 @@
         <file>app/pages/volcano/DepositDialog.qml</file>
         <file>imports/components/TPriceField.qml</file>
         <file>imports/components/TNumberField.qml</file>
+        <file>app/pages/volcano/WithdrawDialog.qml</file>
+        <file>app/pages/volcano/QRScannerDialog.qml</file>
     </qresource>
 </RCC>

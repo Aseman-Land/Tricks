@@ -259,14 +259,9 @@ TPage {
                                     }
                                 }
 
-                                TBusyIndicator {
-                                    running: valcanoReq.refreshing
-                                    Layout.preferredWidth: 16 * Devices.density
-                                    Layout.preferredHeight: 16 * Devices.density
-                                }
-
                                 TIconButton {
-                                    visible: !valcanoReq.refreshing
+                                    enabled: !valcanoReq.refreshing
+                                    opacity: valcanoReq.refreshing? 0 : 1
                                     materialIcon: MaterialIcons.mdi_plus
                                     materialText: qsTr("Deposit") + Translations.refresher
                                     materialColor: Colors.accent
@@ -276,12 +271,22 @@ TPage {
                                     onDialogChanged: if (!dialog) valcanoReq.doRequest()
                                 }
                                 TIconButton {
-                                    visible: !valcanoReq.refreshing
+                                    enabled: !valcanoReq.refreshing
+                                    opacity: valcanoReq.refreshing? 0 : 1
                                     materialIcon: MaterialIcons.mdi_minus
                                     materialText: qsTr("Withdraw") + Translations.refresher
                                     materialColor: Colors.accent
-                                    onClicked: {
-                                    }
+                                    onClicked: dialog = Viewport.controller.trigger("bottomdrawer:/volcano/withdraw")
+
+                                    property Item dialog
+                                    onDialogChanged: if (!dialog) valcanoReq.doRequest()
+                                }
+
+                                TBusyIndicator {
+                                    running: valcanoReq.refreshing
+                                    visible: valcanoReq.refreshing
+                                    Layout.preferredWidth: 16 * Devices.density
+                                    Layout.preferredHeight: 16 * Devices.density
                                 }
                             }
                         }

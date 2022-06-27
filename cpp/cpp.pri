@@ -1,4 +1,5 @@
 QT += quick widgets svg asemancore
+
 CONFIG += c++17
 
 QTPLUGIN.sqldrivers += qsqlite
