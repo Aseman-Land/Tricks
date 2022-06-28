@@ -281,6 +281,7 @@ Item {
     }
 
     THeaderBackButton {
+        y: headerItem.height/2 - height/2
         ratio: 1
         onClicked: dis.ViewportType.open = false
         property bool isIOSPopup: true
