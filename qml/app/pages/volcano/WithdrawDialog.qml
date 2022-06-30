@@ -11,7 +11,7 @@ import components 1.0
 import requests 1.0
 import globals 1.0
 
-Item {
+TNullableArea {
     id: dis
     width: Viewport.viewport.width
     height: (resultColumn.visible? resultColumn.height : generateColumn.height) + headerItem.height + Devices.navigationBarHeight

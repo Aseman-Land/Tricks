@@ -10,10 +10,11 @@ import components 1.0
 import requests 1.0
 import globals 1.0
 
-Item {
+TNullableArea {
     id: dis
     width: Viewport.viewport.width
     height: Math.min(360 * Devices.density + tipItem.height, Viewport.viewport.height - Devices.standardTitleBarHeight)
+    ViewportType.gestureWidth: Devices.standardTitleBarHeight + bodyLabel.height + bodyLabel.y
 
     property alias headerLabel: headerLabel
     property alias scene: scene
@@ -142,7 +143,7 @@ Item {
             labelText: qsTr("%1 Satoshi").arg(formater.output)
             to: 10 * Math.log( Math.min(Bootstrap.tips.max_tip, dis.balance)) / Math.log(10)
             from: 10 * Math.log(Bootstrap.tips.min_tip) / Math.log(10)
-            stepSize: 0.25
+            stepSize: 1
 
             TextFormater {
                 id: formater
@@ -150,7 +151,7 @@ Item {
                 count: 3
                 input: "" + Math.floor(msats / 1000)
 
-                property int msats: Math.min(dis.balance, ((slider.value % 10) + 1) * Math.pow(10, Math.floor(slider.value / 10)))
+                property int msats: Math.min(Math.min(dis.balance, Bootstrap.tips.max_tip), ((slider.value % 10) + 1) * Math.pow(10, Math.floor(slider.value / 10)))
             }
         }
 
