@@ -71,3 +71,6 @@ SubmitTipRequest 1.0 SubmitTipRequest.qml
 SubmitVolcanoDecodeRequest 1.0 SubmitVolcanoDecodeRequest.qml
 SubmitVolcanoDepositRequest 1.0 SubmitVolcanoDepositRequest.qml
 SubmitVolcanoWhitdrawRequest 1.0 SubmitVolcanoWhitdrawRequest.qml
+GoogleCheckStateRequest 1.0 GoogleCheckStateRequest.qml
+GoogleGetLinkRequest 1.0 GoogleGetLinkRequest.qml
+GoogleRegisterRequest 1.0 GoogleRegisterRequest.qml

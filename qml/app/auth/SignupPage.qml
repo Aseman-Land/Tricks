@@ -16,7 +16,9 @@ Page {
     width: Constants.width
     height: Constants.height
 
-    signal signupSuccessfull(string username, string password)
+    signal signupSuccessfull(string accessToken)
+
+    property alias googleRegisterToken: googleRegReq.google_register_token
 
     RegisterRequest {
         id: regReq
@@ -28,7 +30,19 @@ Page {
         agreement_version: Bootstrap.agreement.version
         onSuccessfull: {
             dis.ViewportType.open = false;
-            signupSuccessfull(userLbl.text, passLbl.text);
+            signupSuccessfull(response.result.access_token);
+        }
+    }
+
+    GoogleRegisterRequest {
+        id: googleRegReq
+        allowGlobalBusy: true
+        username: userLbl.text.toLowerCase()
+        fullname: nameLbl.text
+        agreement_version: Bootstrap.agreement.version
+        onSuccessfull: {
+            dis.ViewportType.open = false;
+            signupSuccessfull(response.result.access_token);
         }
     }
 
@@ -86,7 +100,11 @@ Page {
                     TLabel {
                         font.pixelSize: 16 * Devices.fontDensity
                         font.bold: true
-                        text: qsTr("Register") + Translations.refresher
+                        text: {
+                            if (googleRegisterToken.length)
+                                return qsTr("Complete Registration") + Translations.refresher;
+                            return qsTr("Register") + Translations.refresher;
+                        }
                     }
 
                     TTextField {
@@ -130,10 +148,10 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
+                        visible: googleRegisterToken.length == 0
                         minimumCharacters: Bootstrap.user.password_min_length
                         maximumCharacters: Bootstrap.user.password_max_length
                         inputMethodHints: Qt.ImhNoPredictiveText
-                        onAccepted: if(loginBtn.enabled) regReq.doRequest(passLbl.text)
 
                         TLabel {
                             anchors.left: parent.left
@@ -183,6 +201,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
+                        visible: googleRegisterToken.length == 0
                         validator: RegExpValidator { regExp: /[a-z0-9\._]+\@[a-z0-9\._]+/ }
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
                         onAccepted: (invitationLbl.visible? invitationLbl : passLbl).focus = true
@@ -210,7 +229,7 @@ Page {
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                        visible: Bootstrap.signup.invitation_code
+                        visible: Bootstrap.signup.invitation_code && googleRegisterToken.length == 0
                         onAccepted: passLbl.focus = true
 
                         TLabel {
@@ -232,17 +251,20 @@ Page {
                             id: signupBtn
                             Layout.preferredWidth: flick.width * 0.3 - 2 * Devices.density
                             text: qsTr("Signup") + Translations.refresher
-                            enabled: passLbl.acceptableInput && passLbl.acceptable &&
+                            enabled: (!passLbl.visible || (passLbl.acceptableInput && passLbl.acceptable)) &&
                                      userLbl.acceptableInput && userLbl.acceptable &&
                                      nameLbl.acceptableInput && nameLbl.acceptable &&
-                                     emailLbl.acceptableInput &&
+                                     (!emailLbl.visible || emailLbl.acceptableInput) &&
                                      (!invitationLbl.visible || invitationLbl.length)
                             highlighted: true
                             font.pixelSize: 9 * Devices.fontDensity
                             onClicked: {
                                 var obj = Viewport.controller.trigger("popup:/licenses/agreement")
                                 obj.accepted.connect(function(){
-                                    regReq.doRequest(passLbl.text);
+                                    if (googleRegisterToken.length)
+                                        googleRegReq.doRequest();
+                                    else
+                                        regReq.doRequest(passLbl.text);
                                 });
                             }
                         }

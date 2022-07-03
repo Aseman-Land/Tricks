@@ -36,6 +36,12 @@ AsemanApplication {
     }
 
     onApplicationStateChanged: {
+        switch (applicationState) {
+        case 4:
+            GlobalSignals.unsuspend();
+            break;
+        }
+
         if (!GlobalSettings.userId)
             return;
 

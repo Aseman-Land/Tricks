@@ -14,5 +14,6 @@ AsemanObject {
     signal retrickRequest(variant trick)
     signal tagReaded(string tag)
     signal communityChooseRequest()
+    signal unsuspend()
 }
 

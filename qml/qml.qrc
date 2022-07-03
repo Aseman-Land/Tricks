@@ -225,5 +225,8 @@
         <file>imports/models/VolcanoPaymentsModel.qml</file>
         <file>imports/models/TricksTipsModel.qml</file>
         <file>app/pages/timeline/TricksTipsDialog.qml</file>
+        <file>imports/requests/GoogleCheckStateRequest.qml</file>
+        <file>imports/requests/GoogleGetLinkRequest.qml</file>
+        <file>imports/requests/GoogleRegisterRequest.qml</file>
     </qresource>
 </RCC>

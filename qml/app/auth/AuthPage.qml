@@ -26,6 +26,39 @@ TPage {
         }
     }
 
+    GoogleGetLinkRequest {
+        id: googleReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            googleCheckReq.session_id = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    GoogleCheckStateRequest {
+        id: googleCheckReq
+        onSuccessfull: {
+            if (response.result.register_token) {
+                Viewport.viewport.append(signup_component, {"googleRegisterToken": response.result.register_token}, "float");
+            } else {
+                GlobalSettings.accessToken = response.result.access_token;
+                dis.ViewportType.open = false;
+            }
+            session_id = "";
+        }
+    }
+
+    Connections {
+        target: GlobalSignals
+        function onUnsuspend() {
+            if (googleCheckReq.session_id.length == 0)
+                return;
+
+            googleCheckReq.allowGlobalBusy = true;
+            googleCheckReq.doRequest();
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
@@ -191,6 +224,17 @@ TPage {
                     }
 
                     TButton {
+                        id: googleBtn
+                        Layout.alignment: Qt.AlignHCenter
+                        text: qsTr("Google") + Translations.refresher
+                        highlighted: true
+                        font.pixelSize: 9 * Devices.fontDensity
+                        onClicked: googleReq.doRequest()
+                        IOSStyle.accent: "#333"
+                        Material.accent: "#333"
+                    }
+
+                    TButton {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("Forgot password?") + Translations.refresher
                         highlighted: true
@@ -209,9 +253,8 @@ TPage {
             anchors.fill: parent
             onSignupSuccessfull: {
                 GlobalSettings.introDone = false;
-                userLbl.text = username;
-                passLbl.text = password;
-                loginReq.doRequest(password);
+                GlobalSettings.accessToken = accessToken;
+                dis.ViewportType.open = false;
             }
         }
     }
