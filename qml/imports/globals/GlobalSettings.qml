@@ -16,6 +16,7 @@ AsemanObject {
     property bool ignoreSslErrors
     property alias ignoreSslErrorsPerment: _settings.ignoreSslErrorsPerment
 
+    property alias loggedInWithoutPassword: _auth.loggedInWithoutPassword
     property alias accessToken: _auth.accessToken
     property alias userId: _auth.userId
     property alias username: _auth.username
@@ -55,6 +56,7 @@ AsemanObject {
         if (accessToken.length != 0)
             return;
 
+        loggedInWithoutPassword = false;
         userId = 0;
         fullname = "";
         username = "";
@@ -86,6 +88,7 @@ AsemanObject {
         source: AsemanApp.homePath + "/auth.ini"
 
         property string accessToken
+        property bool loggedInWithoutPassword: false
         property int userId
         property string username
         property string fullname

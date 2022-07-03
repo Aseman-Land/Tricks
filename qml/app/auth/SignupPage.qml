@@ -19,6 +19,7 @@ Page {
     signal signupSuccessfull(string accessToken)
 
     property alias googleRegisterToken: googleRegReq.google_register_token
+    property alias githubRegisterToken: githubRegReq.github_register_token
 
     RegisterRequest {
         id: regReq
@@ -36,6 +37,18 @@ Page {
 
     GoogleRegisterRequest {
         id: googleRegReq
+        allowGlobalBusy: true
+        username: userLbl.text.toLowerCase()
+        fullname: nameLbl.text
+        agreement_version: Bootstrap.agreement.version
+        onSuccessfull: {
+            dis.ViewportType.open = false;
+            signupSuccessfull(response.result.access_token);
+        }
+    }
+
+    GithubRegisterRequest {
+        id: githubRegReq
         allowGlobalBusy: true
         username: userLbl.text.toLowerCase()
         fullname: nameLbl.text
@@ -103,6 +116,8 @@ Page {
                         text: {
                             if (googleRegisterToken.length)
                                 return qsTr("Complete Registration") + Translations.refresher;
+                            if (githubRegisterToken.length)
+                                return qsTr("Complete Registration") + Translations.refresher;
                             return qsTr("Register") + Translations.refresher;
                         }
                     }
@@ -148,7 +163,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
-                        visible: googleRegisterToken.length == 0
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
                         minimumCharacters: Bootstrap.user.password_min_length
                         maximumCharacters: Bootstrap.user.password_max_length
                         inputMethodHints: Qt.ImhNoPredictiveText
@@ -201,7 +216,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
-                        visible: googleRegisterToken.length == 0
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
                         validator: RegExpValidator { regExp: /[a-z0-9\._]+\@[a-z0-9\._]+/ }
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
                         onAccepted: (invitationLbl.visible? invitationLbl : passLbl).focus = true
@@ -229,7 +244,7 @@ Page {
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                        visible: Bootstrap.signup.invitation_code && googleRegisterToken.length == 0
+                        visible: Bootstrap.signup.invitation_code && googleRegisterToken.length == 0 && githubRegisterToken.length == 0
                         onAccepted: passLbl.focus = true
 
                         TLabel {
@@ -263,6 +278,9 @@ Page {
                                 obj.accepted.connect(function(){
                                     if (googleRegisterToken.length)
                                         googleRegReq.doRequest();
+                                    else
+                                    if (githubRegisterToken.length)
+                                        githubRegReq.doRequest();
                                     else
                                         regReq.doRequest(passLbl.text);
                                 });

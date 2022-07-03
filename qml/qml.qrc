@@ -228,5 +228,8 @@
         <file>imports/requests/GoogleCheckStateRequest.qml</file>
         <file>imports/requests/GoogleGetLinkRequest.qml</file>
         <file>imports/requests/GoogleRegisterRequest.qml</file>
+        <file>imports/requests/GithubCheckStateRequest.qml</file>
+        <file>imports/requests/GithubGetLinkRequest.qml</file>
+        <file>imports/requests/GithubRegisterRequest.qml</file>
     </qresource>
 </RCC>

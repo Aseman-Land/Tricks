@@ -21,6 +21,7 @@ TPage {
         allowGlobalBusy: true
         username: userLbl.text.toLowerCase()
         onSuccessfull: {
+            GlobalSettings.loggedInWithoutPassword = false;
             GlobalSettings.accessToken = response.result.token
             dis.ViewportType.open = false;
         }
@@ -41,6 +42,30 @@ TPage {
             if (response.result.register_token) {
                 Viewport.viewport.append(signup_component, {"googleRegisterToken": response.result.register_token}, "float");
             } else {
+                GlobalSettings.loggedInWithoutPassword = true;
+                GlobalSettings.accessToken = response.result.access_token;
+                dis.ViewportType.open = false;
+            }
+            session_id = "";
+        }
+    }
+
+    GithubGetLinkRequest {
+        id: githubReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            githubCheckReq.session_id = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    GithubCheckStateRequest {
+        id: githubCheckReq
+        onSuccessfull: {
+            if (response.result.register_token) {
+                Viewport.viewport.append(signup_component, {"githubRegisterToken": response.result.register_token}, "float");
+            } else {
+                GlobalSettings.loggedInWithoutPassword = true;
                 GlobalSettings.accessToken = response.result.access_token;
                 dis.ViewportType.open = false;
             }
@@ -51,11 +76,14 @@ TPage {
     Connections {
         target: GlobalSignals
         function onUnsuspend() {
-            if (googleCheckReq.session_id.length == 0)
-                return;
-
-            googleCheckReq.allowGlobalBusy = true;
-            googleCheckReq.doRequest();
+            if (googleCheckReq.session_id.length != 0) {
+                googleCheckReq.allowGlobalBusy = true;
+                googleCheckReq.doRequest();
+            }
+            if (githubCheckReq.session_id.length != 0) {
+                githubCheckReq.allowGlobalBusy = true;
+                githubCheckReq.doRequest();
+            }
         }
     }
 
@@ -224,23 +252,41 @@ TPage {
                     }
 
                     TButton {
-                        id: googleBtn
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Google") + Translations.refresher
-                        highlighted: true
-                        font.pixelSize: 9 * Devices.fontDensity
-                        onClicked: googleReq.doRequest()
-                        IOSStyle.accent: "#333"
-                        Material.accent: "#333"
-                    }
-
-                    TButton {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("Forgot password?") + Translations.refresher
                         highlighted: true
                         flat: true
                         font.pixelSize: 9 * Devices.fontDensity
                         onClicked: Viewport.viewport.append(forget_pass_init_component, {}, "float")
+                    }
+
+                    ColumnLayout {
+                        spacing: -8 * Devices.density
+                        Layout.alignment: Qt.AlignHCenter
+
+                        TIconButton {
+                            id: googleBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("Sign-In using Google") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_google
+                            materialBold: true
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: googleReq.doRequest()
+                        }
+
+                        TIconButton {
+                            id: githubBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("Sign-In using Github") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_github_circle
+                            materialBold: true
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: githubReq.doRequest()
+                        }
                     }
                 }
             }
@@ -253,6 +299,7 @@ TPage {
             anchors.fill: parent
             onSignupSuccessfull: {
                 GlobalSettings.introDone = false;
+                GlobalSettings.loggedInWithoutPassword = (googleRegisterToken.length || githubRegisterToken.length);
                 GlobalSettings.accessToken = accessToken;
                 dis.ViewportType.open = false;
             }

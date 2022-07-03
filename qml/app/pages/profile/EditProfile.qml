@@ -176,10 +176,12 @@ TPage {
                         font.pixelSize: 12 * Devices.fontDensity
                         text: qsTr("Security") + Translations.refresher
                         color: Colors.accent
+                        visible: !GlobalSettings.loggedInWithoutPassword
                     }
 
                     RowLayout {
                         spacing: 8 * Devices.density
+                        visible: !GlobalSettings.loggedInWithoutPassword
 
                         Rectangle {
                             Layout.leftMargin: 8 * Devices.density

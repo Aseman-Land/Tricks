@@ -74,3 +74,6 @@ SubmitVolcanoWhitdrawRequest 1.0 SubmitVolcanoWhitdrawRequest.qml
 GoogleCheckStateRequest 1.0 GoogleCheckStateRequest.qml
 GoogleGetLinkRequest 1.0 GoogleGetLinkRequest.qml
 GoogleRegisterRequest 1.0 GoogleRegisterRequest.qml
+GithubCheckStateRequest 1.0 GithubCheckStateRequest.qml
+GithubGetLinkRequest 1.0 GithubGetLinkRequest.qml
+GithubRegisterRequest 1.0 GithubRegisterRequest.qml
