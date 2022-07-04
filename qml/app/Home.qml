@@ -140,6 +140,10 @@ TPage {
             GlobalSettings.avatar = response.result.avatar
             GlobalSettings.about = response.result.about;
             try {
+                GlobalSettings.google = response.result.google;
+                GlobalSettings.github = response.result.github;
+            } catch (e) {}
+            try {
                 GlobalSettings.userInviteCode = response.result.invitation_code;
             } catch (e) {
                 GlobalSettings.userInviteCode = "";

@@ -44,6 +44,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/auth\/signup/
+        source: "qrc:/app/auth/SignupPage.qml"
+        viewportType: "float"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/tricks/
         source: "qrc:/app/pages/timeline/TrickPage.qml"
         viewportType: GlobalSettings.mobileView? "page" : "popup"

@@ -231,5 +231,8 @@
         <file>imports/requests/GithubCheckStateRequest.qml</file>
         <file>imports/requests/GithubGetLinkRequest.qml</file>
         <file>imports/requests/GithubRegisterRequest.qml</file>
+        <file>app/auth/SignInCheckArea.qml</file>
+        <file>imports/requests/GithubConnectRequest.qml</file>
+        <file>imports/requests/GoogleConnectRequest.qml</file>
     </qresource>
 </RCC>

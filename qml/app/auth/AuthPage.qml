@@ -16,14 +16,18 @@ TPage {
     width: Constants.width
     height: Constants.height
 
+    Component.onCompleted: {
+        GlobalSettings.googleRegisterSessionId = "";
+        GlobalSettings.githubRegisterSessionId = "";
+    }
+
     LoginRequest {
         id: loginReq
         allowGlobalBusy: true
         username: userLbl.text.toLowerCase()
         onSuccessfull: {
             GlobalSettings.loggedInWithoutPassword = false;
-            GlobalSettings.accessToken = response.result.token
-            dis.ViewportType.open = false;
+            GlobalSettings.accessToken = response.result.token;
         }
     }
 
@@ -31,22 +35,8 @@ TPage {
         id: googleReq
         allowGlobalBusy: true
         onSuccessfull: {
-            googleCheckReq.session_id = response.result.session_id;
+            GlobalSettings.googleRegisterSessionId = response.result.session_id;
             Qt.openUrlExternally(response.result.authorize_url);
-        }
-    }
-
-    GoogleCheckStateRequest {
-        id: googleCheckReq
-        onSuccessfull: {
-            if (response.result.register_token) {
-                Viewport.viewport.append(signup_component, {"googleRegisterToken": response.result.register_token}, "float");
-            } else {
-                GlobalSettings.loggedInWithoutPassword = true;
-                GlobalSettings.accessToken = response.result.access_token;
-                dis.ViewportType.open = false;
-            }
-            session_id = "";
         }
     }
 
@@ -54,36 +44,16 @@ TPage {
         id: githubReq
         allowGlobalBusy: true
         onSuccessfull: {
-            githubCheckReq.session_id = response.result.session_id;
+            GlobalSettings.githubRegisterSessionId = response.result.session_id;
             Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
-    GithubCheckStateRequest {
-        id: githubCheckReq
-        onSuccessfull: {
-            if (response.result.register_token) {
-                Viewport.viewport.append(signup_component, {"githubRegisterToken": response.result.register_token}, "float");
-            } else {
-                GlobalSettings.loggedInWithoutPassword = true;
-                GlobalSettings.accessToken = response.result.access_token;
-                dis.ViewportType.open = false;
-            }
-            session_id = "";
-        }
-    }
-
     Connections {
-        target: GlobalSignals
-        function onUnsuspend() {
-            if (googleCheckReq.session_id.length != 0) {
-                googleCheckReq.allowGlobalBusy = true;
-                googleCheckReq.doRequest();
-            }
-            if (githubCheckReq.session_id.length != 0) {
-                githubCheckReq.allowGlobalBusy = true;
-                githubCheckReq.doRequest();
-            }
+        target: GlobalSettings
+        function onAccessTokenChanged() {
+            if (GlobalSettings.accessToken.length)
+                dis.ViewportType.open = false;
         }
     }
 
@@ -147,7 +117,6 @@ TPage {
                     id: mainColumn
                     width: parent.width * 0.7
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -50 * Devices.density
                     spacing: 4 * Devices.density
 
                     TImage {
@@ -245,7 +214,7 @@ TPage {
                             text: qsTr("Signup") + Translations.refresher
                             highlighted: true
                             font.pixelSize: 9 * Devices.fontDensity
-                            onClicked: Viewport.viewport.append(signup_component, {}, "float")
+                            onClicked: Viewport.controller.trigger("float:/auth/signup");
                             IOSStyle.accent: "#333"
                             Material.accent: "#333"
                         }
@@ -258,6 +227,28 @@ TPage {
                         flat: true
                         font.pixelSize: 9 * Devices.fontDensity
                         onClicked: Viewport.viewport.append(forget_pass_init_component, {}, "float")
+                        IOSStyle.accent: "#333"
+                        Material.accent: "#333"
+                    }
+
+                    RowLayout {
+                        Layout.topMargin: 6 * Devices.density
+
+                        THListSeprator {
+                            opacity: 1
+                            color: Colors.accent
+                        }
+
+                        TLabel {
+                            text: qsTr("Other Methods") + Translations.refresher
+                            font.pixelSize: 9 * Devices.fontDensity
+                            color: Colors.accent
+                        }
+
+                        THListSeprator {
+                            opacity: 1
+                            color: Colors.accent
+                        }
                     }
 
                     ColumnLayout {
@@ -270,6 +261,7 @@ TPage {
                             materialText: qsTr("Sign-In using Google") + Translations.refresher
                             materialIcon: MaterialIcons.mdi_google
                             materialBold: true
+                            materialColor: "#e34133"
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
@@ -282,6 +274,7 @@ TPage {
                             materialText: qsTr("Sign-In using Github") + Translations.refresher
                             materialIcon: MaterialIcons.mdi_github_circle
                             materialBold: true
+                            materialColor: "#2cb44c"
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
@@ -289,19 +282,6 @@ TPage {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    Component {
-        id: signup_component
-        SignupPage {
-            anchors.fill: parent
-            onSignupSuccessfull: {
-                GlobalSettings.introDone = false;
-                GlobalSettings.loggedInWithoutPassword = (googleRegisterToken.length || githubRegisterToken.length);
-                GlobalSettings.accessToken = accessToken;
-                dis.ViewportType.open = false;
             }
         }
     }

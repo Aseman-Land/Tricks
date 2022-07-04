@@ -35,7 +35,7 @@ TPage {
     GetVolcanoWalletRequest {
         id: valcanoReq
         allowShowErrors: true
-        Component.onCompleted: doRequest()
+        Component.onCompleted: if (GlobalSettings.accessToken.length) doRequest()
     }
 
     TScrollView {

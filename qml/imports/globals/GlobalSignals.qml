@@ -8,6 +8,7 @@ AsemanObject {
     signal tagsRefreshed()
     signal snackRequest(string text)
     signal errorRequest(string text)
+    signal fatalRequest(string text)
     signal trickUpdated(variant data)
     signal refreshRequest();
     signal trickDeleted(int id);

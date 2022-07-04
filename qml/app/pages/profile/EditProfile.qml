@@ -16,6 +16,11 @@ TPage {
 
     readonly property real labelsWidth: 120 * Devices.density
 
+    Component.onCompleted: {
+        GlobalSettings.googleConnectSessionId = "";
+        GlobalSettings.githubConnectSessionId = "";
+    }
+
     EditProfileRequest {
         id: req
         allowGlobalBusy: true
@@ -27,6 +32,24 @@ TPage {
             GlobalSignals.refreshRequest();
             GlobalSignals.snackRequest(qsTr("Profile updated"));
             dis.ViewportType.open = false;
+        }
+    }
+
+    GoogleGetLinkRequest {
+        id: googleReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.googleConnectSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    GithubGetLinkRequest {
+        id: githubReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.githubConnectSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
@@ -174,6 +197,49 @@ TPage {
                         Layout.topMargin: 20 * Devices.density
                         Layout.fillWidth: true
                         font.pixelSize: 12 * Devices.fontDensity
+                        text: qsTr("Other") + Translations.refresher
+                        color: Colors.accent
+                    }
+
+                    RowLayout {
+                        spacing: 8 * Devices.density
+
+                        Rectangle {
+                            Layout.leftMargin: 8 * Devices.density
+                            Layout.preferredWidth: 2 * Devices.density
+                            Layout.preferredHeight: 110 * Devices.density
+                            color: Colors.accent
+                        }
+
+                        ColumnLayout {
+                            Layout.topMargin: 8 * Devices.density
+                            spacing: 4 * Devices.density
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+
+                                TLabel {
+                                    Layout.preferredWidth: labelsWidth
+                                    Layout.alignment: Qt.AlignTop
+                                    text: qsTr("Biography") + Translations.refresher
+                                }
+
+                                TTextArea {
+                                    id: bioField
+                                    Layout.fillWidth: true
+                                    Layout.minimumHeight: 100 * Devices.density
+                                    text: GlobalSettings.about
+                                    minimumCharacters: 0
+                                    maximumCharacters: Bootstrap.user.about_max_length
+                                }
+                            }
+                        }
+                    }
+
+                    TLabel {
+                        Layout.topMargin: 20 * Devices.density
+                        Layout.fillWidth: true
+                        font.pixelSize: 12 * Devices.fontDensity
                         text: qsTr("Security") + Translations.refresher
                         color: Colors.accent
                         visible: !GlobalSettings.loggedInWithoutPassword
@@ -186,7 +252,7 @@ TPage {
                         Rectangle {
                             Layout.leftMargin: 8 * Devices.density
                             Layout.preferredWidth: 2 * Devices.density
-                            Layout.preferredHeight: 100 * Devices.density
+                            Layout.preferredHeight: 120 * Devices.density
                             color: Colors.accent
                         }
 
@@ -257,7 +323,7 @@ TPage {
                         Layout.topMargin: 20 * Devices.density
                         Layout.fillWidth: true
                         font.pixelSize: 12 * Devices.fontDensity
-                        text: qsTr("Other") + Translations.refresher
+                        text: qsTr("Authentication Methods") + Translations.refresher
                         color: Colors.accent
                     }
 
@@ -267,7 +333,7 @@ TPage {
                         Rectangle {
                             Layout.leftMargin: 8 * Devices.density
                             Layout.preferredWidth: 2 * Devices.density
-                            Layout.preferredHeight: 100 * Devices.density
+                            Layout.preferredHeight: 80 * Devices.density
                             color: Colors.accent
                         }
 
@@ -277,20 +343,41 @@ TPage {
 
                             RowLayout {
                                 spacing: 4 * Devices.density
+                                Layout.topMargin: -10 * Devices.density
 
                                 TLabel {
-                                    Layout.preferredWidth: labelsWidth
-                                    Layout.alignment: Qt.AlignTop
-                                    text: qsTr("Biography") + Translations.refresher
+                                    Layout.fillWidth: true
+                                    text: qsTr("Google") + Translations.refresher
                                 }
 
-                                TTextArea {
-                                    id: bioField
+                                TIconButton {
+                                    enabled: !GlobalSettings.google
+                                    materialIcon: MaterialIcons.mdi_google
+                                    materialText: GlobalSettings.google? qsTr("Connected") : qsTr("Connect") + Translations.refresher
+                                    flat: true
+                                    materialColor: GlobalSettings.google? Colors.foreground :"#e34133"
+                                    opacity: enabled? 1 : 0.7
+                                    onClicked: googleReq.doRequest()
+                                }
+                            }
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+                                Layout.topMargin: -10 * Devices.density
+
+                                TLabel {
                                     Layout.fillWidth: true
-                                    Layout.minimumHeight: 100 * Devices.density
-                                    text: GlobalSettings.about
-                                    minimumCharacters: 0
-                                    maximumCharacters: Bootstrap.user.about_max_length
+                                    text: qsTr("Github") + Translations.refresher
+                                }
+
+                                TIconButton {
+                                    enabled: !GlobalSettings.github
+                                    materialIcon: MaterialIcons.mdi_github_circle
+                                    materialText: GlobalSettings.github? qsTr("Connected") : qsTr("Connect") + Translations.refresher
+                                    flat: true
+                                    materialColor: GlobalSettings.github? Colors.foreground : "#2cb44c"
+                                    opacity: enabled? 1 : 0.7
+                                    onClicked: githubReq.doRequest()
                                 }
                             }
                         }
@@ -322,7 +409,7 @@ TPage {
                                 spacing: 4 * Devices.density
 
                                 TLabel {
-                                    Layout.preferredWidth: labelsWidth
+                                    Layout.fillWidth: true
                                     text: qsTr("Delete Account") + Translations.refresher
                                 }
 

@@ -16,10 +16,48 @@ Page {
     width: Constants.width
     height: Constants.height
 
-    signal signupSuccessfull(string accessToken)
+    function signupSuccessfull(accessToken) {
+        GlobalSettings.introDone = false;
+        GlobalSettings.loggedInWithoutPassword = (googleRegisterToken.length || githubRegisterToken.length);
+        GlobalSettings.accessToken = accessToken;
+    }
+
+    function googleSignupRequest() {
+        googleReq.doRequest();
+    }
+
+    function githubSignupRequest() {
+        githubReq.doRequest();
+    }
 
     property alias googleRegisterToken: googleRegReq.google_register_token
     property alias githubRegisterToken: githubRegReq.github_register_token
+
+    GoogleGetLinkRequest {
+        id: googleReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.googleRegisterSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    GithubGetLinkRequest {
+        id: githubReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.githubRegisterSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    Connections {
+        target: GlobalSettings
+        function onAccessTokenChanged() {
+            if (GlobalSettings.accessToken.length)
+                dis.ViewportType.open = false;
+        }
+    }
 
     RegisterRequest {
         id: regReq
@@ -107,7 +145,7 @@ Page {
                     id: columnLyt
                     width: parent.width * 0.6
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -50 * Devices.density
+                    anchors.verticalCenterOffset: googleRegisterToken.length == 0 && githubRegisterToken.length == 0? 0 : -50 * Devices.density
                     spacing: 4 * Devices.density
 
                     TLabel {
@@ -296,6 +334,59 @@ Page {
                             onClicked: dis.ViewportType.open = false
                             IOSStyle.accent: "#333"
                             Material.accent: "#333"
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.topMargin: 6 * Devices.density
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+
+                        THListSeprator {
+                            opacity: 1
+                            color: Colors.accent
+                        }
+
+                        TLabel {
+                            text: Bootstrap.signup.invitation_code? qsTr("Without invitation code") : qsTr("Other Methods") + Translations.refresher
+                            font.pixelSize: 9 * Devices.fontDensity
+                            color: Colors.accent
+                        }
+
+                        THListSeprator {
+                            opacity: 1
+                            color: Colors.accent
+                        }
+                    }
+
+                    ColumnLayout {
+                        spacing: -8 * Devices.density
+                        Layout.alignment: Qt.AlignHCenter
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+
+                        TIconButton {
+                            id: googleBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("Sign-Up using Google") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_google
+                            materialBold: true
+                            materialColor: "#e34133"
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: googleSignupRequest()
+                        }
+
+                        TIconButton {
+                            id: githubBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("Sign-Up using Github") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_github_circle
+                            materialBold: true
+                            materialColor: "#2cb44c"
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: githubSignupRequest()
                         }
                     }
                 }

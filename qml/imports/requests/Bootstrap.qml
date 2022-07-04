@@ -16,7 +16,7 @@ BootstrapRequest {
     property alias timeline: timeline
     property alias agreement: agreement
 
-    readonly property string title: { try { return features.title; } catch (e) { return qsTr("Tricks") + Translations.refresher; } }
+    readonly property string title: { try { if (features.title_1 == undefined) throw "err"; return features.title_1; } catch (e) { return qsTr("Tricks") + Translations.refresher; } }
     readonly property bool smartKeyboardHeight: { try { return features.smart_keyboard_height; } catch (e) { return true; } }
     readonly property bool dynamicKeyboardHeight: { try { return features.dynamic_keyboard_height; } catch (e) { return true; } }
     readonly property bool aseman: { try { return features.aseman; } catch (e) { return false; } }

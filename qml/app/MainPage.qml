@@ -38,6 +38,13 @@ TPage {
         function onErrorRequest(text) {
             errorsSnackBar.open(text);
         }
+        function onFatalRequest(text) {
+            var args = {
+                "title": qsTr("Fatal"),
+                "body" : text
+            };
+            Viewport.controller.trigger("dialog:/general/warning", args);
+        }
     }
 
     Viewport {
@@ -68,6 +75,10 @@ TPage {
                 sourceComponent: Auth.AuthPage {
                     anchors.fill: parent
                 }
+            }
+
+            Auth.SignInCheckArea {
+                anchors.fill: parent
             }
         }
     }

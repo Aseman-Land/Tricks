@@ -77,3 +77,5 @@ GoogleRegisterRequest 1.0 GoogleRegisterRequest.qml
 GithubCheckStateRequest 1.0 GithubCheckStateRequest.qml
 GithubGetLinkRequest 1.0 GithubGetLinkRequest.qml
 GithubRegisterRequest 1.0 GithubRegisterRequest.qml
+GithubConnectRequest 1.0 GithubConnectRequest.qml
+GoogleConnectRequest 1.0 GoogleConnectRequest.qml
