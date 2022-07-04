@@ -124,6 +124,7 @@ TPage {
             if (data.launchnotification) {
                 var action = data.nClickAction;
                 if (action == undefined) {
+                    GlobalSettings.homeTabIndex = 4;
                     console.debug("There is no action on clicked notification.");
                     return;
                 }
