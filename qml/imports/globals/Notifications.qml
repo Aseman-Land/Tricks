@@ -13,6 +13,7 @@ AsemanObject {
 
     signal registerFcmRequest(string token)
     signal unregisterFcmRequest(string token)
+    signal notificationRecieved(variant data)
 
     function initFirebase() {
         if (!qtFirebase)
@@ -20,11 +21,11 @@ AsemanObject {
 
         if (allowNotifications) {
             if (!fcmMessaging) {
-                fcmMessaging = Qt.createQmlObject("import AsemanQml.Base 2.0\n" +
-                                                  "import QtFirebase 1.0\n" +
-                                                  "Messaging{\n" +
+                fcmMessaging = Qt.createQmlObject("import QtFirebase 1.0\n" +
+                                                  "import globals 1.0\n" +
+                                                  "Messaging {\n" +
                                                   "    id: msg\n" +
-                                                  "    onDataChanged: console.debug(Tools.variantToJson(data))\n" +
+                                                  "    onDataChanged: Notifications.notificationRecieved(data)\n" +
                                                   "}", dis);
             }
         } else {

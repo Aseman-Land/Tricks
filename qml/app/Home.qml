@@ -119,6 +119,27 @@ TPage {
             unregisterReq.token = token;
             unregisterReq.doRequest();
         }
+
+        function onNotificationRecieved(data) {
+            if (data.launchnotification) {
+                var action = data.nClickAction;
+                if (action == undefined) {
+                    console.debug("There is no action on clicked notification.");
+                    return;
+                }
+
+                let trick_cmd = "trick://";
+                let user_cmd = "user://";
+
+                if (action.slice(0, trick_cmd.length) == trick_cmd) {
+                    let trick_id = action.slice(trick_cmd.length) * 1;
+                    Viewport.controller.trigger("float:/tricks", {"trickId": trick_id})
+                } else if (action.slice(0, user_cmd.length) == user_cmd) {
+                    let user_id = action.slice(user_cmd.length) * 1;
+                    Viewport.controller.trigger("float:/users", {"userId": user_id})
+                }
+            }
+        }
     }
 
     RegisterFCMToken {
