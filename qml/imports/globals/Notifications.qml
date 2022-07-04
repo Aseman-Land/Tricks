@@ -20,7 +20,12 @@ AsemanObject {
 
         if (allowNotifications) {
             if (!fcmMessaging) {
-                fcmMessaging = Qt.createQmlObject("import QtFirebase 1.0\nMessaging{ id: msg }", dis);
+                fcmMessaging = Qt.createQmlObject("import AsemanQml.Base 2.0\n" +
+                                                  "import QtFirebase 1.0\n" +
+                                                  "Messaging{\n" +
+                                                  "    id: msg\n" +
+                                                  "    onDataChanged: console.debug(Tools.variantToJson(data))\n" +
+                                                  "}", dis);
             }
         } else {
             if (fcmMessaging) fcmMessaging.destroy();
