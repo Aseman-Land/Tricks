@@ -367,7 +367,7 @@ Page {
                         TIconButton {
                             id: googleBtn
                             Layout.alignment: Qt.AlignHCenter
-                            materialText: qsTr("Sign-Up using Google") + Translations.refresher
+                            materialText: qsTr("Google") + Translations.refresher
                             materialIcon: MaterialIcons.mdi_google
                             materialBold: true
                             materialColor: "#e34133"
@@ -380,7 +380,7 @@ Page {
                         TIconButton {
                             id: githubBtn
                             Layout.alignment: Qt.AlignHCenter
-                            materialText: qsTr("Sign-Up using Github") + Translations.refresher
+                            materialText: qsTr("Github") + Translations.refresher
                             materialIcon: MaterialIcons.mdi_github_circle
                             materialBold: true
                             materialColor: "#2cb44c"

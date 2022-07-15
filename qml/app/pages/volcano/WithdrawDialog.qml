@@ -226,11 +226,16 @@ TNullableArea {
                         height: 30 * Devices.density
                         materialIcon: MaterialIcons.mdi_qrcode_scan
                         onClicked: {
-                            var comp = Qt.createComponent("QRScannerDialog.qml");
-                            var dlg = Viewport.viewport.append(comp, {}, "float");
-                            dlg.tagFound.connect(function(tag) {
-                                paymentLink.text = tag;
-                                confirmBtn.clicked();
+                            AsemanApp.requestPermissions(["android.permission.CAMERA"],
+                                                         function(res) {
+                                if(res["android.permission.CAMERA"] == true) {
+                                    var comp = Qt.createComponent("QRScannerDialog.qml");
+                                    var dlg = Viewport.viewport.append(comp, {}, "float");
+                                    dlg.tagFound.connect(function(tag) {
+                                        paymentLink.text = tag;
+                                        confirmBtn.clicked();
+                                    });
+                                }
                             });
                         }
                     }

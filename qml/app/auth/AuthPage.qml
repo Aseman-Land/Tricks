@@ -277,14 +277,19 @@ TPage {
                             font.pixelSize: 9 * Devices.fontDensity
                             visible: qzxing
                             onClicked: {
-                                var comp = Qt.createComponent("qrc:/app/pages/volcano/QRScannerDialog.qml");
-                                dialog = Viewport.viewport.append(comp, {"body": qsTr("From Settings menu of the logged-in device, click on \"Link to other Device\".")}, "float");
-                                dialog.tagFound.connect(function(tag) {
-                                    if (meRequest.refreshing)
-                                        return;
+                                AsemanApp.requestPermissions(["android.permission.CAMERA"],
+                                                             function(res) {
+                                    if(res["android.permission.CAMERA"] == true) {
+                                        var comp = Qt.createComponent("qrc:/app/pages/volcano/QRScannerDialog.qml");
+                                        dialog = Viewport.viewport.append(comp, {"body": qsTr("From Settings menu of the logged-in device, click on \"Link to other Device\".")}, "float");
+                                        dialog.tagFound.connect(function(tag) {
+                                            if (meRequest.refreshing)
+                                                return;
 
-                                    meRequest.accessToken = tag;
-                                    meRequest.doRequest();
+                                            meRequest.accessToken = tag;
+                                            meRequest.doRequest();
+                                        });
+                                    }
                                 });
                             }
 
