@@ -358,9 +358,10 @@ Page {
                         }
                     }
 
-                    ColumnLayout {
-                        spacing: -8 * Devices.density
+                    Flow {
+                        spacing: 6 * Devices.density
                         Layout.alignment: Qt.AlignHCenter
+                        Layout.fillWidth: true
                         visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
 
                         TIconButton {

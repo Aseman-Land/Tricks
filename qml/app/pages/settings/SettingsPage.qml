@@ -356,6 +356,21 @@ TPage {
                                     onClicked: Viewport.controller.trigger("popup:/licenses/agreement", {"buttons": false})
                                 }
                             }
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+
+                                TLabel {
+                                    Layout.fillWidth: true
+                                    text: qsTr("Link to other Device") + Translations.refresher
+                                }
+
+                                TIconButton {
+                                    materialText: qsTr("QR Code")
+                                    materialColor: Colors.accent
+                                    onClicked: Viewport.controller.trigger("bottomdrawer:/settings/qr-login")
+                                }
+                            }
                         }
                     }
 
@@ -384,7 +399,7 @@ TPage {
         id: menuComponent
         MenuView {
             id: menuItem
-            x: pointPad.x - width
+            x: dis.LayoutMirroring.enabled? pointPad.x : pointPad.x - width
             y: pointPad.y + (openFromTop? 10 * Devices.density : - height - 10 * Devices.density)
             width: 220 * Devices.density
             ViewportType.transformOrigin: {

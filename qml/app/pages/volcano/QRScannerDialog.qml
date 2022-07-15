@@ -14,8 +14,7 @@ import components 1.0
 Page {
     id: dis
 
-    Material.theme: Material.Dark
-    IOSStyle.theme: IOSStyle.Dark
+    property alias body: bodyLabel.text
 
     signal tagFound(string tag)
     
@@ -54,6 +53,18 @@ Page {
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
+        spacing: 12 * Devices.density
+
+        TLabel {
+            id: bodyLabel
+            Layout.fillWidth: true
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            visible: text.length
+            font.pixelSize: 7 * Devices.fontDensity
+            Layout.topMargin: 12 * Devices.density
+            Layout.leftMargin: 12 * Devices.density
+            Layout.rightMargin: 12 * Devices.density
+        }
 
         Item {
             id: cameraFrame

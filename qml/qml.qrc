@@ -234,5 +234,6 @@
         <file>app/auth/SignInCheckArea.qml</file>
         <file>imports/requests/GithubConnectRequest.qml</file>
         <file>imports/requests/GoogleConnectRequest.qml</file>
+        <file>app/pages/settings/QRLogin.qml</file>
     </qresource>
 </RCC>

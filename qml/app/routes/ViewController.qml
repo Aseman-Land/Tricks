@@ -153,6 +153,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/settings\/qr-login/
+        source: "qrc:/app/pages/settings/QRLogin.qml"
+        viewportType: "bottomdrawer"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/tricks\/add/
         source: "qrc:/app/pages/add-trick/AddTrickDialog.qml"
         viewportType: GlobalSettings.mobileView? "float" : "popup"

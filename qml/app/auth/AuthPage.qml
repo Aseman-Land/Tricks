@@ -49,6 +49,15 @@ TPage {
         }
     }
 
+    GetMeRequest {
+        id: meRequest
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.loggedInWithoutPassword = true;
+            GlobalSettings.accessToken = accessToken;
+        }
+    }
+
     Connections {
         target: GlobalSettings
         function onAccessTokenChanged() {
@@ -251,14 +260,40 @@ TPage {
                         }
                     }
 
-                    ColumnLayout {
-                        spacing: -8 * Devices.density
+                    Flow {
+                        spacing: 6 * Devices.density
                         Layout.alignment: Qt.AlignHCenter
+                        Layout.fillWidth: true
+
+                        TIconButton {
+                            id: qrBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("QR Code") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_qrcode_scan
+                            materialBold: true
+                            materialColor: Colors.primary
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: {
+                                var comp = Qt.createComponent("qrc:/app/pages/volcano/QRScannerDialog.qml");
+                                dialog = Viewport.viewport.append(comp, {"body": qsTr("From Settings menu of the logged-in device, click on \"Link to other Device\".")}, "float");
+                                dialog.tagFound.connect(function(tag) {
+                                    if (meRequest.refreshing)
+                                        return;
+
+                                    meRequest.accessToken = tag;
+                                    meRequest.doRequest();
+                                });
+                            }
+
+                            property Item dialog
+                        }
 
                         TIconButton {
                             id: googleBtn
                             Layout.alignment: Qt.AlignHCenter
-                            materialText: qsTr("Sign-In using Google") + Translations.refresher
+                            materialText: qsTr("Google") + Translations.refresher
                             materialIcon: MaterialIcons.mdi_google
                             materialBold: true
                             materialColor: "#e34133"
@@ -271,7 +306,7 @@ TPage {
                         TIconButton {
                             id: githubBtn
                             Layout.alignment: Qt.AlignHCenter
-                            materialText: qsTr("Sign-In using Github") + Translations.refresher
+                            materialText: qsTr("Github") + Translations.refresher
                             materialIcon: MaterialIcons.mdi_github_circle
                             materialBold: true
                             materialColor: "#2cb44c"
