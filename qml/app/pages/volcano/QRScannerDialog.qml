@@ -53,6 +53,7 @@ Page {
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
+        anchors.topMargin: Devices.statusBarHeight
         spacing: 12 * Devices.density
 
         TLabel {

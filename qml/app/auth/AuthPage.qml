@@ -275,6 +275,7 @@ TPage {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: qzxing
                             onClicked: {
                                 var comp = Qt.createComponent("qrc:/app/pages/volcano/QRScannerDialog.qml");
                                 dialog = Viewport.viewport.append(comp, {"body": qsTr("From Settings menu of the logged-in device, click on \"Link to other Device\".")}, "float");

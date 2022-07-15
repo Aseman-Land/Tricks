@@ -359,6 +359,7 @@ TPage {
 
                             RowLayout {
                                 spacing: 4 * Devices.density
+                                enabled: qzxing
 
                                 TLabel {
                                     Layout.fillWidth: true
@@ -368,6 +369,7 @@ TPage {
                                 TIconButton {
                                     materialText: qsTr("QR Code")
                                     materialColor: Colors.accent
+                                    opacity: qzxing? 1 : 0.5
                                     onClicked: Viewport.controller.trigger("bottomdrawer:/settings/qr-login")
                                 }
                             }
