@@ -740,13 +740,6 @@ TItemDelegate {
 
                                 Viewport.controller.trigger("bottomdrawer:/tricks/tip", {"trickId": dis.mainId, "trickData": dis.trickData})
                             }
-
-                            TBusyIndicator {
-                                anchors.centerIn: parent
-                                width: 18 * Devices.density
-                                IOSStyle.foreground: IOSStyle.accent
-                                running: addBookmarkReq.refreshing || deleteBookmarkReq.refreshing
-                            }
                         }
                         TIconButton {
                             materialIcon: dis.bookmarked? MaterialIcons.mdi_star : MaterialIcons.mdi_star_outline
