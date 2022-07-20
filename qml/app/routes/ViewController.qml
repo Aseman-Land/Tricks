@@ -141,6 +141,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/tag\/notification/
+        source: "qrc:/app/pages/notifications/TagNotificationDialog.qml"
+        viewportType: "bottomdrawer"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/tags/
         source: "qrc:/app/pages/tags/TagsPage.qml"
         viewportType: GlobalSettings.mobileView? "float" : "popup"

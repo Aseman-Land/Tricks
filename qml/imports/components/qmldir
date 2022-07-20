@@ -47,3 +47,4 @@ TDesktopWheelArea 1.0 TDesktopWheelArea.qml
 TModernSlider 1.0 TModernSlider.qml
 TNumberField 1.0 TNumberField.qml
 TPriceField 1.0 TPriceField.qml
+TSpinBox 1.0 TSpinBox.qml
