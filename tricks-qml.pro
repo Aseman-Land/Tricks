@@ -24,10 +24,10 @@ ios {
     }
 }
 
-include(configurations/configurations.pri)
 include(translations/translations.pri)
 include(objective-c/objective-c.pri)
 include(cpp/cpp.pri)
+include(configurations/configurations.pri)
 
 exists ($$PWD/qml/imports): QML_IMPORT_PATH += $$PWD/qml/imports
 

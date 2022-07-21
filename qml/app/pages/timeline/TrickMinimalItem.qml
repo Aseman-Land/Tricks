@@ -53,6 +53,7 @@ TItemDelegate {
     property real imageHeight: 100
     property string code
     property int rates
+    property int retricks
     property int comments
     property int tips_sat
     property bool rateState
@@ -124,6 +125,7 @@ TItemDelegate {
         try {
             dis.code = data.code;
             dis.rates = data.rates;
+            dis.retricks = data.retricks;
             dis.tips_sat = Math.floor(data.tips / 1000);
             dis.comments = data.comments;
             dis.rateState = (GlobalSettings.likedsHash.contains(trickId)? GlobalSettings.likedsHash.value(trickId) : data.rate_state);
@@ -169,6 +171,7 @@ TItemDelegate {
                 dis.dateTime = trk.datetime;
                 dis.viewCount = trk.views;
                 dis.rates = trk.rates;
+                dis.retricks = trk.retricks;
                 dis.tips_sat = Math.floor(trk.tips / 1000);
                 dis.comments = trk.comments;
 
@@ -712,6 +715,7 @@ TItemDelegate {
                         TIconButton {
                             materialIcon: MaterialIcons.mdi_repeat
                             visible: !globalViewMode && quote.length == 0
+                            materialText: retricks? retricks : ""
                             materialBold: myRetrick
                             materialColor: myRetrick? Colors.accent : Colors.buttonsColor
                             onClicked: {
