@@ -20,7 +20,7 @@ TItemDelegate {
     focusPolicy: Qt.ClickFocus
     clip: true
 
-    readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && quoteId
+    readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && isRetrick
     readonly property real defaultHeight: columnLyt.height + columnLyt.y + (actionsRow.visible? 0 : columnLyt.y)
 
     readonly property string tipsText: {
@@ -34,7 +34,7 @@ TItemDelegate {
             return Math.floor(tips_sat/100000) / 10 + "M";
     }
 
-    property int mainId: isRetrick? quoteId : trickId
+    property int mainId: isRetrick? retrickTrickId : trickId
     property int trickId
     property int link_id
     property int ownerId
@@ -70,6 +70,7 @@ TItemDelegate {
     property string parentOwnerUsername
     property int parentOwnerId
 
+    property int retrickTrickId
     property string quote
     property int quoteId
     property int quoteQuoteId
@@ -114,7 +115,7 @@ TItemDelegate {
         dis.imageWidth = data.image_size.width;
         dis.imageHeight = data.image_size.height;
 
-        if (data.link_id) {
+        if (data.link_id && link_id == 0) {
             link_id = data.link_id;
             if (link_id < trickId)
                 commentLineTop = true;
@@ -163,44 +164,27 @@ TItemDelegate {
 
         isRetrick = false;
         try {
-            quoteId = data.quote.trick_id;
-
-            if (data.quote.quote == null) { // It's retrick
+            if (data.retricker) { // It's retrick
                 isRetrick = true;
-                let trk = data.quote.trick;
-                dis.dateTime = trk.datetime;
-                dis.viewCount = trk.views;
-                dis.rates = trk.rates;
-                dis.retricks = trk.retricks;
-                dis.tips_sat = Math.floor(trk.tips / 1000);
-                dis.comments = trk.comments;
+                let trk = data.quote;
 
-                dis.fullname = trk.fullname;
-                dis.username = "@" + trk.username;
-                dis.ownerId = trk.owner;
-                dis.avatar = trk.avatar;
+                retrickTrickId = data.retrick_trick_id
+                quoteUserId = data.retricker.id;
+                quoteUsername = data.retricker.username;
+                quoteFullname = data.retricker.fullname;
+                quoteAvatar = data.retricker.avatar;
+            } else if (data.quote) { // It's quote
+                quote = data.body;
+                quoteId = data.quote.id;
+                quoteUsername = data.quote.username;
+                quoteFullname = data.quote.fullname;
+                quoteUserId = data.quote.owner;
+                quoteAvatar = data.quote.avatar;
 
-                quoteUserId = data.owner.id;
-                quoteUsername = data.owner.username;
-                quoteFullname = data.owner.fullname;
-                quoteAvatar = data.owner.avatar;
-
-                quote = trk.quoted_text;
+                let trk = data.quote;
+                dis.trickImage = "";
+                dis.imageHeight = 0;
                 dis.body = trk.body;
-                quoteQuoteId = trk.quoted_trick_id;
-            } else { // It's quote
-                quote = data.quote.quote;
-                quoteUsername = data.quote.user.username;
-                quoteFullname = data.quote.user.fullname;
-                quoteUserId = data.quote.user.id;
-                quoteAvatar = data.quote.user.avatar;
-
-                let trk = data.quote.trick;
-                if (trk.quoted_trick_id) {
-                    dis.trickImage = "";
-                    dis.imageHeight = 0;
-                    dis.body = trk.quoted_text;
-                }
             }
         } catch (e) {
         }

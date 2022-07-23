@@ -84,6 +84,7 @@ AsemanListModel {
                     last_link_id = 0;
                 }
 
+                m["link_id"] = null;
                 linkes[linkes.length] = m;
             })
             model.change(linkes);

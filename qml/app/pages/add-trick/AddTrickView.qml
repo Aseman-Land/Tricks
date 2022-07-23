@@ -402,29 +402,32 @@ Item {
             if (sendingMode)
                 return;
 
-            if (quoteAction.active) {
+            if (quoteAction.active && body.text.length == 0) {
                 reTrickReq.quoted_text = body.text.trim();
-                reTrickReq.quoted_trick_id = quoteItem.mainId;
+                reTrickReq.trick_id = quoteItem.mainId;
                 reTrickReq.doRequest();
+                return;
             } else {
-                if (code.visible) {
-                    postReq.code = code.text;
-                    postReq.highlighter_id = code.themeCombo.model.get(code.themeCombo.currentIndex).id;
-                    postReq.programing_language_id = code.definitionCombo.model.get(code.definitionCombo.currentIndex).id;
-                    postReq.code_frame_id = code.darkTheme? 1 : 2;
-                } else {
-                    postReq.code = " ";
-                }
-
-                postReq.type_id = 1;
-
-                if (postReq.tags.length < Bootstrap.trick.tags_min_count) {
-                    Viewport.controller.trigger("dialog:/general/error", {"title": qsTr("Tags"), "body": qsTr("Please add at least %1 tags to the Message.\nExample: #C++ #STL #ObjectOriented").arg(Bootstrap.trick.tags_min_count)})
-                    return;
-                }
-
-                postReq.doRequest();
+                postReq.quoted_trick_id = quoteItem.mainId;
             }
+
+            if (code.visible) {
+                postReq.code = code.text;
+                postReq.highlighter_id = code.themeCombo.model.get(code.themeCombo.currentIndex).id;
+                postReq.programing_language_id = code.definitionCombo.model.get(code.definitionCombo.currentIndex).id;
+                postReq.code_frame_id = code.darkTheme? 1 : 2;
+            } else {
+                postReq.code = " ";
+            }
+
+            postReq.type_id = 1;
+
+            if (postReq.tags.length < Bootstrap.trick.tags_min_count) {
+                Viewport.controller.trigger("dialog:/general/error", {"title": qsTr("Tags"), "body": qsTr("Please add at least %1 tags to the Message.\nExample: #C++ #STL #ObjectOriented").arg(Bootstrap.trick.tags_min_count)})
+                return;
+            }
+
+            postReq.doRequest();
         }
 
         Rectangle {

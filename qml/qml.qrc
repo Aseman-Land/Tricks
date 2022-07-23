@@ -239,5 +239,8 @@
         <file>imports/components/TSpinBox.qml</file>
         <file>imports/requests/GetTagNotificationRequest.qml</file>
         <file>imports/requests/SubmitTagNotificationRequest.qml</file>
+        <file>imports/jsons/qmldir</file>
+        <file>imports/jsons/TrickJsonItem.qml</file>
+        <file>imports/jsons/UserJsonItem.qml</file>
     </qresource>
 </RCC>

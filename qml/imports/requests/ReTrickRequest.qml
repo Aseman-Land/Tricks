@@ -8,8 +8,7 @@ BaseRequest {
     contentType: NetworkRequest.TypeJson
     url: baseUrl + "/retricks"
 
-    property string quoted_text
-    property int quoted_trick_id
+    property int trick_id
     property string community_id: GlobalSettings.communityId? GlobalSettings.communityId : Bootstrap.defaultCommunity
 
     function doRequest() {
