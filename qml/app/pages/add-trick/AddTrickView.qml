@@ -216,8 +216,6 @@ Item {
                         minimumEditorHeight: 120 * Devices.density
                         placeholderText: qsTr("Code") + Translations.refresher
                         visible: {
-                            if (quoteAction.active)
-                                return false;
                             if (tagsRepeater.model.indexOf("bug_report") >= 0)
                                 return false;
                             if (tagsRepeater.model.indexOf("feedback") >= 0)
@@ -402,13 +400,14 @@ Item {
             if (sendingMode)
                 return;
 
-            if (quoteAction.active && body.text.length == 0) {
-                reTrickReq.quoted_text = body.text.trim();
-                reTrickReq.trick_id = quoteItem.mainId;
-                reTrickReq.doRequest();
-                return;
-            } else {
-                postReq.quoted_trick_id = quoteItem.mainId;
+            if (quoteAction.active) {
+                if (body.text.length == 0) {
+                    reTrickReq.trick_id = quoteItem.mainId;
+                    reTrickReq.doRequest();
+                    return;
+                } else {
+                    postReq.quoted_trick_id = quoteItem.mainId;
+                }
             }
 
             if (code.visible) {

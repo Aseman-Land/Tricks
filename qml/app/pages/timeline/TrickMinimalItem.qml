@@ -71,6 +71,11 @@ TItemDelegate {
     property int parentOwnerId
 
     property int retrickTrickId
+    property string retrickUsername
+    property string retrickFullname
+    property int retrickUserId
+    property string retrickAvatar
+
     property string quote
     property int quoteId
     property int quoteQuoteId
@@ -78,6 +83,10 @@ TItemDelegate {
     property string quoteFullname
     property int quoteUserId
     property string quoteAvatar
+    property string quoteImageUrl
+    property bool quoteCodeFrameIsDark: false
+    property real quoteImageWidth: 100
+    property real quoteImageHeight: 1
 
     property bool globalViewMode
     property bool commentMode
@@ -166,14 +175,14 @@ TItemDelegate {
         try {
             if (data.retricker) { // It's retrick
                 isRetrick = true;
-                let trk = data.quote;
-
                 retrickTrickId = data.retrick_trick_id
-                quoteUserId = data.retricker.id;
-                quoteUsername = data.retricker.username;
-                quoteFullname = data.retricker.fullname;
-                quoteAvatar = data.retricker.avatar;
-            } else if (data.quote) { // It's quote
+                retrickUserId = data.retricker.id;
+                retrickUsername = data.retricker.username;
+                retrickFullname = data.retricker.fullname;
+                retrickAvatar = data.retricker.avatar;
+            }
+
+            if (data.quote) { // It's quote
                 quote = data.body;
                 quoteId = data.quote.id;
                 quoteUsername = data.quote.username;
@@ -181,9 +190,21 @@ TItemDelegate {
                 quoteUserId = data.quote.owner;
                 quoteAvatar = data.quote.avatar;
 
+                try {
+                    if (data.quote.filename) {
+                        quoteImageUrl = dis.trickImage;
+                        quoteImageWidth = dis.imageWidth;
+                        quoteImageHeight = dis.imageHeight;
+                        quoteCodeFrameIsDark = dis.codeFrameIsDark;
+
+                        dis.trickImage = data.quote.filename;
+                        dis.imageWidth = data.quote.image_size.width;
+                        dis.imageHeight = data.quote.image_size.height;
+                        dis.codeFrameIsDark = data.quote.code_frame_id == 1;
+                    }
+                } catch (e) {}
+
                 let trk = data.quote;
-                dis.trickImage = "";
-                dis.imageHeight = 0;
                 dis.body = trk.body;
             }
         } catch (e) {
@@ -314,7 +335,7 @@ TItemDelegate {
                 Layout.fillWidth: true
                 font.bold: true
                 opacity: 0.4
-                text: qsTr("%1 (@%2) Retricked...").arg(quoteFullname).arg(quoteUsername) + Translations.refresher
+                text: qsTr("%1 (@%2) Retricked...").arg(retrickFullname).arg(retrickUsername) + Translations.refresher
                 font.pixelSize: 8 * Devices.fontDensity
             }
         }
@@ -526,6 +547,34 @@ TItemDelegate {
                     text: quote
                 }
 
+                Loader {
+                    Layout.fillWidth: true
+                    active: quoteImageHeight > 1
+                    visible: active
+                    Layout.preferredHeight: quoteImageHeight * width / quoteImageWidth
+                    asynchronous: true
+                    sourceComponent: Item {
+                        anchors.fill: parent
+
+                        TRemoteImage {
+                            id: quoteImage
+                            radius: Constants.radius
+                            anchors.fill: parent
+                            remoteUrl: dis.quoteImageUrl
+                            visible: !invertQuoteImg.visible
+                        }
+
+                        LevelAdjust {
+                            id: invertQuoteImg
+                            anchors.fill: quoteImage
+                            source: quoteImage
+                            minimumOutput: "#00ffffff"
+                            maximumOutput: "#ff000000"
+                            visible: GlobalSettings.forceCodeTheme && (dis.quoteCodeFrameIsDark != Colors.darkMode)
+                        }
+                    }
+                }
+
                 Item {
                     id: trickFrame
                     Layout.fillWidth: true
@@ -548,7 +597,7 @@ TItemDelegate {
                         anchors.fill: quoteBorder
                         hoverEnabled: true
                         visible: quoteId && quote.length
-                        onClicked: if (!globalViewMode) Viewport.controller.trigger("float:/tricks", {"trickId": (isRetrick? quoteQuoteId : quoteId)})
+                        onClicked: if (!globalViewMode) Viewport.controller.trigger("float:/tricks", {"trickId": quoteId})
                     }
 
                     ColumnLayout {
@@ -698,7 +747,7 @@ TItemDelegate {
                         }
                         TIconButton {
                             materialIcon: MaterialIcons.mdi_repeat
-                            visible: !globalViewMode && quote.length == 0
+                            visible: !globalViewMode
                             materialText: retricks? retricks : ""
                             materialBold: myRetrick
                             materialColor: myRetrick? Colors.accent : Colors.buttonsColor
