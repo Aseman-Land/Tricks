@@ -71,15 +71,14 @@ NetworkRequest {
         GlobalSettings.ignoreSslErrorsViewed = true;
     }
     onServerError: {
-        if (status == 405)
-            return;
         try {
             _showError(qsTr("Server Error"), response.message? "Error %1: %2".arg(response.error_code).arg(response.message) : error)
         } catch (e) {}
     }
     onClientError: {
-        if (status == 405)
-            return;
+        if (status == 401) {
+            GlobalSettings.accessToken = "";
+        }
         try {
             _showError(qsTr("Client Error"), response.message? "Error %1: %2".arg(response.error_code).arg(response.message) : error);
         } catch (e) {}

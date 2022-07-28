@@ -283,7 +283,7 @@ TItemDelegate {
 
     AddRateRequest {
         id: rateReq
-        _id: dis.mainId
+        _id: dis.trickId
         onSuccessfull: {
             response.result.forEach(GlobalSignals.trickUpdated)
         }
@@ -291,7 +291,7 @@ TItemDelegate {
 
     AddBookmarkRequest {
         id: addBookmarkReq
-        trick_id: dis.mainId
+        trick_id: dis.trickId
         onSuccessfull: {
             trickData.bookmarked = true;
             GlobalSignals.trickUpdated(trickData);
@@ -300,7 +300,7 @@ TItemDelegate {
 
     DeleteBookmarkRequest {
         id: deleteBookmarkReq
-        _trick_id: dis.mainId
+        _trick_id: dis.trickId
         onSuccessfull: {
             trickData.bookmarked = false;
             GlobalSignals.trickUpdated(trickData);
@@ -743,7 +743,7 @@ TItemDelegate {
                             materialIcon: comments? MaterialIcons.mdi_comment_outline : MaterialIcons.mdi_comment_outline
                             materialText: comments? comments : ""
                             materialColor: Colors.buttonsColor
-                            onClicked: if (!globalViewMode) Viewport.controller.trigger("float:/tricks/add", {"parentId": dis.mainId, "trickData": dis.trickData})
+                            onClicked: if (!globalViewMode) Viewport.controller.trigger("float:/tricks/add", {"parentId": dis.trickId, "trickData": dis.trickData})
                         }
                         TIconButton {
                             materialIcon: MaterialIcons.mdi_repeat
