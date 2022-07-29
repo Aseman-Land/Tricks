@@ -273,6 +273,7 @@ TItemDelegate {
 
     DeleteTrickRequest {
         id: deleteReq
+        allowGlobalBusy: true
         _id: dis.trickId
         onSuccessfull: {
             GlobalSignals.trickDeleted(_id)
@@ -933,9 +934,9 @@ TItemDelegate {
                             enabled: true,
                             command: "report"
                         };
-                    } else {
+                    } else if (GlobalSettings.userId == dis.ownerId) {
                         res[res.length] = {
-                            title: myRetrick? qsTr("Undo Retrick") : qsTr("Delete Trick"),
+                            title: qsTr("Delete Trick"),
                             icon: "mdi_trash_can",
                             enabled: true,
                             command: "delete"

@@ -20,7 +20,7 @@ AppOptions {
 
     // Look and Feel
     readonly property url logo: "logo.png"
-    readonly property color primaryColor: "#5b24bd"
-    readonly property color accentColor: "#5b24bd"
+    readonly property color primaryColor: "#5856D6"
+    readonly property color accentColor: "#5856D6"
 }
 

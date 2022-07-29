@@ -189,7 +189,7 @@ Item {
             EscapeItem {
                 id: scene
                 width: flick.width
-                height: columnLyt.height + columnLyt.y * 2
+                height: columnLyt.height + columnLyt.y * 2 + 50 * Devices.density
                 enabled: !sendingMode
 
                 ColumnLayout {

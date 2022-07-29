@@ -12,7 +12,7 @@ QtObject {
 
     readonly property bool lightHeader: darkMode? true : GlobalSettings.lightHeader
 
-    readonly property color darkAccent: Qt.lighter(App.accentColor, 1.5)
+    readonly property color darkAccent: Qt.lighter(App.accentColor, 1.3)
     readonly property color accent: (darkMode? darkAccent : App.accentColor)
     readonly property color primary: App.primaryColor
 
