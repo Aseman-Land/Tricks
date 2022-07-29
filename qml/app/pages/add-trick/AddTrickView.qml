@@ -62,6 +62,15 @@ Item {
         quoteAction.active = true;
     }
 
+    function openImage() {
+        AsemanApp.requestPermissions(["android.permission.READ_EXTERNAL_STORAGE"],
+                                     function(res) {
+            if(res["android.permission.READ_EXTERNAL_STORAGE"] == true) {
+                Devices.getOpenPictures();
+            }
+        });
+    }
+
     onTrickDataChanged: {
         replyItem.pushData(trickData);
         replyItem.parentId = 0;
@@ -70,6 +79,21 @@ Item {
         replyItem.commentLineBottom = false;
     }
     onParentIdChanged: postReq.parent_id = parentId
+
+    Connections {
+        target: Devices
+        function onSelectImageResult(path) {
+            let p = Devices.localFilesPrePath + path;
+            uploadImageReq._filePath = p;
+
+            let size = Tools.imageSize(p);
+            let ratio = size.width / size.height;
+
+            image.ratio = ratio;
+            image.source = p;
+            imageAct.active = true;
+        }
+    }
 
     Timer {
         id: keyboardFocusCheck
@@ -92,6 +116,31 @@ Item {
         id: postReq
         allowGlobalBusy: GlobalSettings.mobileView
         onSuccessfull: reloadTimer.restart()
+    }
+
+    UploadTrickImageRequest {
+        id: uploadImageReq
+        allowGlobalBusy: GlobalSettings.mobileView
+        onSuccessfull: {
+            postReq.uploaded_file_id = response.result;
+            postReq.doRequest();
+        }
+
+        property string _filePath
+
+        function convertAndSend() {
+            let size = Tools.imageSize(_filePath);
+            let ratio = size.width / size.height;
+
+            let img = Constants.cachePath + "/" + Tools.createUuid() + ".jpg";
+
+            GlobalSettings.waitCount++;
+            Tools.imageResize(_filePath, Qt.size(1024, 1024/ratio), img, function(){
+                uploadImageReq.image = Devices.localFilesPrePath + img;
+                uploadImageReq.doRequest();
+                GlobalSettings.waitCount--;
+            });
+        }
     }
 
     ReTrickRequest {
@@ -177,7 +226,7 @@ Item {
                     TTextArea {
                         id: body
                         Layout.fillWidth: true
-                        Layout.minimumHeight: 80 * Devices.density
+                        Layout.minimumHeight: 120 * Devices.density
                         placeholderText: qsTr("Message") + Translations.refresher
                         minimumCharacters: Bootstrap.trick.body_min_length
                         maximumCharacters: Bootstrap.trick.body_max_length
@@ -210,36 +259,94 @@ Item {
                         }
                     }
 
-                    TCodeEditor {
-                        id: code
-                        Layout.fillWidth: true
-                        minimumEditorHeight: 120 * Devices.density
-                        placeholderText: qsTr("Code") + Translations.refresher
+                    Flow {
                         visible: {
                             if (tagsRepeater.model.indexOf("bug_report") >= 0)
                                 return false;
                             if (tagsRepeater.model.indexOf("feedback") >= 0)
                                 return false;
-                            return true;
+                            return !codePane.visible && !imagePane.visible;
                         }
-                        minimumCharacters: Bootstrap.trick.code_min_length
-                        maximumCharacters: Bootstrap.trick.code_max_length
+
+                        TIconButton {
+                            materialIcon: MaterialIcons.mdi_image
+                            materialText: qsTr("Image") + Translations.refresher
+                            onClicked: openImage()
+                        }
+
+                        TIconButton {
+                            materialIcon: MaterialIcons.mdi_code_braces
+                            materialText: qsTr("Code") + Translations.refresher
+                            onClicked: codeAct.active = true;
+                        }
+
+                        TIconButton {
+                            materialIcon: MaterialIcons.mdi_bug
+                            materialText: qsTr("Bug") + Translations.refresher
+                            visible: dis.parentId == 0
+                            onClicked: body.append(" #bug_report");
+                        }
+
+                        TIconButton {
+                            materialIcon: MaterialIcons.mdi_information
+                            materialText: qsTr("Feedback") + Translations.refresher
+                            visible: dis.parentId == 0
+                            onClicked: body.append(" #feedback");
+                        }
                     }
 
-                    TLabel {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                        font.pixelSize: 7 * Devices.fontDensity
-                        opacity: 0.6
-                        visible: parentId == 0
-                        onLinkActivated: {
-                            if (link == "send:/bug")
-                                body.append(" #bug_report");
-                            else if (link == "send:/feedback")
-                                body.append(" #feedback");
+                    ColumnLayout {
+                        id: codePane
+                        visible: codeAct.active
+                        spacing: 0
+                        onVisibleChanged: if (!visible) code.clear()
+
+                        BackAction { id: codeAct }
+
+                        TCodeEditor {
+                            id: code
+                            Layout.fillWidth: true
+                            minimumEditorHeight: 150 * Devices.density
+                            placeholderText: qsTr("Code") + Translations.refresher
+                            minimumCharacters: Bootstrap.trick.code_min_length
+                            maximumCharacters: Bootstrap.trick.code_max_length
                         }
 
-                        text: qsTr("To send bug report or feedback, use <a href='send:/bug'>#bug_report</a> or <a href='send:/feedback'>#feedback</a> tags") + Translations.refresher
+                        TIconButton {
+                            Layout.alignment: Qt.AlignRight
+                            materialText: qsTr("Cancel") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_close
+                            onClicked: codeAct.active = false
+                            flat: false
+                        }
+                    }
+
+                    ColumnLayout {
+                        id: imagePane
+                        visible: imageAct.active
+                        spacing: 0
+                        onVisibleChanged: if (!visible) image.source = ""
+
+                        BackAction { id: imageAct }
+
+                        RoundedImage {
+                            id: image
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: width / ratio
+                            fillMode: Image.PreserveAspectFit
+                            asynchronous: true
+                            radius: Constants.radius
+
+                            property real ratio: 1
+                        }
+
+                        TIconButton {
+                            Layout.alignment: Qt.AlignRight
+                            materialText: qsTr("Cancel") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_close
+                            onClicked: imageAct.active = false
+                            flat: false
+                        }
                     }
 
                     Item {
@@ -277,7 +384,7 @@ Item {
                         Layout.fillWidth: true
                         font.bold: true
                         text: qsTr("Detected Tags:") + Translations.refresher
-                        visible: !quoteAction.active
+                        visible: tagsRepeater.count && !quoteAction.active
                     }
 
                     Flow {
@@ -320,20 +427,20 @@ Item {
                         }
                     }
 
-                    TLabel {
-                        visible: tagsRepeater.count == 0 && !quoteAction.active
-                        Layout.fillWidth: true
-                        font.pixelSize: 8 * Devices.fontDensity
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                        text: qsTr("There is no tag assigned. Just type tags using # in the message to add tags.") + Translations.refresher
-                        opacity: 0.5
-                    }
+//                    TLabel {
+//                        visible: tagsRepeater.count == 0 && !quoteAction.active
+//                        Layout.fillWidth: true
+//                        font.pixelSize: 8 * Devices.fontDensity
+//                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+//                        text: qsTr("There is no tag assigned. Just type tags using # in the message to add tags.") + Translations.refresher
+//                        opacity: 0.5
+//                    }
 
                     TLabel {
                         Layout.fillWidth: true
                         font.bold: true
                         text: qsTr("References:") + Translations.refresher
-                        visible: !quoteAction.active && parentId == 0
+                        visible: refsRepeater.count && !quoteAction.active && parentId == 0
                     }
 
                     Flow {
@@ -371,14 +478,14 @@ Item {
                         }
                     }
 
-                    TLabel {
-                        visible: refsRepeater.count == 0 && !quoteAction.active && parentId == 0
-                        Layout.fillWidth: true
-                        font.pixelSize: 8 * Devices.fontDensity
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                        text: qsTr("There is no references found on the body text.") + Translations.refresher
-                        opacity: 0.5
-                    }
+//                    TLabel {
+//                        visible: refsRepeater.count == 0 && !quoteAction.active && parentId == 0
+//                        Layout.fillWidth: true
+//                        font.pixelSize: 8 * Devices.fontDensity
+//                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+//                        text: qsTr("There is no references found on the body text.") + Translations.refresher
+//                        opacity: 0.5
+//                    }
                 }
             }
         }
@@ -394,7 +501,7 @@ Item {
         highlighted: true
         materialText: sendingMode? "" : quoteAction.active? (body.text.length? qsTr("Post Quote") : qsTr("Retrick")) : qsTr("Post Trick") + Translations.refresher
         flat: false
-        enabled: (code.text.length || body.text.length || quoteAction.active) && (!code.visible || code.acceptable || quoteAction.active) && body.acceptable
+        enabled: (uploadImageReq._filePath.length || code.text.length || body.text.length || quoteAction.active) && (!code.visible || code.acceptable || quoteAction.active) && body.acceptable
         onEnabledChanged: if (enabled && MyTricksLimits.dailyPostLimit == 0) GlobalSignals.snackRequest(qsTr("Your daily tricks limits reached!"))
         onClicked: {
             if (sendingMode)
@@ -402,11 +509,11 @@ Item {
 
             if (quoteAction.active) {
                 if (body.text.length == 0) {
-                    reTrickReq.trick_id = quoteItem.mainId;
+                    reTrickReq.trick_id = quoteItem.trickId;
                     reTrickReq.doRequest();
                     return;
                 } else {
-                    postReq.quoted_trick_id = quoteItem.mainId;
+                    postReq.quoted_trick_id = quoteItem.trickId;
                 }
             }
 
@@ -426,7 +533,10 @@ Item {
                 return;
             }
 
-            postReq.doRequest();
+            if (uploadImageReq._filePath.length)
+                uploadImageReq.convertAndSend();
+            else
+                postReq.doRequest();
         }
 
         Rectangle {

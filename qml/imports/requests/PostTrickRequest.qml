@@ -14,6 +14,7 @@ BaseRequest {
     property variant programing_language_id
     property variant code_frame_id
     property variant quoted_trick_id
+    property variant uploaded_file_id
     property int type_id
     property variant tags: new Array
     property variant references: new Array

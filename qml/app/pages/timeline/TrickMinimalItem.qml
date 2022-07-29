@@ -307,6 +307,16 @@ TItemDelegate {
         }
     }
 
+    ReTrickRequest {
+        id: reTrickReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            MyTricksLimits.refresh();
+            GlobalSignals.snackRequest(qsTr("Trick retricked successfully"));
+            GlobalSignals.refreshRequest();
+        }
+    }
+
     GetUserRequest {
         id: userReq
         allowGlobalBusy: true
@@ -746,16 +756,22 @@ TItemDelegate {
                             onClicked: if (!globalViewMode) Viewport.controller.trigger("float:/tricks/add", {"parentId": dis.trickId, "trickData": dis.trickData})
                         }
                         TIconButton {
+                            id: retrickBtn
                             materialIcon: MaterialIcons.mdi_repeat
                             visible: !globalViewMode
                             materialText: retricks? retricks : ""
                             materialBold: myRetrick
                             materialColor: myRetrick? Colors.accent : Colors.buttonsColor
                             onClicked: {
-                                if (myRetrick)
-                                    deleteRequest(true);
-                                else
-                                    GlobalSignals.retrickRequest(trickData)
+                                var pos = Qt.point(dis.LayoutMirroring.enabled? Constants.radius : retrickBtn.width - Constants.radius, retrickBtn.height/2);
+                                var parent = retrickBtn;
+                                while (parent && parent != Viewport.viewport) {
+                                    pos.x += parent.x;
+                                    pos.y += parent.y;
+                                    parent = parent.parent;
+                                }
+
+                                Viewport.viewport.append(quoteComponent, {"pointPad": pos}, "menu");
                             }
                         }
 
@@ -775,7 +791,7 @@ TItemDelegate {
                                 if (globalViewMode)
                                     return;
 
-                                Viewport.controller.trigger("bottomdrawer:/tricks/tip", {"trickId": dis.mainId, "trickData": dis.trickData})
+                                Viewport.controller.trigger("bottomdrawer:/tricks/tip", {"trickId": dis.trickId, "trickData": dis.trickData})
                             }
                         }
                         TIconButton {
@@ -845,29 +861,29 @@ TItemDelegate {
             property bool openFromTop: pointPad.y < Viewport.viewport.height/2
 
             onItemClicked: {
-                switch (index) {
-                case 0:
+                var d = menuModel.get(index);
+                switch (d.command) {
+                case "copy_link":
                     Devices.clipboard = dis.share_link;
                     GlobalSignals.snackRequest(qsTr("Link copied to the clipboard"));
                     break;
-                case 1:
+                case "copy_message":
                     Devices.clipboard = (quote.length? quote : dis.originalBody);
                     GlobalSignals.snackRequest(qsTr("Message copied to the clipboard"));
                     break;
-                case 2:
+                case "copy_code":
                     Devices.clipboard = dis.code;
                     GlobalSignals.snackRequest(qsTr("Code copied to the clipboard"));
                     break;
-                case 3:
+                case "share":
                     Devices.share(dis.fullname + " from " + AsemanApp.applicationName, (dis.quoteId? dis.quote : dis.originalBody) + "\n" + dis.share_link)
                     break;
-                case 4:
-                    if (GlobalSettings.userId != ownerId) {
-                        Viewport.controller.trigger("float:/tricks/report", {"trickId": dis.mainId, "title": dis.title});
-                        ViewportType.open = false;
-                    } else {
-                        deleteRequest(myRetrick);
-                    }
+                case "report":
+                    Viewport.controller.trigger("float:/tricks/report", {"trickId": dis.trickId, "title": dis.title});
+                    ViewportType.open = false;
+                    break;
+                case "delete":
+                    deleteRequest(myRetrick);
                     break;
                 }
 
@@ -875,43 +891,123 @@ TItemDelegate {
             }
 
             model: AsemanListModel {
+                id: menuModel
                 data: {
                     var res = [
                         {
                             title: qsTr("Copy Link"),
                             icon: "mdi_content_copy",
-                            enabled: true
-                        },
-                        {
-                            title: qsTr("Copy Message"),
-                            icon: "mdi_content_copy",
-                            enabled: true
-                        },
-                        {
-                            title: qsTr("Copy Code"),
-                            icon: "mdi_content_copy",
-                            enabled: true
-                        },
-                        {
-                            title: qsTr("Share"),
-                            icon: "mdi_share",
-                            enabled: true
+                            enabled: true,
+                            command: "copy_link"
                         }
                     ];
+
+                    if ((quote.length? quote : dis.originalBody).trim().length)
+                        res[res.length] = {
+                            title: qsTr("Copy Message"),
+                            icon: "mdi_content_copy",
+                            enabled: true,
+                            command: "copy_message"
+                        }
+
+                    if (dis.code.trim().length)
+                        res[res.length] = {
+                            title: qsTr("Copy Code"),
+                            icon: "mdi_content_copy",
+                            enabled: true,
+                            command: "copy_code"
+                        }
+
+                    if (GlobalSettings.userId != originalOwnerId)
+                            res[res.length] = {
+                            title: qsTr("Share"),
+                            icon: "mdi_share",
+                            enabled: true,
+                            command: "share"
+                        }
 
                     if (GlobalSettings.userId != originalOwnerId) {
                         res[res.length] = {
                             title: qsTr("Report"),
                             icon: "mdi_pen",
-                            enabled: true
+                            enabled: true,
+                            command: "report"
                         };
                     } else {
                         res[res.length] = {
                             title: myRetrick? qsTr("Undo Retrick") : qsTr("Delete Trick"),
                             icon: "mdi_trash_can",
-                            enabled: true
+                            enabled: true,
+                            command: "delete"
                         };
                     }
+                    return res;
+                }
+            }
+        }
+    }
+
+    Component {
+        id: quoteComponent
+        MenuView {
+            id: menuItem
+            x: pointPad.x - width/2
+            y: pointPad.y + (openFromTop? 10 * Devices.density : - height - 10 * Devices.density)
+            width: 220 * Devices.density
+            ViewportType.transformOrigin: {
+                var y = openFromTop? 0 : height;
+                var x = width/2;
+                return Qt.point(x, y);
+            }
+
+            property point pointPad
+            property int index
+            property bool openFromTop: pointPad.y < Viewport.viewport.height/2
+
+            onItemClicked: {
+                var d = menuModel.get(index);
+                switch (d.command) {
+                case "quote":
+                    GlobalSignals.retrickRequest(trickData);
+                    break;
+                case "retrick":
+                    reTrickReq.trick_id = dis.trickId;
+                    reTrickReq.doRequest();
+                    break;
+                case "undo_retrick":
+                    deleteRequest(myRetrick);
+                    break;
+                }
+
+                ViewportType.open = false;
+            }
+
+            model: AsemanListModel {
+                id: menuModel
+                data: {
+                    var res = [
+                        {
+                            title: qsTr("Quote"),
+                            icon: "mdi_comment",
+                            enabled: true,
+                            command: "quote"
+                        },
+                        {
+                            title: qsTr("Retrick"),
+                            icon: "mdi_repeat",
+                            enabled: true,
+                            command: "retrick"
+                        }
+                    ];
+
+                    if (isRetrick)
+                        res[res.length] = {
+                            title: qsTr("Undo retrick"),
+                            icon: "mdi_trash_can",
+                            enabled: true,
+                            command: "undo_retrick"
+                        }
+
                     return res;
                 }
             }

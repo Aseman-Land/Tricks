@@ -242,5 +242,6 @@
         <file>imports/jsons/qmldir</file>
         <file>imports/jsons/TrickJsonItem.qml</file>
         <file>imports/jsons/UserJsonItem.qml</file>
+        <file>imports/requests/UploadTrickImageRequest.qml</file>
     </qresource>
 </RCC>
