@@ -97,7 +97,7 @@ TPage {
                         Layout.preferredWidth: 45 * Devices.density
                         materialIcon: MaterialIcons.mdi_trash_can
                         highlighted: true
-                        flat: false
+                        flat: true
                         IOSStyle.accent: Colors.darkMode? "#ff4245" : "#a00"
                         Material.accent: Colors.darkMode? "#ff4245" : "#a00"
                         onClicked: {
