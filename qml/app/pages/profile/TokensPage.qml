@@ -98,6 +98,7 @@ TPage {
                         materialIcon: MaterialIcons.mdi_trash_can
                         highlighted: true
                         flat: true
+                        materialColor: Colors.darkMode? "#ff4245" : "#a00"
                         IOSStyle.accent: Colors.darkMode? "#ff4245" : "#a00"
                         Material.accent: Colors.darkMode? "#ff4245" : "#a00"
                         onClicked: {
