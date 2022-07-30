@@ -73,6 +73,7 @@ TPage {
             }
 
             delegate: TItemDelegate {
+                id: notItem
                 width: listv.width
                 height: rowItem.height + 16 * Devices.density
                 Component.onCompleted: if (model.index == listv.count-1 && listv.model.more) listv.model.more()
@@ -90,9 +91,15 @@ TPage {
                     case 4:
                         Viewport.controller.trigger("float:/tricks", {"trickId": model.comment.id})
                         break;
+                    case 5:
+                        Viewport.controller.trigger("float:/tricks", {"trickId": model.trick.id})
+                        break;
                     }
 
                 }
+
+                property bool trickItemMode: model.notify_type == 3 || model.notify_type == 5
+                property variant masterObject: model.comment? model.comment : model.trick
 
                 RowLayout {
                     id: rowItem
@@ -110,8 +117,8 @@ TPage {
                         TAvatar {
                             width: 36 * Devices.density
                             height: 36 * Devices.density
-                            remoteUrl: model.notify_type == 3? model.users[0].avatar : ""
-                            visible: model.notify_type == 3
+                            remoteUrl: visible? model.users[0].avatar : ""
+                            visible: notItem.trickItemMode
                         }
 
                         TMaterialIcon {
@@ -128,6 +135,8 @@ TPage {
                                     return MaterialIcons.mdi_comment;
                                 case 4:
                                     return MaterialIcons.mdi_at;
+                                case 5:
+                                    return MaterialIcons.mdi_tag;
                                 }
                                 return "";
                             }
@@ -141,6 +150,8 @@ TPage {
                                     return Colors.commentsColor;
                                 case 4:
                                     return Colors.commentsColor;
+                                case 5:
+                                    return Colors.accent;
                                 }
                                 return Colors.accent;
                             }
@@ -154,10 +165,12 @@ TPage {
                                     return 12 * Devices.fontDensity;
                                 case 4:
                                     return 12 * Devices.fontDensity;
+                                case 5:
+                                    return 12 * Devices.fontDensity;
                                 }
-                                return Colors.accent;
+                                return 12 * Devices.fontDensity;
                             }
-                            visible: model.notify_type != 3
+                            visible: !notItem.trickItemMode
                         }
 
                         TMouseArea {
@@ -171,7 +184,7 @@ TPage {
 
                         RowLayout {
                             spacing: 4 * Devices.density
-                            visible: model.notify_type != 3
+                            visible: !notItem.trickItemMode
 
                             Repeater {
                                 model: AsemanListModel {
@@ -192,18 +205,18 @@ TPage {
 
                         RowLayout {
                             spacing: 4 * Devices.density
-                            visible: model.notify_type == 3
+                            visible: notItem.trickItemMode
 
                             TLabel {
                                 font.bold: true
-                                text: model.notify_type == 3? model.users[0].fullname : ""
+                                text: notItem.trickItemMode? model.users[0].fullname : ""
                             }
 
                             TLabel {
                                 Layout.fillWidth: true
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 opacity: 0.7
-                                text: model.notify_type == 3? "@" + model.users[0].username : ""
+                                text: notItem.trickItemMode? "@" + model.users[0].username : ""
                             }
                         }
 
@@ -215,7 +228,7 @@ TPage {
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 text: {
                                     var res = "";
-                                    if (model.notify_type != 3) {
+                                    if (!notItem.trickItemMode) {
                                         res += qsTr("<b>%1</b> ").arg(model.users[0].fullname);
                                         if (model.users.length > 1 && (model.count - 1) > 0)
                                             res += qsTr("and %1 others ").arg(model.count - 1);
@@ -233,6 +246,9 @@ TPage {
                                         break;
                                     case 4:
                                         res += qsTr("mentioned you.");
+                                        break;
+                                    case 5:
+                                        res += qsTr("posted a trick on the %1.").arg(model.tag);
                                         break;
                                     }
                                     return res;
@@ -277,7 +293,7 @@ TPage {
                                     id: image
                                     radius: Constants.radius
                                     anchors.fill: parent
-                                    remoteUrl: model.comment.filename
+                                    remoteUrl: notItem.masterObject.filename
                                 }
                             }
                         }
@@ -297,22 +313,22 @@ TPage {
                                     materialIcon: rateState? MaterialIcons.mdi_thumb_up : MaterialIcons.mdi_thumb_up_outline
                                     materialOpacity: rateReq.refreshing? 0 : 1
                                     materialColor: rateState? Colors.likeColors : Colors.buttonsColor
-                                    materialText: model.comment.rates? model.comment.rates : ""
+                                    materialText: notItem.masterObject.rates? notItem.masterObject.rates : ""
                                     onClicked: {
                                         var rate = (rateState? 0 : 1);
-                                        GlobalSettings.likedsHash.remove(model.comment.id);
-                                        GlobalSettings.likedsHash.insert(model.comment.id, rate);
+                                        GlobalSettings.likedsHash.remove(notItem.masterObject.id);
+                                        GlobalSettings.likedsHash.insert(notItem.masterObject.id, rate);
 
                                         rateState = rate;
                                         rateReq.rate = rate;
                                         rateReq.doRequest();
                                     }
 
-                                    property int rateState: GlobalSettings.likedsHash.count && GlobalSettings.likedsHash.contains(model.comment.id)? GlobalSettings.likedsHash.value(model.comment.id) : model.comment.rate_state
+                                    property int rateState: model.comment? GlobalSettings.likedsHash.count && GlobalSettings.likedsHash.contains(model.comment.id)? GlobalSettings.likedsHash.value(model.comment.id) : model.comment.rate_state : 0
 
                                     AddRateRequest {
                                         id: rateReq
-                                        _id: model.comment.id
+                                        _id: notItem.masterObject.id
                                         onSuccessfull: {
                                             response.result.forEach(GlobalSignals.trickUpdated)
                                         }
@@ -328,17 +344,20 @@ TPage {
                                 TIconButton {
                                     materialIcon: MaterialIcons.mdi_comment_outline
                                     materialColor: Colors.buttonsColor
-                                    materialText: model.comment.comments? model.comment.comments : ""
+                                    materialText: notItem.masterObject.comments? notItem.masterObject.comments : ""
                                     onClicked: {
-                                        var trickData = Tools.toVariantMap(model.comment);
+                                        var trickData = Tools.toVariantMap(notItem.masterObject);
                                         trickData["owner"] = Tools.toVariantMap(model.users[0]);
-                                        trickData["views"] = 0;
-                                        trickData["body"] = trickData.message;
-                                        trickData["filename"] = "";
                                         trickData["image_size"] = {
                                             "width": 10,
                                             "height": 0,
                                         };
+
+                                        if (model.comment) {
+                                            trickData["views"] = 0;
+                                            trickData["body"] = trickData.message;
+                                            trickData["filename"] = "";
+                                        }
 
                                         Viewport.controller.trigger("float:/tricks/add", {"parentId": trickData.id, "trickData": trickData})
                                     }
