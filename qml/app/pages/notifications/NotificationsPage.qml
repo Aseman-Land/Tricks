@@ -267,7 +267,7 @@ TPage {
                         }
 
                         TLabel {
-                            Layout.topMargin: model.notify_type >= 3? 4 * Devices.density : 0
+                            Layout.topMargin: notItem.trickItemMode? 4 * Devices.density : 0
                             Layout.fillWidth: true
                             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             horizontalAlignment: TricksTools.directionOf(text) == Qt.RightToLeft? Text.AlignRight : Text.AlignLeft
@@ -278,7 +278,7 @@ TPage {
                                     return (model.trick.quoted_text? model.trick.quoted_text : model.trick.body);
                                 return "";
                             }
-                            opacity: model.notify_type >= 3? 1 : 0.7
+                            opacity: notItem.trickItemMode? 1 : 0.7
                             maximumLineCount: 2
                             elide: Text.ElideRight
                             visible: text.length
@@ -304,10 +304,10 @@ TPage {
 
                         Loader {
                             Layout.fillWidth: true
-                            Layout.topMargin: model.notify_type >= 3? -8 * Devices.density : 0
+                            Layout.topMargin: notItem.trickItemMode? -8 * Devices.density : 0
                             Layout.preferredHeight: 38 * Devices.density
                             asynchronous: true
-                            active: model.notify_type >= 3
+                            active: notItem.trickItemMode
                             visible: active
                             sourceComponent: RowLayout {
                                 spacing: 0
@@ -357,6 +357,14 @@ TPage {
                                             "height": 0,
                                         };
 
+                                        if (model.tip_amount) {
+                                            trickData["owner"] = {
+                                                "id": GlobalSettings.userId,
+                                                "username": GlobalSettings.username,
+                                                "fullname": GlobalSettings.fullname,
+                                                "avatar": GlobalSettings.avatar
+                                            };
+                                        }
                                         if (model.comment) {
                                             trickData["views"] = 0;
                                             trickData["body"] = trickData.message;
