@@ -82,3 +82,5 @@ GoogleConnectRequest 1.0 GoogleConnectRequest.qml
 GetTagNotificationRequest 1.0 GetTagNotificationRequest.qml
 SubmitTagNotificationRequest 1.0 SubmitTagNotificationRequest.qml
 UploadTrickImageRequest 1.0 UploadTrickImageRequest.qml
+DeleteTokensRequest 1.0 DeleteTokensRequest.qml
+GetTokensRequest 1.0 GetTokensRequest.qml

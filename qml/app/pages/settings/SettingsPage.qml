@@ -322,6 +322,36 @@ TPage {
 
                                 TLabel {
                                     Layout.fillWidth: true
+                                    text: qsTr("Profile") + Translations.refresher
+                                }
+
+                                TIconButton {
+                                    materialText: qsTr("Edit Profile")
+                                    materialColor: Colors.accent
+                                    onClicked: Viewport.controller.trigger("float:/profile/edit")
+                                }
+                            }
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+
+                                TLabel {
+                                    Layout.fillWidth: true
+                                    text: qsTr("Logged in sessions") + Translations.refresher
+                                }
+
+                                TIconButton {
+                                    materialText: qsTr("View")
+                                    materialColor: Colors.accent
+                                    onClicked: Viewport.controller.trigger("float:/profile/edit/tokens")
+                                }
+                            }
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+
+                                TLabel {
+                                    Layout.fillWidth: true
                                     text: qsTr("Invitation Code") + Translations.refresher
                                 }
 

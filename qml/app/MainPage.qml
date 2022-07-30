@@ -45,6 +45,11 @@ TPage {
             };
             Viewport.controller.trigger("dialog:/general/warning", args);
         }
+        function onCloseAllPages() {
+            mainViewport.list.forEach(function(i){
+                i.open = false;
+            });
+        }
     }
 
     Viewport {

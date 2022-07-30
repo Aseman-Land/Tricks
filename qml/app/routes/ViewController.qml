@@ -93,6 +93,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/profile\/edit\/tokens/
+        source: "qrc:/app/pages/profile/TokensPage.qml"
+        viewportType: GlobalSettings.mobileView? "float" : "popup"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/about/
         source: "qrc:/app/pages/about/AboutPage.qml"
         viewportType: GlobalSettings.mobileView? "float" : "popup"

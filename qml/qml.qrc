@@ -243,5 +243,9 @@
         <file>imports/jsons/TrickJsonItem.qml</file>
         <file>imports/jsons/UserJsonItem.qml</file>
         <file>imports/requests/UploadTrickImageRequest.qml</file>
+        <file>app/pages/profile/TokensPage.qml</file>
+        <file>imports/requests/DeleteTokensRequest.qml</file>
+        <file>imports/requests/GetTokensRequest.qml</file>
+        <file>imports/models/TokensModel.qml</file>
     </qresource>
 </RCC>

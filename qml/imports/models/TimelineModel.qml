@@ -73,6 +73,8 @@ AsemanListModel {
             let last_link_id = 0;
             list.forEach(function(l){
                 var m = l;
+                m["link_id"] = null;
+
                 if (m.refred_trick_id) {
                     last_link_id = m.id;
                     m["link_id"] = m.refred_trick_id;
@@ -84,7 +86,6 @@ AsemanListModel {
                     last_link_id = 0;
                 }
 
-                m["link_id"] = null;
                 linkes[linkes.length] = m;
             })
             model.change(linkes);
