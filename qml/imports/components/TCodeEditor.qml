@@ -97,11 +97,18 @@ Item {
                     font.pixelSize: 8 * Devices.fontDensity
                     model: ProgrammingLanguagesModel { id: pmodel }
                     textRole: "name"
-                    onCurrentTextChanged: highlighter.definition = currentText
-                    onActivated: GlobalSettings.defaultCodeDefinition = currentText
+                    onCurrentIndexChanged: {
+                        if (currentIndex >= pmodel.count)
+                            return;
+
+                        try {
+                            highlighter.definition = pmodel.get(currentIndex).logical_name
+                        } catch (e) {}
+                    }
+                    onActivated: GlobalSettings.defaultCodeDefinition = pmodel.get(currentIndex).logical_name
                     onCountChanged: {
                         for (var i=0; i<model.count; i++)
-                            if (model.get(i).name.toLowerCase() == GlobalSettings.defaultCodeDefinition.toLowerCase()) {
+                            if (model.get(i).logical_name.toLowerCase() == GlobalSettings.defaultCodeDefinition.toLowerCase()) {
                                 currentIndex = i;
                                 break;
                             }
