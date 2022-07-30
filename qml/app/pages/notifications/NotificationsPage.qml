@@ -79,23 +79,26 @@ TPage {
                 Component.onCompleted: if (model.index == listv.count-1 && listv.model.more) listv.model.more()
                 onClicked: {
                     switch (model.notify_type) {
-                    case 1:
-                        Viewport.controller.trigger("float:/tricks", {"trickId": model.trick.id})
-                        break;
                     case 2:
+                    case 7:
                         Viewport.controller.trigger("float:/users", {"userId": model.users[0].id, "title": model.users[0].fullname});
                         break;
                     case 3:
                         Viewport.controller.trigger("float:/tricks", {"trickId": model.comment.id})
-                        break;
-                    case 4:
                         Viewport.controller.trigger("float:/tricks", {"trickId": model.comment.id})
                         break;
+                    case 1:
                     case 5:
+                    case 6:
                         Viewport.controller.trigger("float:/tricks", {"trickId": model.trick.id})
                         break;
-                    }
 
+                    default:
+                        if (model.trick)
+                            Viewport.controller.trigger("float:/tricks", {"trickId": model.trick.id})
+                        else
+                            Viewport.controller.trigger("float:/users", {"userId": model.users[0].id, "title": model.users[0].fullname});
+                    }
                 }
 
                 property bool trickItemMode: model.notify_type == 3 || model.notify_type == 5
@@ -137,6 +140,9 @@ TPage {
                                     return MaterialIcons.mdi_at;
                                 case 5:
                                     return MaterialIcons.mdi_tag;
+                                case 6:
+                                case 7:
+                                    return MaterialIcons.mdi_bitcoin;
                                 }
                                 return "";
                             }
@@ -144,31 +150,23 @@ TPage {
                                 switch (model.notify_type) {
                                 case 1:
                                     return Colors.likeColors;
-                                case 2:
-                                    return Colors.accent;
                                 case 3:
-                                    return Colors.commentsColor;
                                 case 4:
                                     return Colors.commentsColor;
-                                case 5:
+                                default:
                                     return Colors.accent;
                                 }
-                                return Colors.accent;
                             }
                             font.pixelSize: {
                                 switch (model.notify_type) {
-                                case 1:
-                                    return 12 * Devices.fontDensity;
                                 case 2:
-                                    return 14 * Devices.fontDensity
-                                case 3:
-                                    return 12 * Devices.fontDensity;
-                                case 4:
-                                    return 12 * Devices.fontDensity;
                                 case 5:
+                                case 6:
+                                case 7:
+                                    return 14 * Devices.fontDensity
+                                default:
                                     return 12 * Devices.fontDensity;
                                 }
-                                return 12 * Devices.fontDensity;
                             }
                             visible: !notItem.trickItemMode
                         }
@@ -249,6 +247,12 @@ TPage {
                                         break;
                                     case 5:
                                         res += qsTr("posted a trick on the %1.").arg(model.tag);
+                                        break;
+                                    case 6:
+                                        res += qsTr("tipped <b>%1SAT</b> your trick.").arg(Math.floor(model.tip_amount/1000));
+                                        break;
+                                    case 7:
+                                        res += qsTr("donated <b>%1SAT</b> you.").arg(Math.floor(model.tip_amount/1000));
                                         break;
                                     }
                                     return res;

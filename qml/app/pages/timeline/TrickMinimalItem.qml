@@ -787,12 +787,13 @@ TItemDelegate {
                             materialOpacity: 1
                             materialColor: tipState? Colors.accent : Colors.buttonsColor
                             materialText: dis.tipsText
-                            visible: GlobalSettings.userId != ownerId && !globalViewMode
                             onClicked: {
                                 if (globalViewMode)
                                     return;
-
-                                Viewport.controller.trigger("bottomdrawer:/tricks/tip", {"trickId": dis.trickId, "trickData": dis.trickData})
+                                if (GlobalSettings.userId != ownerId)
+                                    Viewport.controller.trigger("bottomdrawer:/tricks/tip", {"trickId": dis.trickId, "trickData": dis.trickData})
+                                else
+                                    Viewport.controller.trigger("page:/tricks/tips", {"trickId": dis.trickId})
                             }
                         }
                         TIconButton {
