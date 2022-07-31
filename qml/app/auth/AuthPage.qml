@@ -88,8 +88,8 @@ TPage {
         visible: GlobalSettings.viewMode == 0
 
         TImage {
-            width: parent.width * 0.6
-            height: parent.height * 0.6
+            width: parent.width * 0.8
+            height: parent.height * 0.8
             sourceSize: Qt.size(width*1.2, height*1.2)
             anchors.centerIn: parent
             fillMode: Image.PreserveAspectFit

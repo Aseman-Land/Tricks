@@ -12,7 +12,7 @@ import globals 1.0
 
 TPage {
     id: dis
-    ViewportType.maximumWidth: Viewport.viewport.width > Viewport.viewport.height && !Devices.isMobile? 500 * Devices.density : 0
+    ViewportType.maximumWidth: GlobalSettings.viewMode != 2? 500 * Devices.density : 0
     ViewportType.touchToClose: true
 
     property alias userId: req._user_id

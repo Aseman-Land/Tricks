@@ -145,8 +145,8 @@ AsemanObject {
         property bool initialized: false
         property bool ignoreSslErrorsPerment: false
 
-        property real width: 1280
-        property real height: 700
+        property real width: 900
+        property real height: 680
 
         property string language: "en"
 
