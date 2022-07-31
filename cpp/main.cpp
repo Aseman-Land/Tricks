@@ -59,6 +59,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/imports/globals/logo.png"));
 
+    qDebug() << APP_SECRET_ID;
+
     QQmlApplicationEngine engine;
     engine.addImportPath(":/imports/");
     engine.rootContext()->setContextProperty("appBundleVersion", APP_BUNDLE_VERSION);
