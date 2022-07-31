@@ -314,7 +314,7 @@ TPage {
                 x: GlobalSettings.viewMode == 2? parent.width/2 - width/2 : parent.width - width - Constants.spacing
                 anchors.verticalCenter: footerItem.verticalCenter
                 anchors.verticalCenterOffset: GlobalSettings.viewMode == 2? -Devices.navigationBarHeight/2 : -Constants.spacing
-                height: 60 * Devices.density
+                height: GlobalSettings.viewMode == 2? 60 * Devices.density : 50 * Devices.density
                 width: height
 
                 FastDropShadow {
