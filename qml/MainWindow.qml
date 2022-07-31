@@ -69,7 +69,7 @@ AsemanWindow {
             id: framelessPad
             anchors.left: parent.left
             anchors.right: parent.right
-            height: GlobalSettings.frameless? (GlobalSettings.mobileView? 35 : 30) * Devices.density : 0
+            height: GlobalSettings.frameless? (GlobalSettings.viewMode == 2? 35 : 30) * Devices.density : 0
             color: Colors.header
             visible: GlobalSettings.frameless
 

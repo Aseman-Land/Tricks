@@ -13,6 +13,7 @@ import components 1.0
 
 Page {
     id: dis
+    ViewportType.maximumWidth: Viewport.viewport.width > Viewport.viewport.height && !Devices.isMobile? 500 * Devices.density : 0
 
     property alias body: bodyLabel.text
 

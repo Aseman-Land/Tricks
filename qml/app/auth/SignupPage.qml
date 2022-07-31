@@ -111,7 +111,7 @@ Page {
         anchors.right: parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        visible: !GlobalSettings.mobileView
+        visible: GlobalSettings.viewMode != 2
 
         TImage {
             width: parent.width * 0.6
@@ -125,8 +125,8 @@ Page {
 
     TScrollView {
         anchors.right: parent.right
-        anchors.rightMargin: GlobalSettings.mobileView? 0 : 80 * Devices.density
-        anchors.left: GlobalSettings.mobileView? parent.left : parent.horizontalCenter
+        anchors.rightMargin: GlobalSettings.viewMode == 2? 0 : 80 * Devices.density
+        anchors.left: GlobalSettings.viewMode == 2? parent.left : parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Constants.keyboardHeight

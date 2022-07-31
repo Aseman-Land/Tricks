@@ -138,7 +138,7 @@ TPage {
             TIconButton {
                 id: editBtn
                 Layout.preferredHeight: 40 * Devices.density
-                visible: GlobalSettings.homeTabIndex == 0 && GlobalSettings.mobileView
+                visible: GlobalSettings.homeTabIndex == 0 && GlobalSettings.viewMode == 2
                 materialIcon: MaterialIcons.mdi_dots_vertical
                 flat: true
                 materialColor: Colors.headerText

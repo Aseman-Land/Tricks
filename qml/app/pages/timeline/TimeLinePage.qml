@@ -51,7 +51,7 @@ TPage {
     Connections {
         target: GlobalSignals
         function onRetrickRequest(trick) {
-            if (GlobalSettings.mobileView || Viewport.viewport.count > 0)
+            if (GlobalSettings.viewMode == 2 || Viewport.viewport.count > 0)
                 Viewport.controller.trigger("float:/tricks/add", {"quote": trick});
         }
     }
@@ -187,10 +187,10 @@ TPage {
 
     THeader {
         id: headerItem
-        y: timeLine.headerVisible || !GlobalSettings.mobileView || findUser.visible? 0 : -Devices.standardTitleBarHeight
+        y: timeLine.headerVisible || GlobalSettings.viewMode != 2 || findUser.visible? 0 : -Devices.standardTitleBarHeight
         anchors.left: parent.left
         anchors.right: parent.right
-        height: GlobalSettings.mobileView? defaultHeight : 42 * Devices.density
+        height: GlobalSettings.viewMode == 2? defaultHeight : 42 * Devices.density
         light: true
         color: Colors.header
 
@@ -245,7 +245,7 @@ TPage {
             anchors.verticalCenter: parent.verticalCenter
             anchors.margins: 6 * Devices.density
             height: 38 * Devices.density
-            visible: GlobalSettings.homeTabIndex == 1 && GlobalSettings.mobileView
+            visible: GlobalSettings.homeTabIndex == 1 && GlobalSettings.viewMode == 2
             onSearchRequest: dis.keyword = GlobalMethods.fixUrlProperties(keyword)
             IOSStyle.theme: Colors.lightHeader && !Colors.darkMode? IOSStyle.Light : IOSStyle.Dark
             Material.theme: Colors.lightHeader && !Colors.darkMode? Material.Light : Material.Dark
@@ -257,7 +257,7 @@ TPage {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 14 * Devices.density
-            visible: GlobalSettings.homeTabIndex == 0 && GlobalSettings.mobileView
+            visible: GlobalSettings.homeTabIndex == 0 && GlobalSettings.viewMode == 2
             remoteUrl: GlobalSettings.avatar
 
             TMouseArea {
@@ -269,7 +269,7 @@ TPage {
         RowLayout {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.margins: GlobalSettings.homeCurrentTag.length && !GlobalSettings.mobileView? 0 : (searchField.visible? 50 * Devices.density : 10 * Devices.density)
+            anchors.margins: GlobalSettings.homeCurrentTag.length && GlobalSettings.viewMode != 2? 0 : (searchField.visible? 50 * Devices.density : 10 * Devices.density)
             spacing: 10 * Devices.density
 
             TBusyIndicator {

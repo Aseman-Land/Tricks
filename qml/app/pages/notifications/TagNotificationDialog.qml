@@ -12,7 +12,7 @@ import globals 1.0
 
 Item {
     id: dis
-    width: Viewport.viewport.width
+    width: GlobalSettings.viewMode == 2? Viewport.viewport.width : 480 * Devices.density
     height: 340 * Devices.density
 
     property string tag

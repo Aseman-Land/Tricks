@@ -27,8 +27,8 @@ EscapeItem {
         anchors.right: parent.right
         height: Constants.headerHeight
 
-        IOSStyle.theme: (GlobalSettings.mobileView || Colors.lightHeader) && !Colors.darkMode? IOSStyle.Light : IOSStyle.Dark
-        Material.theme: (GlobalSettings.mobileView || Colors.lightHeader) && !Colors.darkMode? Material.Light : Material.Dark
+        IOSStyle.theme: (GlobalSettings.viewMode == 2 || Colors.lightHeader) && !Colors.darkMode? IOSStyle.Light : IOSStyle.Dark
+        Material.theme: (GlobalSettings.viewMode == 2 || Colors.lightHeader) && !Colors.darkMode? Material.Light : Material.Dark
 
         TSearchField {
             anchors.left: parent.left
@@ -51,7 +51,7 @@ EscapeItem {
             Layout.topMargin: 10 * Devices.density
             materialText: qsTr("Home") + Translations.refresher
             materialIcon: MaterialIcons.mdi_home
-            visible: !GlobalSettings.mobileView
+            visible: GlobalSettings.viewMode != 2
             selected: GlobalSettings.homeTabIndex == 0 && GlobalSettings.homeCurrentTag.length == 0
             onClicked: {
                 GlobalSettings.homeCurrentTag = "";
@@ -63,7 +63,7 @@ EscapeItem {
         SideBarItemDelegate {
             materialText: qsTr("Global") + Translations.refresher
             materialIcon: MaterialIcons.mdi_earth
-            visible: !GlobalSettings.mobileView
+            visible: GlobalSettings.viewMode != 2
             selected: GlobalSettings.homeTabIndex == 1 && GlobalSettings.homeCurrentTag.length == 0
             onClicked: {
                 GlobalSettings.homeCurrentTag = "";
@@ -73,7 +73,7 @@ EscapeItem {
         }
 
         THListSeprator {
-            visible: !GlobalSettings.mobileView
+            visible: GlobalSettings.viewMode != 2
         }
 
         SideBarItemDelegate {
@@ -123,7 +123,7 @@ EscapeItem {
                         materialCount: model.unreads_count? model.unreads_count : -1
                         selected: GlobalSettings.homeCurrentTag == model.tag
                         onClicked: {
-                            if (GlobalSettings.mobileView)
+                            if (GlobalSettings.viewMode == 2)
                                 Viewport.controller.trigger("float:/tag", {"tag": model.tag});
                             else
                                 GlobalSettings.homeCurrentTag = model.tag;

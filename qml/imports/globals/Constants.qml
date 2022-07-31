@@ -11,7 +11,7 @@ AsemanObject {
     readonly property int spacing: 10 * Devices.density
 
     readonly property int refreshDelay: 1
-    readonly property real headerHeight: GlobalSettings.mobileView || !Devices.isDesktop? Devices.standardTitleBarHeight + Devices.statusBarHeight : 42 * Devices.density + Devices.statusBarHeight
+    readonly property real headerHeight: GlobalSettings.viewMode == 2 || !Devices.isDesktop? Devices.standardTitleBarHeight + Devices.statusBarHeight : 42 * Devices.density + Devices.statusBarHeight
 
     readonly property string cachePath: AsemanApp.homePath + "/cache"
     readonly property string baseUrl: App.domain + "/api/v1"

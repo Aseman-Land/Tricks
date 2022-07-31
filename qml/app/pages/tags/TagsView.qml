@@ -97,6 +97,14 @@ Item {
                         text: model.tag
                     }
 
+                    TIconButton {
+                        visible: !followable || followBtn.followed
+                        materialIcon: model.notification != undefined && model.notification.enable?  MaterialIcons.mdi_bell : MaterialIcons.mdi_bell_outline
+                        flat: true
+                        highlighted: true
+                        onClicked: Viewport.controller.trigger("bottomdrawer:/tag/notification", {"tag": model.tag, "settingss": model.notification})
+                    }
+
                     RowLayout {
                         spacing: 2 * Devices.density
 
@@ -155,15 +163,8 @@ Item {
                         }
                     }
 
-                    TIconButton {
-                        visible: !followable
-                        materialIcon: model.notification != undefined && model.notification.enable?  MaterialIcons.mdi_bell : MaterialIcons.mdi_bell_outline
-                        flat: true
-                        highlighted: true
-                        onClicked: Viewport.controller.trigger("bottomdrawer:/tag/notification", {"tag": model.tag, "settingss": model.notification})
-                    }
-
                     TFollowButton {
+                        id: followBtn
                         visible: followable
                         Layout.preferredWidth: refreshing? 40 :90 * Devices.density
 

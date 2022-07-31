@@ -10,7 +10,13 @@ AsemanObject {
     property bool dynamicKeyboardHeight: true
     property int waitCount
     property bool languageInited: false
-    property bool mobileView: true
+    property int viewMode: {
+        if (Devices.isMobile)
+            return 2;
+        if (Devices.isTablet)
+            return 1;
+        return 0;
+    }
 
     property bool ignoreSslErrorsViewed
     property bool ignoreSslErrors

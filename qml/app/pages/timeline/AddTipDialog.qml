@@ -12,7 +12,7 @@ import globals 1.0
 
 TNullableArea {
     id: dis
-    width: Viewport.viewport.width
+    width: GlobalSettings.viewMode == 2? Viewport.viewport.width : 480 * Devices.density
     height: Math.min(360 * Devices.density + tipItem.height, Viewport.viewport.height - Devices.standardTitleBarHeight)
     ViewportType.gestureWidth: Devices.standardTitleBarHeight + bodyLabel.height + bodyLabel.y
 

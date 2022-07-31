@@ -11,7 +11,7 @@ import globals 1.0
 
 Item {
     id: dis
-    width: Viewport.viewport.width
+    width: GlobalSettings.viewMode == 2? Viewport.viewport.width : 480 * Devices.density
     height: 240 * Devices.density
 
     property alias headerLabel: headerLabel

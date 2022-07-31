@@ -13,7 +13,7 @@ Rectangle {
     property string text
     property bool opened
     property int duration: 2000
-    property bool fullWidth: GlobalSettings.mobileView
+    property bool fullWidth: GlobalSettings.viewMode == 2
 
     signal clicked
 

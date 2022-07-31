@@ -191,9 +191,9 @@ TPage {
         TLoader {
             id: sidebarLoader
             Layout.fillHeight: true
-            Layout.preferredWidth: GlobalSettings.mobileView? home.width : 230 * Devices.density
-            active: !GlobalSettings.mobileView
-            visible: !GlobalSettings.mobileView
+            Layout.preferredWidth: GlobalSettings.viewMode == 2? home.width : 230 * Devices.density
+            active: GlobalSettings.viewMode != 2
+            visible: GlobalSettings.viewMode != 2
             z: 10
             sourceComponent: Rectangle {
                 color: Colors.background
@@ -219,7 +219,7 @@ TPage {
         }
 
         TVListSeprator {
-            visible: !GlobalSettings.mobileView
+            visible: GlobalSettings.viewMode != 2
         }
 
         Item {
@@ -232,7 +232,7 @@ TPage {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.bottom: GlobalSettings.mobileView? footerItem.top : parent.bottom
+                anchors.bottom: GlobalSettings.viewMode == 2? footerItem.top : parent.bottom
                 visible: GlobalSettings.homeTabIndex < 2
             }
 
@@ -275,7 +275,7 @@ TPage {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                visible: GlobalSettings.mobileView
+                visible: GlobalSettings.viewMode == 2
                 visibleTexts: false
                 model: HomeFooterModel { id: footerModel }
                 currentIndex: GlobalSettings.homeTabIndex
@@ -307,6 +307,15 @@ TPage {
                         footerItem.currentIndex = GlobalSettings.homeTabIndex;
                     }
                 }
+            }
+
+            Item {
+                id: addBtnFrame
+                x: GlobalSettings.viewMode == 2? parent.width/2 - width/2 : parent.width - width - Constants.spacing
+                anchors.verticalCenter: footerItem.verticalCenter
+                anchors.verticalCenterOffset: GlobalSettings.viewMode == 2? -Devices.navigationBarHeight/2 : -Constants.spacing
+                height: 60 * Devices.density
+                width: height
 
                 FastDropShadow {
                     source: addBtn
@@ -320,13 +329,10 @@ TPage {
 
                 Rectangle {
                     id: addBtn
-                    anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -Devices.navigationBarHeight/2
-                    height: 60 * Devices.density
-                    width: height
+                    anchors.fill: parent
                     radius: height / 2
                     color: Qt.darker(Colors.accent, (addBtnMarea.pressed? 1.2 : 1))
-                    visible: GlobalSettings.mobileView
+                    visible: GlobalSettings.viewMode != 0
 
                     MouseArea {
                         id: addBtnMarea
@@ -347,14 +353,14 @@ TPage {
         }
 
         TVListSeprator {
-            visible: !GlobalSettings.mobileView
+            visible: GlobalSettings.viewMode == 0
         }
 
         TLoader {
             Layout.fillHeight: true
-            Layout.preferredWidth: GlobalSettings.mobileView? home.width : home.width * 0.4
-            active: !GlobalSettings.mobileView
-            visible: !GlobalSettings.mobileView
+            Layout.preferredWidth: GlobalSettings.viewMode != 0? home.width : home.width * 0.4
+            active: GlobalSettings.viewMode == 0
+            visible: GlobalSettings.viewMode == 0
             sourceComponent: TPage {
                 anchors.fill: parent
 

@@ -24,10 +24,18 @@ TPage {
     Material.primary: Colors.primary
 
     property alias viewport: mainViewport
-    readonly property bool mobileView: width < height || Devices.isMobile
 
     Component.onCompleted: {
-        GlobalSettings.mobileView = Qt.binding(function(){ return dis.mobileView; });
+        GlobalSettings.viewMode = Qt.binding(function(){
+            if (Devices.isMobile)
+                return 2;
+            else if (width < height || width < 600 * Devices.density)
+                return 2;
+            else if (width < height*1.3 || width < 1024 * Devices.density)
+                return 1;
+            else
+                return 0;
+        });
     }
 
     Connections {
@@ -68,7 +76,7 @@ TPage {
 
             TLoader {
                 anchors.fill: parent
-                active: GlobalSettings.accessToken.length === 0 && (Bootstrap.timeline.unauth_timeline && GlobalSettings.mobileView)
+                active: GlobalSettings.accessToken.length === 0 && (Bootstrap.timeline.unauth_timeline && GlobalSettings.viewMode == 2)
                 sourceComponent: TimeLine.NonAuthTimeLinePage {
                     anchors.fill: parent
                 }
@@ -76,7 +84,7 @@ TPage {
 
             TLoader {
                 anchors.fill: parent
-                active: GlobalSettings.accessToken.length === 0 && (!Bootstrap.timeline.unauth_timeline || !GlobalSettings.mobileView)
+                active: GlobalSettings.accessToken.length === 0 && (!Bootstrap.timeline.unauth_timeline || GlobalSettings.viewMode != 2)
                 sourceComponent: Auth.AuthPage {
                     anchors.fill: parent
                 }

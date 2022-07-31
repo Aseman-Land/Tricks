@@ -22,7 +22,7 @@ Item {
 
     property alias quoteMode: quoteAction.active
     property alias darkTheme: code.darkTheme
-    readonly property bool sendingMode: !GlobalSettings.mobileView && (postReq.refreshing || reTrickReq.refreshing || reloadTimer.running)
+    readonly property bool sendingMode: GlobalSettings.viewMode != 2 && (postReq.refreshing || reTrickReq.refreshing || reloadTimer.running || uploadImageReq.refreshing)
 
     property int parentId
     property variant trickData
@@ -114,13 +114,13 @@ Item {
 
     PostTrickRequest {
         id: postReq
-        allowGlobalBusy: GlobalSettings.mobileView
+        allowGlobalBusy: GlobalSettings.viewMode != 0
         onSuccessfull: reloadTimer.restart()
     }
 
     UploadTrickImageRequest {
         id: uploadImageReq
-        allowGlobalBusy: GlobalSettings.mobileView
+        allowGlobalBusy: GlobalSettings.viewMode != 0
         onSuccessfull: {
             postReq.uploaded_file_id = response.result;
             postReq.doRequest();
@@ -134,18 +134,20 @@ Item {
 
             let img = Constants.cachePath + "/" + Tools.createUuid() + ".jpg";
 
-            GlobalSettings.waitCount++;
+            if (uploadImageReq.allowGlobalBusy)
+                GlobalSettings.waitCount++;
             Tools.imageResize(_filePath, Qt.size(1024, 1024/ratio), img, function(){
                 uploadImageReq.image = Devices.localFilesPrePath + img;
                 uploadImageReq.doRequest();
-                GlobalSettings.waitCount--;
+                if (uploadImageReq.allowGlobalBusy)
+                    GlobalSettings.waitCount--;
             });
         }
     }
 
     ReTrickRequest {
         id: reTrickReq
-        allowGlobalBusy: GlobalSettings.mobileView
+        allowGlobalBusy: GlobalSettings.viewMode != 0
         onSuccessfull: reloadTimer.restart()
     }
 
@@ -156,7 +158,7 @@ Item {
         interval: Constants.refreshDelay
         repeat: false
         onRunningChanged: {
-            if (!GlobalSettings.mobileView)
+            if (GlobalSettings.viewMode == 0)
                 return;
             if (running)
                 GlobalSettings.waitCount++
@@ -167,6 +169,8 @@ Item {
             body.clear();
             code.clear();
             quoteAction.active = false;
+            codeAct.active = false;
+            imageAct.active = false;
             MyTricksLimits.refresh();
             GlobalSignals.snackRequest(qsTr("Tricks posted successfully."));
             GlobalSignals.refreshRequest();

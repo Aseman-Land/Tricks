@@ -38,8 +38,23 @@ AsemanListModel {
         id: sortingMap
     }
 
+    Timer {
+        id: refreshTimer
+        interval: 10
+        repeat: false
+        onTriggered: {
+            sortingMap.clear();
+            req.offset = 0;
+            req.doRequest();
+        }
+    }
+
     GetTagTricksRequest {
         id: req
+        onCommunity_idChanged: {
+            if (_tag.length)
+                refreshTimer.restart()
+        }
         onSuccessfull: {
             response.result.forEach(function(t){
                 let sortId = (t.id + "").padStart(20, '0');
