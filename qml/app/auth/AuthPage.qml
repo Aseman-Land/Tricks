@@ -85,7 +85,7 @@ TPage {
         anchors.right: parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        visible: GlobalSettings.viewMode != 2
+        visible: GlobalSettings.viewMode == 0
 
         TImage {
             width: parent.width * 0.6
@@ -99,8 +99,8 @@ TPage {
 
     TScrollView {
         anchors.right: parent.right
-        anchors.rightMargin: GlobalSettings.viewMode == 2? 0 : 80 * Devices.density
-        anchors.left: GlobalSettings.viewMode == 2? parent.left : parent.horizontalCenter
+        anchors.rightMargin: GlobalSettings.viewMode != 0? 0 : 80 * Devices.density
+        anchors.left: GlobalSettings.viewMode != 0? parent.left : parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Constants.keyboardHeight
@@ -124,7 +124,7 @@ TPage {
 
                 ColumnLayout {
                     id: mainColumn
-                    width: parent.width * 0.7
+                    width: Math.min(400*Devices.density, parent.width * 0.7)
                     anchors.centerIn: parent
                     spacing: 4 * Devices.density
 
@@ -209,7 +209,7 @@ TPage {
 
                         TButton {
                             id: loginBtn
-                            Layout.preferredWidth: flick.width * 0.3 - 2 * Devices.density
+                            Layout.preferredWidth: Math.min(160*Devices.density, flick.width * 0.3 - 2 * Devices.density)
                             text: qsTr("Login") + Translations.refresher
                             enabled: passLbl.acceptable && userLbl.acceptable
                             highlighted: true
@@ -219,7 +219,7 @@ TPage {
 
                         TButton {
                             id: signupBtn
-                            Layout.preferredWidth: flick.width * 0.3 - 2 * Devices.density
+                            Layout.preferredWidth: Math.min(160*Devices.density, flick.width * 0.3 - 2 * Devices.density)
                             text: qsTr("Signup") + Translations.refresher
                             highlighted: true
                             font.pixelSize: 9 * Devices.fontDensity

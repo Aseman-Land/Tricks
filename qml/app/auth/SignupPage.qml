@@ -15,6 +15,7 @@ Page {
     id: dis
     width: Constants.width
     height: Constants.height
+    ViewportType.maximumWidth: GlobalSettings.viewMode != 2? 500 * Devices.density : 0
 
     function signupSuccessfull(accessToken) {
         GlobalSettings.introDone = false;
@@ -105,28 +106,9 @@ Page {
         }
     }
 
-    Item {
-        anchors.left: parent.left
-        anchors.leftMargin: 80 * Devices.density
-        anchors.right: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        visible: GlobalSettings.viewMode != 2
-
-        TImage {
-            width: parent.width * 0.6
-            height: parent.height * 0.6
-            sourceSize: Qt.size(width*1.2, height*1.2)
-            anchors.centerIn: parent
-            fillMode: Image.PreserveAspectFit
-            source: Colors.darkMode? "../files/login_dark.png" : "../files/login_light.png"
-        }
-    }
-
     TScrollView {
         anchors.right: parent.right
-        anchors.rightMargin: GlobalSettings.viewMode == 2? 0 : 80 * Devices.density
-        anchors.left: GlobalSettings.viewMode == 2? parent.left : parent.horizontalCenter
+        anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Constants.keyboardHeight
