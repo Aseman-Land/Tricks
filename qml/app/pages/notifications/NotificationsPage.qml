@@ -328,7 +328,7 @@ TPage {
                                         rateReq.doRequest();
                                     }
 
-                                    property int rateState: model.comment? GlobalSettings.likedsHash.count && GlobalSettings.likedsHash.contains(model.comment.id)? GlobalSettings.likedsHash.value(model.comment.id) : model.comment.rate_state : 0
+                                    property int rateState: notItem.masterObject? GlobalSettings.likedsHash.count && GlobalSettings.likedsHash.contains(notItem.masterObject.id)? GlobalSettings.likedsHash.value(notItem.masterObject.id) : notItem.masterObject.rate_state : 0
 
                                     AddRateRequest {
                                         id: rateReq
