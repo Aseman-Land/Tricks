@@ -317,6 +317,7 @@ TPage {
             }
 
             TFollowButton {
+                Layout.rightMargin: 2 * Devices.density
                 Layout.preferredWidth: refreshing? 40 :90 * Devices.density
                 visible: GlobalSettings.homeCurrentTag.length
                 highlighted: !Colors.lightHeader
