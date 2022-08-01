@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQuickTextDocument>
 #include <QPointer>
+#include <QColor>
 
 #ifdef KSYNTAX_HIGHLIGHTER
 #include <SyntaxHighlighter>
@@ -21,6 +22,7 @@ class CodeHighlighter : public QObject
     Q_PROPERTY(QString definition READ definition WRITE setDefinition NOTIFY definitionChanged)
     Q_PROPERTY(QStringList themes READ themes NOTIFY fakeSignal)
     Q_PROPERTY(QStringList definitions READ definitions NOTIFY fakeSignal)
+    Q_PROPERTY(QColor background READ background NOTIFY backgroundChanged)
     Q_PROPERTY(bool darkMode READ darkMode NOTIFY darkModeChanged)
 
 public:
@@ -45,6 +47,8 @@ public:
 
     bool darkMode() const;
 
+    QColor background() const;
+
 Q_SIGNALS:
     void textDocumentChanged();
     void themeChanged();
@@ -53,6 +57,7 @@ Q_SIGNALS:
     void fakeSignal();
     void refreshRequest();
     void darkModeChanged();
+    void backgroundChanged();
 
 protected:
     void reloadTheme();
@@ -70,6 +75,7 @@ private:
     QString mFrame;
     QString mDefinition;
     bool mDarkMode = false;
+    QColor mBackground;
 };
 
 #endif // CODEHIGHLIGHTER_H

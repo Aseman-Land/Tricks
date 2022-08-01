@@ -141,6 +141,7 @@ void CodeHighlighter::reloadTheme()
     const auto t = mRepo.theme(mTheme);
     const QColor back = t.editorColor(KSyntaxHighlighting::Theme::BackgroundColor);
 
+    mBackground = back;
     mDarkMode = ((back.redF() + back.greenF() + back.blueF()) / 3 < 0.5);
 
     mHighlighter->setTheme(t);
@@ -148,6 +149,7 @@ void CodeHighlighter::reloadTheme()
 #else
     mDarkMode = mTheme.toLower().contains("dark");
 #endif
+    Q_EMIT backgroundChanged();
     Q_EMIT darkModeChanged();
     Q_EMIT refreshRequest();
 }
@@ -169,6 +171,11 @@ void CodeHighlighter::reloadDefinition()
     mHighlighter->rehighlight();
 #endif
     Q_EMIT refreshRequest();
+}
+
+QColor CodeHighlighter::background() const
+{
+    return mBackground;
 }
 
 bool CodeHighlighter::darkMode() const

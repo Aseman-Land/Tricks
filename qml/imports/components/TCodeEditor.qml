@@ -34,7 +34,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: Constants.radius
-        color: darkTheme? "#151718" : "#fff"
+        color: highlighter.background // darkTheme? "#151718" : "#fff"
         z: -1
     }
 

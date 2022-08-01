@@ -525,7 +525,7 @@ Item {
                 postReq.code = code.text;
                 postReq.highlighter_id = code.themeCombo.model.get(code.themeCombo.currentIndex).id;
                 postReq.programing_language_id = code.definitionCombo.model.get(code.definitionCombo.currentIndex).id;
-                postReq.code_frame_id = code.darkTheme? 1 : 2;
+//                postReq.code_frame_id = code.darkTheme? 1 : 2;
             } else {
                 postReq.code = " ";
             }
