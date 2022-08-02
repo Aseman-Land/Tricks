@@ -388,13 +388,13 @@ Item {
                         Layout.fillWidth: true
                         font.bold: true
                         text: qsTr("Detected Tags:") + Translations.refresher
-                        visible: tagsRepeater.count && !quoteAction.active
+                        visible: tagsRepeater.count
                     }
 
                     Flow {
                         spacing: 4 * Devices.density
                         Layout.fillWidth: true
-                        visible: tagsRepeater.count && !quoteAction.active
+                        visible: tagsRepeater.count
 
                         Repeater {
                             id: tagsRepeater
@@ -431,26 +431,17 @@ Item {
                         }
                     }
 
-//                    TLabel {
-//                        visible: tagsRepeater.count == 0 && !quoteAction.active
-//                        Layout.fillWidth: true
-//                        font.pixelSize: 8 * Devices.fontDensity
-//                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-//                        text: qsTr("There is no tag assigned. Just type tags using # in the message to add tags.") + Translations.refresher
-//                        opacity: 0.5
-//                    }
-
                     TLabel {
                         Layout.fillWidth: true
                         font.bold: true
                         text: qsTr("References:") + Translations.refresher
-                        visible: refsRepeater.count && !quoteAction.active && parentId == 0
+                        visible: refsRepeater.count && parentId == 0
                     }
 
                     Flow {
                         spacing: 4 * Devices.density
                         Layout.fillWidth: true
-                        visible: refsRepeater.count && !quoteAction.active && parentId == 0
+                        visible: refsRepeater.count && parentId == 0
 
                         Repeater {
                             id: refsRepeater
@@ -481,15 +472,6 @@ Item {
                             }
                         }
                     }
-
-//                    TLabel {
-//                        visible: refsRepeater.count == 0 && !quoteAction.active && parentId == 0
-//                        Layout.fillWidth: true
-//                        font.pixelSize: 8 * Devices.fontDensity
-//                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-//                        text: qsTr("There is no references found on the body text.") + Translations.refresher
-//                        opacity: 0.5
-//                    }
                 }
             }
         }

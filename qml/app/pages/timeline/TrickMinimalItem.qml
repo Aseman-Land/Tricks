@@ -61,6 +61,7 @@ TItemDelegate {
     property bool bookmarked
     property string share_link
     property variant references: new Array
+    property variant quotedReferences: new Array
     property variant tags: new Array
     property bool codeFrameIsDark: false
     property bool isRetrick: false
@@ -113,16 +114,32 @@ TItemDelegate {
         dis.ownerId = data.owner.id;
         dis.originalOwnerId = data.owner.id;
         dis.avatar = data.owner.avatar;
+        dis.dateTime = data.datetime;
+        dis.viewCount = data.views;
+
         try {
             dis.language = data.programing_language.name;
         } catch (e) {}
-        dis.dateTime = data.datetime;
-        dis.viewCount = data.views;
-        dis.originalBody = data.body;
-        dis.body = styleText(dis.originalBody);
-        dis.trickImage = data.filename;
-        dis.imageWidth = data.image_size.width;
-        dis.imageHeight = data.image_size.height;
+
+        try {
+            dis.originalBody = data.body;
+            dis.body = styleText(dis.originalBody);
+        } catch (e) {
+            console.debug("Body error:", e)
+            dis.originalBody = "";
+            dis.body = "";
+        }
+
+        try {
+            dis.trickImage = data.filename;
+            dis.imageWidth = data.image_size.width;
+            dis.imageHeight = data.image_size.height;
+        } catch (e) {
+            console.debug("File error:", e)
+            dis.trickImage = "";
+            dis.imageWidth = 1000;
+            dis.imageHeight = 1;
+        }
 
         if (data.link_id && link_id == 0) {
             link_id = data.link_id;
@@ -134,6 +151,18 @@ TItemDelegate {
 
         try {
             dis.code = data.code;
+        } catch (e) {
+            console.debug("Code error:", e)
+            dis.code = "";
+        }
+
+        try {
+            dis.references = data.references;
+        } catch (e) {
+            console.debug("References error:", e)
+        }
+
+        try {
             dis.rates = data.rates;
             dis.retricks = data.retricks;
             dis.tips_sat = Math.floor(data.tips / 1000);
@@ -141,7 +170,6 @@ TItemDelegate {
             dis.rateState = (GlobalSettings.likedsHash.contains(trickId)? GlobalSettings.likedsHash.value(trickId) : data.rate_state);
             dis.tipState = data.tip_state;
             dis.share_link = data.share_link;
-            dis.references = data.references;
             dis.tags = data.tags;
             dis.bookmarked = data.bookmarked;
 
@@ -183,29 +211,33 @@ TItemDelegate {
             }
 
             if (data.quote) { // It's quote
-                quote = data.body;
-                quoteId = data.quote.id;
-                quoteUsername = data.quote.username;
-                quoteFullname = data.quote.fullname;
-                quoteUserId = data.quote.owner;
-                quoteAvatar = data.quote.avatar;
+                quote = styleText(data.body);
+                quotedReferences = data.references;
+
+                let trk = data.quote;
+                quoteId = trk.id;
+                quoteUsername = trk.username;
+                quoteFullname = trk.fullname;
+                quoteUserId = trk.owner;
+                quoteAvatar = trk.avatar;
 
                 try {
-                    if (data.quote.filename) {
+                    if (trk.filename) {
                         quoteImageUrl = dis.trickImage;
                         quoteImageWidth = dis.imageWidth;
                         quoteImageHeight = dis.imageHeight;
                         quoteCodeFrameIsDark = dis.codeFrameIsDark;
 
-                        dis.trickImage = data.quote.filename;
-                        dis.imageWidth = data.quote.image_size.width;
-                        dis.imageHeight = data.quote.image_size.height;
-                        dis.codeFrameIsDark = data.quote.code_frame_id == 1;
+                        dis.trickImage = trk.filename;
+                        dis.imageWidth = trk.image_size.width;
+                        dis.imageHeight = trk.image_size.height;
+                        dis.codeFrameIsDark = trk.code_frame_id == 1;
                     }
                 } catch (e) {}
 
-                let trk = data.quote;
-                dis.body = trk.body;
+                dis.originalBody = trk.body;
+                dis.body = styleText(dis.originalBody);
+                dis.references = trk.references;
             }
         } catch (e) {
         }
@@ -554,8 +586,32 @@ TItemDelegate {
                 TTextView {
                     id: quoteLbl
                     Layout.fillWidth: true
+                    textFormat: TextEdit.RichText
                     visible: quoteBorder.visible && text.length
-                    text: quote
+                    onLinkActivated: {
+                        if (link.slice(0, 4) == "go:/") {
+                            Viewport.controller.trigger("float:/tag", {"tag": link.slice(5)})
+                        } else if (link.slice(0, 6) == "user:/") {
+                            userReq._userId = link.slice(6);
+                            userReq.doRequest();
+                        } else {
+                            Qt.openUrlExternally(link)
+                        }
+                    }
+                    text: {
+                        var res = quote;
+                        var i = 0;
+                        dis.quotedReferences.forEach(function(r){
+                            if (textFormat == Text.MarkdownText)
+                                res = Tools.stringReplace(res, "[r:%1]".arg(i), "[" + r.name + "](" + r.link + ")");
+                            else
+                                res = Tools.stringReplace(res, "[r:%1]".arg(i), "<a href=\"" + r.link + "\">" + r.name + "</a>");
+                            i++;
+                        });
+                        if (textFormat == TextEdit.RichText)
+                            res = Tools.stringReplace(res, "\n", "<br />");
+                        return res;
+                    }
                 }
 
                 Loader {
