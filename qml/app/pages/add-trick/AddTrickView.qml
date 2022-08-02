@@ -27,6 +27,8 @@ Item {
     property int parentId
     property variant trickData
 
+    property string imageRequestId
+
     signal trickPosted()
 
     function calculateTags(text) {
@@ -66,6 +68,7 @@ Item {
         AsemanApp.requestPermissions(["android.permission.READ_EXTERNAL_STORAGE"],
                                      function(res) {
             if(res["android.permission.READ_EXTERNAL_STORAGE"] == true) {
+                GlobalSettings.lastImageRequestId = dis.imageRequestId;
                 Devices.getOpenPictures();
             }
         });
@@ -83,6 +86,9 @@ Item {
     Connections {
         target: Devices
         function onSelectImageResult(path) {
+            if (GlobalSettings.lastImageRequestId != dis.imageRequestId)
+                return;
+
             let p = Devices.localFilesPrePath + path;
             uploadImageReq._filePath = p;
 
@@ -151,7 +157,10 @@ Item {
         onSuccessfull: reloadTimer.restart()
     }
 
-    Component.onCompleted: MyTricksLimits.refresh()
+    Component.onCompleted: {
+        imageRequestId = Tools.createUuid();
+        MyTricksLimits.refresh();
+    }
 
     Timer {
         id: reloadTimer

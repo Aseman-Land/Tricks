@@ -111,6 +111,7 @@ Item {
                                      function(res) {
             if(res["android.permission.READ_EXTERNAL_STORAGE"] == true) {
                 imageSelectMode = 0;
+                GlobalSettings.lastImageRequestId = Tools.createUuid();
                 Devices.getOpenPictures();
             }
         });
@@ -170,6 +171,7 @@ Item {
                                      function(res) {
             if(res["android.permission.READ_EXTERNAL_STORAGE"] == true) {
                 imageSelectMode = 1;
+                GlobalSettings.lastImageRequestId = Tools.createUuid();
                 Devices.getOpenPictures();
             }
         });

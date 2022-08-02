@@ -10,6 +10,7 @@ import QtQuick.Controls.IOSStyle 2.0
 import QtGraphicalEffects 1.0
 import QZXing 3.3
 import components 1.0
+import globals 1.0
 
 Page {
     id: dis

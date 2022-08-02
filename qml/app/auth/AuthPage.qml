@@ -235,7 +235,7 @@ TPage {
                         highlighted: true
                         flat: true
                         font.pixelSize: 9 * Devices.fontDensity
-                        onClicked: Viewport.viewport.append(forget_pass_init_component, {}, "float")
+                        onClicked: Viewport.viewport.append(forget_pass_init_component, {}, "popup")
                         IOSStyle.accent: "#333"
                         Material.accent: "#333"
                     }
@@ -281,7 +281,7 @@ TPage {
                                                              function(res) {
                                     if(res["android.permission.CAMERA"] == true) {
                                         var comp = Qt.createComponent("qrc:/app/pages/volcano/QRScannerDialog.qml");
-                                        dialog = Viewport.viewport.append(comp, {"body": qsTr("From Settings menu of the logged-in device, click on \"Link to other Device\".")}, "float");
+                                        dialog = Viewport.viewport.append(comp, {"body": qsTr("From Settings menu of the logged-in device, click on \"Link to other Device\".")}, "popup");
                                         dialog.tagFound.connect(function(tag) {
                                             if (meRequest.refreshing)
                                                 return;

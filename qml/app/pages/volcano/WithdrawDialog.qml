@@ -230,7 +230,7 @@ TNullableArea {
                                                          function(res) {
                                 if(res["android.permission.CAMERA"] == true) {
                                     var comp = Qt.createComponent("QRScannerDialog.qml");
-                                    var dlg = Viewport.viewport.append(comp, {}, "float");
+                                    var dlg = Viewport.viewport.append(comp, {}, "popup");
                                     dlg.tagFound.connect(function(tag) {
                                         paymentLink.text = tag;
                                         confirmBtn.clicked();

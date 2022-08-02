@@ -46,7 +46,7 @@ ViewportController {
     ViewportControllerRoute {
         route: /\w+:\/auth\/signup/
         source: "qrc:/app/auth/SignupPage.qml"
-        viewportType: "float"
+        viewportType: GlobalSettings.viewMode == 2? "float" : "popup"
     }
 
     ViewportControllerRoute {

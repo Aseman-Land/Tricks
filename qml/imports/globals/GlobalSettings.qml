@@ -6,6 +6,7 @@ import AsemanQml.Base 2.0
 AsemanObject {
     id: dis
 
+    property string lastImageRequestId
     property bool smartKeyboardHeight: true
     property bool dynamicKeyboardHeight: true
     property int waitCount

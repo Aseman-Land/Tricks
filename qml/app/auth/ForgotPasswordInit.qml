@@ -20,7 +20,7 @@ Page {
     Component.onCompleted: {
         if (GlobalSettings.forgetPasswordEmail.length) {
             Tools.jsDelayCall(300, function(){
-                Viewport.viewport.append(forget_pass_component, {}, "float");
+                Viewport.viewport.append(forget_pass_component, {}, "popup");
             });
         }
     }
@@ -31,7 +31,7 @@ Page {
         email: emailLbl.text
         onSuccessfull: {
             GlobalSettings.forgetPasswordEmail = email;
-            Viewport.viewport.append(forget_pass_component, {}, "float");
+            Viewport.viewport.append(forget_pass_component, {}, "popup");
             GlobalSignals.snackRequest(qsTr("Code sent successfully."));
         }
     }
