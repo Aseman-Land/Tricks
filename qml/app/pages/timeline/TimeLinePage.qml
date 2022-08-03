@@ -23,8 +23,8 @@ TPage {
         if (GlobalSettings.homeCurrentTag.length == 0)
             GlobalSettings.homeTabIndex = 1
 
-        if (timeLine.model == tagSearchModel)
-            tagSearchModel.keyword = keyword;
+        if (timeLine.model == tagModel)
+            tagModel.keyword = keyword;
         else if (timeLine.model == gmodel)
             gmodel.keyword = keyword;
     }
@@ -73,7 +73,7 @@ TPage {
         visible: tabBar.currentIndex == 0 || !tabBar.visible
         model: {
             if (GlobalSettings.homeCurrentTag.length)
-                return keyword.length? tagSearchModel : tagModel;
+                return tagModel;
 
             switch (GlobalSettings.homeTabIndex) {
             case 0:
@@ -89,8 +89,8 @@ TPage {
             return 0;
         }
         onModelChanged: {
-            if (timeLine.model == tagSearchModel)
-                tagSearchModel.keyword = keyword;
+            if (timeLine.model == tagModel)
+                tagModel.keyword = keyword;
             else if (timeLine.model == gmodel)
                 gmodel.keyword = keyword;
 
@@ -115,15 +115,12 @@ TPage {
 
     GlobalTimelineModel {
         id: gmodel
+        active: timeLine.model == gmodel
     }
 
     TimelineModel {
         id: tmodel
-    }
-
-    GlobalTimelineModel {
-        id: tagSearchModel
-        tag_name: GlobalSettings.homeCurrentTag
+        active: timeLine.model == tmodel
     }
 
     TagTricksModel {

@@ -159,6 +159,7 @@ Item {
 
     Component.onCompleted: {
         imageRequestId = Tools.createUuid();
+        console.debug(":/")
         MyTricksLimits.refresh();
     }
 

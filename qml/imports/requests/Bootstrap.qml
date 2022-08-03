@@ -5,7 +5,7 @@ import AsemanQml.Network 2.0
 import AsemanQml.Base 2.0
 import globals 1.0
 
-BootstrapRequest {
+AsemanObject {
     id: dis
 
     property alias tag: tag
@@ -26,22 +26,25 @@ BootstrapRequest {
     property variant features
     property variant licenses
 
+    BootstrapRequest {
+        id: req
+        onSuccessfull: {
+            limits = response.result.limits;
+            features = response.result.features;
+            licenses = response.result.licenses;
+
+            Tools.writeText(Constants.cacheLimits, Tools.variantToJson(limits));
+            Tools.writeText(Constants.cacheFeatures, Tools.variantToJson(features));
+            Tools.writeText(Constants.cacheLicenses, Tools.variantToJson(licenses));
+        }
+    }
+
     onSmartKeyboardHeightChanged: GlobalSettings.smartKeyboardHeight = smartKeyboardHeight
     Component.onCompleted: {
         limits = Tools.jsonToVariant( Tools.readText(Constants.cacheLimits) );
         features = Tools.jsonToVariant( Tools.readText(Constants.cacheFeatures) );
         licenses = Tools.jsonToVariant( Tools.readText(Constants.cacheLicenses) );
         GlobalSettings.smartKeyboardHeight = smartKeyboardHeight;
-    }
-
-    onSuccessfull: {
-        limits = response.result.limits;
-        features = response.result.features;
-        licenses = response.result.licenses;
-
-        Tools.writeText(Constants.cacheLimits, Tools.variantToJson(limits));
-        Tools.writeText(Constants.cacheFeatures, Tools.variantToJson(features));
-        Tools.writeText(Constants.cacheLicenses, Tools.variantToJson(licenses));
     }
 
     QtObject {
@@ -102,5 +105,5 @@ BootstrapRequest {
         property int version: { try { return licenses.agreement.version; } catch (e) { return 0; } }
     }
 
-    function init() { doRequest() }
+    function init() { req.doRequest() }
 }

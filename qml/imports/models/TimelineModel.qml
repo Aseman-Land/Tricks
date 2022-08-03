@@ -11,10 +11,16 @@ AsemanListModel {
     property alias refreshing: req.refreshing
     property int unreadCount
     property bool inited: false
+    property bool active: true
+
+    onActiveChanged: refreshTimer.restart()
 
     Connections {
         target: GlobalSignals
         function onRefreshRequest() {
+            if (!active)
+                return;
+
             model.refresh();
         }
         function onTrickDeleted(id) {
@@ -36,9 +42,13 @@ AsemanListModel {
         interval: 10
         repeat: false
         onTriggered: {
+            if (!active)
+                return;
+
             sortingMap.clear();
             req.offset = 0;
-            req.doRequest();
+            if (!refreshing)
+                req.doRequest();
         }
     }
 

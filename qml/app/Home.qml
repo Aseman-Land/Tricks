@@ -179,7 +179,8 @@ TPage {
         Connections {
             target: GlobalSignals
             function onReloadMeRequest() {
-                meReq.doRequest();
+                if (!meReq.refreshing)
+                    meReq.doRequest();
             }
         }
     }

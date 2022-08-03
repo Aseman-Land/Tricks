@@ -12,10 +12,12 @@ AsemanListModel {
     property alias tag_name: req.tag_name
     property alias parentId: req.parent_id
     property bool reversed: false
+    property bool active: true
 
     onKeywordChanged: refreshTimer.restart()
     onTag_nameChanged: refreshTimer.restart()
     onParentIdChanged: refreshTimer.restart()
+    onActiveChanged: refreshTimer.restart()
 
     Connections {
         target: GlobalSignals
@@ -34,12 +36,15 @@ AsemanListModel {
         interval: 10
         repeat: false
         onTriggered: {
+            if (!active)
+                return;
             if (tag_name.length && keyword.length == 0)
                 return;
 
             sortingMap.clear();
             req.offset = 0;
-            req.doRequest();
+            if (!refreshing)
+                req.doRequest();
         }
     }
 

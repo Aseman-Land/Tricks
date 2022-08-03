@@ -69,6 +69,9 @@ AsemanListModel {
     }
 
     function refresh() {
+        if (req.refreshing)
+            return;
+
         req.doRequest();
     }
 

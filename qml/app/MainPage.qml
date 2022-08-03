@@ -25,19 +25,6 @@ TPage {
 
     property alias viewport: mainViewport
 
-    Component.onCompleted: {
-        GlobalSettings.viewMode = Qt.binding(function(){
-            if (Devices.isMobile)
-                return 2;
-            else if (width < height || width < 600 * Devices.density)
-                return 2;
-            else if (width < height*1.3 || width < 1024 * Devices.density)
-                return 1;
-            else
-                return 0;
-        });
-    }
-
     Connections {
         target: GlobalSignals
         function onSnackRequest(text) {

@@ -9,6 +9,7 @@ AsemanListModel {
 
     property alias refreshing: req.refreshing
     property alias tag: req._tag
+    property alias keyword: globReq.keyword
 
     Connections {
         target: GlobalSignals
@@ -44,42 +45,56 @@ AsemanListModel {
         repeat: false
         onTriggered: {
             sortingMap.clear();
-            req.offset = 0;
-            req.doRequest();
+            model.refresh();
         }
     }
 
     GetTagTricksRequest {
         id: req
-        onCommunity_idChanged: {
-            if (_tag.length)
+        onCommunity_idChanged: if (_tag.length) refreshTimer.restart()
+        onSuccessfull: if (keyword.length == 0) appendItems(response.result)
+    }
+
+    GlobalTimelineRequest {
+        id: globReq
+        tag_name: req._tag
+        onTag_nameChanged: tryRefresh()
+        onCommunity_idChanged: tryRefresh()
+        onKeywordChanged: tryRefresh()
+        onSuccessfull: if (keyword.length != 0) appendItems(response.result)
+
+        function tryRefresh() {
+            if (tag_name.length)
                 refreshTimer.restart()
         }
-        onSuccessfull: {
-            response.result.forEach(function(t){
-                let sortId = (t.id + "").padStart(20, '0');
-                sortingMap.remove(sortId);
-                sortingMap.insert(sortId, t);
-            });
+    }
 
-            let list = sortingMap.values.reverse();
-            model.change(list);
-        }
+    function appendItems(items) {
+        items.forEach(function(t){
+            let sortId = ("" + Date.parse(t.datetime)).padStart(20, '0') + (t.id + "").padStart(20, '0');
+            sortingMap.remove(sortId);
+            sortingMap.insert(sortId, t);
+        });
+
+        let list = sortingMap.values.reverse();
+        model.change(list);
     }
 
     function refresh() {
-        if (refreshing)
+        var r = keyword.length? globReq : req;
+        if (r.refreshing)
             return;
 
-        req.offset = 0;
-        req.doRequest();
+        r.offset = 0;
+        r.doRequest();
     }
 
     function more() {
-        if (refreshing)
+        var r = keyword.length? globReq : req;
+        if (r.refreshing)
             return;
 
-        req.offset = count;
-        req.doRequest();
+        r.offset = count;
+        r.doRequest();
     }
 }
