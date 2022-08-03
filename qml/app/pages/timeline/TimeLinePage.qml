@@ -19,7 +19,15 @@ TPage {
     property alias headerItem: headerItem
     property string keyword
 
-    onKeywordChanged: if (GlobalSettings.homeCurrentTag.length == 0) GlobalSettings.homeTabIndex = 1
+    onKeywordChanged: {
+        if (GlobalSettings.homeCurrentTag.length == 0)
+            GlobalSettings.homeTabIndex = 1
+
+        if (timeLine.model == tagSearchModel)
+            tagSearchModel.keyword = keyword;
+        else if (timeLine.model == gmodel)
+            gmodel.keyword = keyword;
+    }
     Component.onCompleted: refresh()
 
     function refresh() {
@@ -80,7 +88,14 @@ TPage {
                 return tmodel.unreadCount;
             return 0;
         }
-        onModelChanged: dis.refresh()
+        onModelChanged: {
+            if (timeLine.model == tagSearchModel)
+                tagSearchModel.keyword = keyword;
+            else if (timeLine.model == gmodel)
+                gmodel.keyword = keyword;
+
+            Tools.jsDelayCall(10, dis.refresh)
+        }
         topMargin: headerItem.height + (tabBar.visible? tabBar.height : 0)
     }
 
@@ -100,7 +115,6 @@ TPage {
 
     GlobalTimelineModel {
         id: gmodel
-        keyword: dis.keyword
     }
 
     TimelineModel {
@@ -109,7 +123,6 @@ TPage {
 
     GlobalTimelineModel {
         id: tagSearchModel
-        keyword: dis.keyword
         tag_name: GlobalSettings.homeCurrentTag
     }
 
