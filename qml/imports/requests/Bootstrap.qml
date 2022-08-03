@@ -21,6 +21,7 @@ AsemanObject {
     readonly property bool dynamicKeyboardHeight: { try { return features.dynamic_keyboard_height; } catch (e) { return true; } }
     readonly property bool aseman: { try { return features.aseman; } catch (e) { return false; } }
     readonly property int defaultCommunity: { try { return features.default_community; } catch (e) { return 1; } }
+    readonly property bool initialized: { try { return features.initialized; } catch (e) { return false; } }
 
     property variant limits
     property variant features
