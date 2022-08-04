@@ -98,6 +98,14 @@ EscapeItem {
                     id: tagsList
                     model: GlobalMyTagsModel
 
+                    UpdateTagViews {
+                        id: updateReq
+                        onSuccessfull: {
+                            var list = Tools.toVariantList(tags);
+                            list.forEach(GlobalSignals.tagReaded)
+                        }
+                    }
+
                     section.property: "section_title"
                     section.criteria: ViewSection.FullString
                     section.delegate: Item {
@@ -113,6 +121,33 @@ EscapeItem {
                             font.pixelSize: 10 * Devices.fontDensity
                             text: section
                             color: Colors.accent
+                        }
+
+                        TBusyIndicator {
+                            anchors.right: readBtn.right
+                            anchors.rightMargin: 4 * Devices.density
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 12 * Devices.density
+                            height: 12 * Devices.density
+                            running: updateReq.refreshing
+                        }
+
+                        TButton {
+                            id: readBtn
+                            anchors.rightMargin: 4 * Devices.density
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 60 * Devices.density
+                            height: 32 * Devices.density
+                            font.pixelSize: 7 * Devices.fontDensity
+                            text: qsTr("Read All") + Translations.refresher
+                            visible: section != "Read" && !updateReq.refreshing
+                            flat: false
+                            highlighted: true
+                            onClicked: {
+                                updateReq.tags = Tools.toVariantList(GlobalMyTagsModel.unreadedTags);
+                                updateReq.doRequest();
+                            }
                         }
                     }
 
