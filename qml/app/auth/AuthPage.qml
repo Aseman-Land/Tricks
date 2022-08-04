@@ -275,7 +275,7 @@ TPage {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
-                            visible: qzxing
+                            visible: qzxing && Bootstrap.qrLogin
                             onClicked: {
                                 AsemanApp.requestPermissions(["android.permission.CAMERA"],
                                                              function(res) {

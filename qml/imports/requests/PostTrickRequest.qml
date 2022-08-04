@@ -9,7 +9,7 @@ BaseRequest {
     url: baseUrl + "/tricks"
 
     property string body
-    property string code
+    property variant code
     property variant highlighter_id
     property variant programing_language_id
     property variant code_frame_id

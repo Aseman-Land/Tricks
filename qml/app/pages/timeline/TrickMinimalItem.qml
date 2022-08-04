@@ -100,8 +100,8 @@ TItemDelegate {
 
     property Item moreBtnObj
 
-    onContextMenuRequest: if (!globalViewMode) moreBtnObj.clicked()
-    onPressAndHold: if (!globalViewMode) moreBtnObj.clicked()
+    onContextMenuRequest: if (!globalViewMode) moreBtnObj.showMenu( dis.mapToItem(moreBtnObj, Qt.point(mouseX, mouseY)))
+    onPressAndHold: if (!globalViewMode) moreBtnObj.showMenu( dis.mapToItem(moreBtnObj, Qt.point(mouseX, mouseY)))
 
     signal trickDeleted()
 
@@ -222,18 +222,24 @@ TItemDelegate {
                 quoteAvatar = trk.avatar;
 
                 try {
-                    if (trk.filename) {
-                        quoteImageUrl = dis.trickImage;
-                        quoteImageWidth = dis.imageWidth;
-                        quoteImageHeight = dis.imageHeight;
-                        quoteCodeFrameIsDark = dis.codeFrameIsDark;
+                    quoteImageUrl = dis.trickImage;
+                    quoteImageWidth = dis.imageWidth;
+                    quoteImageHeight = dis.imageHeight;
+                    quoteCodeFrameIsDark = dis.codeFrameIsDark;
 
+                    if (trk.filename) {
                         dis.trickImage = trk.filename;
                         dis.imageWidth = trk.image_size.width;
                         dis.imageHeight = trk.image_size.height;
                         dis.codeFrameIsDark = trk.code_frame_id == 1;
+                    } else {
+                        dis.trickImage = "";
+                        dis.imageWidth = 1000;
+                        dis.imageHeight = 1;
+                        dis.codeFrameIsDark = 0;
                     }
-                } catch (e) {}
+                } catch (e) {
+                }
 
                 dis.originalBody = trk.body;
                 dis.body = styleText(dis.originalBody);
@@ -843,6 +849,7 @@ TItemDelegate {
                             materialOpacity: 1
                             materialColor: tipState? Colors.accent : Colors.buttonsColor
                             materialText: dis.tipsText
+                            visible: Bootstrap.volcano
                             onClicked: {
                                 if (globalViewMode)
                                     return;
@@ -880,8 +887,16 @@ TItemDelegate {
                             visible: !globalViewMode
                             materialIcon: MaterialIcons.mdi_dots_horizontal
                             materialColor: Colors.buttonsColor
-                            onClicked: {
+                            onClicked: showMenu()
+
+                            function showMenu(point) {
                                 var pos = Qt.point(dis.LayoutMirroring.enabled? Constants.radius : moreBtn.width - Constants.radius, moreBtn.height/2);
+                                var freePoint = false;
+                                if (point != undefined) {
+                                    pos = point;
+                                    freePoint = true;
+                                }
+
                                 var parent = moreBtn;
                                 while (parent && parent != Viewport.viewport) {
                                     pos.x += parent.x;
@@ -889,7 +904,7 @@ TItemDelegate {
                                     parent = parent.parent;
                                 }
 
-                                Viewport.viewport.append(menuComponent, {"pointPad": pos}, "menu");
+                                Viewport.viewport.append(menuComponent, {"pointPad": pos, "freePoint": freePoint}, "menu");
                             }
 
                             Component.onCompleted: moreBtnObj = moreBtn
@@ -905,15 +920,39 @@ TItemDelegate {
         id: menuComponent
         MenuView {
             id: menuItem
-            x: pointPad.x - width
-            y: pointPad.y + (openFromTop? 10 * Devices.density : - height - 10 * Devices.density)
+            x: {
+                if (freePoint) {
+                    if (pointPad.x - width/2 < 0)
+                        return 0;
+                    if (pointPad.x + width/2 > Viewport.viewport.width)
+                        return Viewport.viewport.width - width;
+                    return pointPad.x - width/2;
+                }
+
+                return dis.LayoutMirroring.enabled? pointPad.x : pointPad.x - width;
+            }
+            y: {
+                if (freePoint) {
+                    if (pointPad.y - height/2 < 0)
+                        return 0;
+                    if (pointPad.y + height/2 > Viewport.viewport.height)
+                        return Viewport.viewport.height - height;
+                    return pointPad.y - height/2;
+                }
+
+                return pointPad.y + (openFromTop? 10 * Devices.density : - height - 10 * Devices.density);
+            }
             width: 220 * Devices.density
             ViewportType.transformOrigin: {
+                if (freePoint)
+                    return Qt.point(width/2, height/2);
+
                 var y = openFromTop? 0 : height;
                 var x = dis.LayoutMirroring.enabled? 0 : width;
                 return Qt.point(x, y);
             }
 
+            property bool freePoint
             property point pointPad
             property int index
             property bool openFromTop: pointPad.y < Viewport.viewport.height/2

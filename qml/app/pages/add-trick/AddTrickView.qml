@@ -159,7 +159,6 @@ Item {
 
     Component.onCompleted: {
         imageRequestId = Tools.createUuid();
-        console.debug(":/")
         MyTricksLimits.refresh();
     }
 
@@ -517,9 +516,9 @@ Item {
                 postReq.code = code.text;
                 postReq.highlighter_id = code.themeCombo.model.get(code.themeCombo.currentIndex).id;
                 postReq.programing_language_id = code.definitionCombo.model.get(code.definitionCombo.currentIndex).id;
-//                postReq.code_frame_id = code.darkTheme? 1 : 2;
+                postReq.code_frame_id = code.darkTheme? 1 : 2;
             } else {
-                postReq.code = " ";
+                postReq.code = null;
             }
 
             postReq.type_id = 1;

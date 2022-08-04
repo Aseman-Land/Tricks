@@ -230,12 +230,12 @@ TPage {
                         font.pixelSize: 12 * Devices.fontDensity
                         text: qsTr("Your Tips") + Translations.refresher
                         color: Colors.darkAccent
-                        visible: GlobalSettings.accessToken.length
+                        visible: GlobalSettings.accessToken.length && Bootstrap.volcano
                     }
 
                     RowLayout {
                         spacing: 8 * Devices.density
-                        visible: GlobalSettings.accessToken.length
+                        visible: GlobalSettings.accessToken.length && Bootstrap.volcano
 
                         Rectangle {
                             Layout.leftMargin: 8 * Devices.density
@@ -390,6 +390,7 @@ TPage {
                             RowLayout {
                                 spacing: 4 * Devices.density
                                 enabled: qzxing
+                                visible: Bootstrap.qrLogin
 
                                 TLabel {
                                     Layout.fillWidth: true

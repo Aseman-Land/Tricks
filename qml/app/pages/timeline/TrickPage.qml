@@ -150,7 +150,7 @@ TPage {
                 Item {
                     Layout.preferredWidth: tipsBtn.width
                     Layout.preferredHeight: 2
-                    visible: item.tips_sat > 0
+                    visible: item.tips_sat > 0 && Bootstrap.volcano
 
                     TIconButton {
                         id: tipsBtn

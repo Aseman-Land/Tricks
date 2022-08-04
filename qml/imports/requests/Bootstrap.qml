@@ -22,6 +22,8 @@ AsemanObject {
     readonly property bool aseman: { try { return features.aseman; } catch (e) { return false; } }
     readonly property int defaultCommunity: { try { return features.default_community; } catch (e) { return 1; } }
     readonly property bool initialized: { try { return features.initialized; } catch (e) { return false; } }
+    readonly property bool volcano: { try { return features.volcano; } catch (e) { return false; } }
+    readonly property bool qrLogin: { try { return features.qr_login; } catch (e) { return true; } }
 
     property variant limits
     property variant features
