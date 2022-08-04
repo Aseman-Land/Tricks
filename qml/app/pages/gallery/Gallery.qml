@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import AsemanQml.Base 2.0
 import QtQuick.Controls 2.12
+import components 1.0
 import "private"
 
 Rectangle {
@@ -37,10 +38,17 @@ Rectangle {
         property bool bounded: false
         onCurrentIndexChanged: bounded = false
 
-        delegate: ImageViewer {
+        delegate: Item {
             width: listv.width
             height: listv.height
-            source: roleName.length? model[roleName] : modelData
+
+            TRemoteImage {
+                anchors.fill: parent
+                anchors.margins: 10 * Devices.density
+                remoteUrl: roleName.length? model[roleName] : modelData
+                asynchronous: true
+                fillMode: Image.PreserveAspectFit
+            }
         }
     }
 }
