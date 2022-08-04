@@ -772,6 +772,11 @@ TItemDelegate {
                                     maximumOutput: "#ff000000"
                                     visible: GlobalSettings.forceCodeTheme && (dis.codeFrameIsDark != Colors.darkMode)
                                 }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: Viewport.controller.trigger("activity:/gallery", {"model": [image.remoteUrl]})
+                                }
                             }
                         }
                     }

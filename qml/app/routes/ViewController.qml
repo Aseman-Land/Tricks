@@ -56,6 +56,12 @@ ViewportController {
     }
 
     ViewportControllerRoute {
+        route: /\w+:\/gallery/
+        source: "qrc:/app/pages/gallery/Gallery.qml"
+        viewportType: "activity"
+    }
+
+    ViewportControllerRoute {
         route: /\w+:\/tricks\/tip/
         source: "qrc:/app/pages/timeline/AddTipDialog.qml"
         viewportType: GlobalSettings.viewMode == 2? "bottomdrawer" : "dialog"

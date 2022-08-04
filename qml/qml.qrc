@@ -247,5 +247,7 @@
         <file>imports/requests/DeleteTokensRequest.qml</file>
         <file>imports/requests/GetTokensRequest.qml</file>
         <file>imports/models/TokensModel.qml</file>
+        <file>app/pages/gallery/Gallery.qml</file>
+        <file>app/pages/gallery/private/ImageViewer.qml</file>
     </qresource>
 </RCC>
