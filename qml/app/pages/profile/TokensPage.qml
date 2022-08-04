@@ -47,7 +47,7 @@ TPage {
             }
             delegate: TItemDelegate {
                 width: lview.width
-                implicitHeight: 56 * Devices.density
+                implicitHeight: 60 * Devices.density
                 focusPolicy: Qt.ClickFocus
 
                 RowLayout {
@@ -63,15 +63,24 @@ TPage {
                     }
 
                     ColumnLayout {
-                        spacing: 4 * Devices.density
+                        spacing: 0
 
                         TLabel {
                             Layout.fillWidth: true
                             font.bold: true
+                            text: model.title
+                            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                        }
+
+                        TLabel {
+                            Layout.fillWidth: true
                             text: model.token
                             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             elide: Text.ElideRight
                             maximumLineCount: 1
+                            opacity: 0.7
                         }
 
                         TLabel {
