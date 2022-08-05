@@ -33,11 +33,6 @@ ViewportController {
     }
 
     ViewportControllerRoute {
-        route: /\w+:\/web\/browse/
-        source: "WebBrowserPage.qml"
-    }
-
-    ViewportControllerRoute {
         route: /\w+:\/auth/
         source: "qrc:/app/auth/AuthPage.qml"
         viewportType: GlobalSettings.viewMode == 2? "float" : "popup"

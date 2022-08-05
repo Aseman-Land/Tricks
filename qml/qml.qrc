@@ -18,7 +18,6 @@
         <file>main.qml</file>
         <file>MainWindow.qml</file>
         <file>app/MainPage.qml</file>
-        <file>app/routes/WebBrowserPage.qml</file>
         <file>app/auth/AuthPage.qml</file>
         <file>app/Home.qml</file>
         <file>imports/globals/GlobalSignals.qml</file>
