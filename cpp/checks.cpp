@@ -119,7 +119,7 @@ void Checks::checkLinuxDesktopIcon()
 
 bool Checks::defaultLightHeader()
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
     if (desktop == "ubuntu")
         return true;
@@ -135,7 +135,7 @@ bool Checks::defaultLightHeader()
 
 QColor Checks::defaultLightColor()
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
     if (desktop == "ubuntu")
         return QStringLiteral("#ebebeb");
@@ -157,7 +157,7 @@ QColor Checks::defaultLightColor()
 
 QColor Checks::defaultLightInactiveColor()
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
     if (desktop == "ubuntu")
         return "#fafafa";
@@ -170,7 +170,7 @@ QColor Checks::defaultLightInactiveColor()
 
 QColor Checks::defaultDarkColor()
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
     if (desktop == "ubuntu")
         return QStringLiteral("#222222");
@@ -192,7 +192,7 @@ QColor Checks::defaultDarkColor()
 
 QColor Checks::defaultDarkInactiveColor()
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
     if (desktop == "ubuntu")
         return "#2c2c2c";

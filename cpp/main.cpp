@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("Tricks");
     app.setWindowIcon(QIcon(":/imports/globals/logo.png"));
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     if (!app.arguments().contains("--no-check-desktop-installation"))
         Checks::checkLinuxDesktopIcon();
 #endif
