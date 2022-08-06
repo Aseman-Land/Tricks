@@ -155,6 +155,19 @@ QColor Checks::defaultLightColor()
 #endif
 }
 
+QColor Checks::defaultLightInactiveColor()
+{
+#ifdef Q_OS_LINUX
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return "#fafafa";
+    else
+        return defaultLightColor();
+#else
+    return defaultLightColor();
+#endif
+}
+
 QColor Checks::defaultDarkColor()
 {
 #ifdef Q_OS_LINUX
@@ -174,5 +187,18 @@ QColor Checks::defaultDarkColor()
     return QStringLiteral("#282828");
 #else
     return QStringLiteral("#282828");
+#endif
+}
+
+QColor Checks::defaultDarkInactiveColor()
+{
+#ifdef Q_OS_LINUX
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return "#2c2c2c";
+    else
+        return defaultDarkColor();
+#else
+    return defaultDarkColor();
 #endif
 }

@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("isAndroidStyle", false);
     engine.rootContext()->setContextProperty("defaultLightHeader", Checks::defaultLightHeader());
     engine.rootContext()->setContextProperty("defaultLightColor", Checks::defaultLightColor());
+    engine.rootContext()->setContextProperty("defaultLightInactiveColor", Checks::defaultLightInactiveColor());
     engine.rootContext()->setContextProperty("defaultDarkColor", Checks::defaultDarkColor());
+    engine.rootContext()->setContextProperty("defaultDarkInactiveColor", Checks::defaultDarkInactiveColor());
 
     auto qzxing = false;
 
