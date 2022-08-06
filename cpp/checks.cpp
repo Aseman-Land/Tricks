@@ -125,6 +125,8 @@ bool Checks::defaultLightHeader()
         return true;
     if (desktop == "plasma")
         return true;
+    if (desktop == "gnome")
+        return true;
     return false;
 #else
     return false;
