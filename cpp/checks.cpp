@@ -143,9 +143,9 @@ QColor Checks::defaultLightColor()
     {
         auto res = qApp->palette().color(QPalette::Window);
         if ((res.redF() + res.greenF() + res.blueF())/3 < 0.5) // is dark
-            return QStringLiteral("#282828");
+            return QStringLiteral("#eeeeee");
         else
-            return qApp->palette().color(QPalette::Window);
+            return res;
     }
     return QStringLiteral("#eeeeee");
 #else
@@ -164,10 +164,10 @@ QColor Checks::defaultDarkColor()
     if (desktop == "plasma")
     {
         auto res = qApp->palette().color(QPalette::Window);
-        if ((res.redF() + res.greenF() + res.blueF())/3 >= 0.5) // is dark
-            return QStringLiteral("#eeeeee");
+        if ((res.redF() + res.greenF() + res.blueF())/3 < 0.5) // is dark
+            return res;
         else
-            return qApp->palette().color(QPalette::Window);
+            return QStringLiteral("#282828");
     }
     return QStringLiteral("#282828");
 #else
