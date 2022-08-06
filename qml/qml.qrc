@@ -248,5 +248,6 @@
         <file>imports/models/TokensModel.qml</file>
         <file>app/pages/gallery/Gallery.qml</file>
         <file>app/pages/gallery/private/ImageViewer.qml</file>
+        <file>app/files/dialog-information.png</file>
     </qresource>
 </RCC>

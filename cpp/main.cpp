@@ -7,6 +7,7 @@
 
 #include "appoptions.h"
 #include "trickstools.h"
+#include "checks.h"
 
 #ifdef QZXING_AVAILABLE
 #include "QZXing.h"
@@ -57,7 +58,12 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication app(argc, argv);
+    app.setApplicationName("Tricks");
     app.setWindowIcon(QIcon(":/imports/globals/logo.png"));
+
+#ifdef Q_OS_LINUX
+    Checks::checkLinuxDesktopIcon();
+#endif
 
     QQmlApplicationEngine engine;
     engine.addImportPath(":/imports/");

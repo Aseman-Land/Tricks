@@ -1,4 +1,4 @@
-QT += quick widgets svg asemancore
+QT += quick widgets svg asemancore asemangui
 
 CONFIG += c++17
 
@@ -20,9 +20,11 @@ include(thirdparty/thirdparty.pri)
 
 SOURCES += \
     $$PWD/appoptions.cpp \
+    $$PWD/checks.cpp \
     $$PWD/main.cpp \
     $$PWD/trickstools.cpp
 
 HEADERS += \
     $$PWD/appoptions.h \
+    $$PWD/checks.h \
     $$PWD/trickstools.h
