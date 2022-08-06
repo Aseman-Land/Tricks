@@ -160,7 +160,7 @@ QColor Checks::defaultDarkColor()
 #ifdef Q_OS_LINUX
     auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
     if (desktop == "ubuntu")
-        return QStringLiteral("#282828");
+        return QStringLiteral("#222222");
     if (desktop == "gnome")
         return QStringLiteral("#272727");
     if (desktop == "plasma")
