@@ -35,7 +35,7 @@ void Checks::checkLinuxDesktopIcon()
         return;
 
     auto check = new QCheckBox(QDialog::tr("Do not ask again"));
-    auto label = new QLabel(QDialog::tr("Do you want to install application shortcut to the main meny?"));
+    auto label = new QLabel(QDialog::tr("Do you want to install application shortcut to the main menu?"));
 
     auto labelLayout = new QVBoxLayout;
     labelLayout->addWidget(label);
