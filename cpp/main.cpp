@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(":/imports/globals/logo.png"));
 
 #ifdef Q_OS_LINUX
-    Checks::checkLinuxDesktopIcon();
+    if (!app.arguments().contains("--no-check-desktop-installation"))
+        Checks::checkLinuxDesktopIcon();
 #endif
 
     QQmlApplicationEngine engine;

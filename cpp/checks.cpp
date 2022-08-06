@@ -79,7 +79,7 @@ void Checks::checkLinuxDesktopIcon()
             entries["StartupNotify"] = "true";
             entries["Type"] = "Application";
             entries["Version"] = "1.0";
-            entries["Exec"] = exePath;
+            entries["Exec"] = exePath + " --no-check-desktop-installation";
             entries["Icon"] = QString(pngs.first()).remove(".png");
 
             auto data = QString::fromUtf8(f_in.readAll());
