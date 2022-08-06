@@ -79,6 +79,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("qtVersion", qVersion());
     engine.rootContext()->setContextProperty("testMode", false);
     engine.rootContext()->setContextProperty("isAndroidStyle", false);
+    engine.rootContext()->setContextProperty("defaultLightHeader", Checks::defaultLightHeader());
+    engine.rootContext()->setContextProperty("defaultLightColor", Checks::defaultLightColor());
+    engine.rootContext()->setContextProperty("defaultDarkColor", Checks::defaultDarkColor());
 
     auto qzxing = false;
 

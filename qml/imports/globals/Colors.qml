@@ -18,7 +18,7 @@ QtObject {
 
     readonly property color background: darkMode? "#111" : "#f8f7f8"
     readonly property color backgroundDeep: darkMode? "#333" : "#fff"
-    readonly property color backgroundLight: darkMode? "#282828" : "#eee"
+    readonly property color backgroundLight: darkMode? defaultDarkColor : defaultLightColor
 
     readonly property color header: lightHeader? backgroundLight : primary
     readonly property color headerSecondary: backgroundLight

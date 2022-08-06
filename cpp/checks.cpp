@@ -7,7 +7,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QDir>
-#include <QCoreApplication>
+#include <QApplication>
 #include <QSettings>
 #include <QAsemanApplication>
 #include <QPixmap>
@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QRegExp>
+#include <QPalette>
 
 void Checks::checkLinuxDesktopIcon()
 {
@@ -114,4 +115,62 @@ void Checks::checkLinuxDesktopIcon()
     });
 
     dialog.exec();
+}
+
+bool Checks::defaultLightHeader()
+{
+#ifdef Q_OS_LINUX
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return true;
+    if (desktop == "plasma")
+        return true;
+    return false;
+#else
+    return false;
+#endif
+}
+
+QColor Checks::defaultLightColor()
+{
+#ifdef Q_OS_LINUX
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return QStringLiteral("#ebebeb");
+    if (desktop == "gnome")
+        return QStringLiteral("#d3d1cf");
+    if (desktop == "plasma")
+    {
+        auto res = qApp->palette().color(QPalette::Window);
+        if ((res.redF() + res.greenF() + res.blueF())/3 < 0.5) // is dark
+            return QStringLiteral("#282828");
+        else
+            return qApp->palette().color(QPalette::Window);
+    }
+    return QStringLiteral("#eeeeee");
+#else
+    return QStringLiteral("#eeeeee");
+#endif
+}
+
+QColor Checks::defaultDarkColor()
+{
+#ifdef Q_OS_LINUX
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return QStringLiteral("#282828");
+    if (desktop == "gnome")
+        return QStringLiteral("#272727");
+    if (desktop == "plasma")
+    {
+        auto res = qApp->palette().color(QPalette::Window);
+        if ((res.redF() + res.greenF() + res.blueF())/3 >= 0.5) // is dark
+            return QStringLiteral("#eeeeee");
+        else
+            return qApp->palette().color(QPalette::Window);
+    }
+    return QStringLiteral("#282828");
+#else
+    return QStringLiteral("#282828");
+#endif
 }

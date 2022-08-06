@@ -56,7 +56,7 @@ AsemanObject {
 
     property alias initialized: _settings.initialized
     property alias introDone: _settings.introDone
-    property alias lightHeader: _settings.lightHeader
+    property alias lightHeader: _settings.lightHeaderState
     property alias forceCodeTheme: _settings.forceCodeTheme
     property alias language: _settings.language
     property alias defaultCodeDefinition: _settings.defaultCodeDefinition
@@ -139,7 +139,7 @@ AsemanObject {
         source: AsemanApp.homePath + "/settings.ini"
 
         property bool introDone: false
-        property bool lightHeader: false
+        property bool lightHeaderState: defaultLightHeader
         property bool forceCodeTheme: false
         property int iosTheme: 2
         property int androidTheme: 0
