@@ -133,6 +133,8 @@ bool Checks::defaultLightHeader()
     if (desktop == "gnome")
         return true;
     return false;
+#elif defined(Q_OS_WIN32) || defined(Q_OS_MACOS)
+    return true;
 #else
     return false;
 #endif
