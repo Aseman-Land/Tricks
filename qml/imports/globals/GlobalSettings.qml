@@ -35,6 +35,7 @@ AsemanObject {
     property alias about: _auth.about
     property alias google: _auth.google
     property alias github: _auth.github
+    property alias apple: _auth.apple
     property string userInviteCode: _auth.userInviteCode
 
     property alias googleRegisterSessionId: _auth.googleRegisterSessionId
@@ -42,6 +43,9 @@ AsemanObject {
 
     property alias githubRegisterSessionId: _auth.githubRegisterSessionId
     property alias githubConnectSessionId: _auth.githubConnectSessionId
+
+    property alias appleRegisterSessionId: _auth.appleRegisterSessionId
+    property alias appleConnectSessionId: _auth.appleConnectSessionId
 
     property alias width: _settings.width
     property alias height: _settings.height
@@ -91,6 +95,10 @@ AsemanObject {
         github = false;
         githubRegisterSessionId = "";
         githubConnectSessionId = "";
+
+        apple = false;
+        appleRegisterSessionId = "";
+        appleConnectSessionId = "";
     }
 
     Component.onCompleted: {
@@ -129,6 +137,10 @@ AsemanObject {
         property bool github
         property string githubRegisterSessionId
         property string githubConnectSessionId
+
+        property bool apple
+        property string appleRegisterSessionId
+        property string appleConnectSessionId
 
         property string forgetPasswordEmail
     }

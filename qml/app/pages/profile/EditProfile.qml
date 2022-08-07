@@ -19,6 +19,7 @@ TPage {
     Component.onCompleted: {
         GlobalSettings.googleConnectSessionId = "";
         GlobalSettings.githubConnectSessionId = "";
+        GlobalSettings.appleConnectSessionId = "";
     }
 
     EditProfileRequest {
@@ -49,6 +50,15 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubConnectSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    AppleGetLinkRequest {
+        id: appleReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.appleConnectSessionId = response.result.session_id;
             Qt.openUrlExternally(response.result.authorize_url);
         }
     }
@@ -333,7 +343,7 @@ TPage {
                         Rectangle {
                             Layout.leftMargin: 8 * Devices.density
                             Layout.preferredWidth: 2 * Devices.density
-                            Layout.preferredHeight: 80 * Devices.density
+                            Layout.preferredHeight: 120 * Devices.density
                             color: Colors.accent
                         }
 
@@ -378,6 +388,26 @@ TPage {
                                     materialColor: GlobalSettings.github? Colors.foreground : "#2cb44c"
                                     opacity: enabled? 1 : 0.7
                                     onClicked: githubReq.doRequest()
+                                }
+                            }
+
+                            RowLayout {
+                                spacing: 4 * Devices.density
+                                Layout.topMargin: -10 * Devices.density
+
+                                TLabel {
+                                    Layout.fillWidth: true
+                                    text: qsTr("Apple") + Translations.refresher
+                                }
+
+                                TIconButton {
+                                    enabled: !GlobalSettings.apple
+                                    materialIcon: MaterialIcons.mdi_apple
+                                    materialText: GlobalSettings.apple? qsTr("Connected") : qsTr("Connect") + Translations.refresher
+                                    flat: true
+                                    materialColor: Colors.foreground
+                                    opacity: enabled? 1 : 0.7
+                                    onClicked: appleReq.doRequest()
                                 }
                             }
                         }
