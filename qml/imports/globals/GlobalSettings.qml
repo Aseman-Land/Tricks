@@ -58,7 +58,7 @@ AsemanObject {
     property alias communityId: _settings.communityId
     property int homeTabIndex
 
-    property alias initialized: _settings.initialized
+    property alias initializedVersion: _settings.initializedVersion
     property alias introDone: _settings.introDone
     property alias lightHeader: _settings.lightHeader
     property alias forceCodeTheme: _settings.forceCodeTheme
@@ -102,10 +102,14 @@ AsemanObject {
     }
 
     Component.onCompleted: {
-        if (!initialized) {
+        switch (initializedVersion) {
+        case 0:
             ignoreSslErrorsPerment = App.ignoreSslErrors;
-            initialized = true;
+            lightHeader = defaultLightHeader
+            break;
         }
+
+        initializedVersion = 1;
     }
 
     HashObject {
@@ -158,7 +162,7 @@ AsemanObject {
         property bool allowNotifications: false
         property bool notificationAsked: false
 
-        property bool initialized: false
+        property int initializedVersion: 0
         property bool ignoreSslErrorsPerment: false
 
         property real width: 900

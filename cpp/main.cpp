@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("Tricks");
     app.setWindowIcon(QIcon(":/imports/globals/logo.png"));
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     if (!app.arguments().contains("--no-check-desktop-installation"))
         Checks::checkLinuxDesktopIcon();
 #endif
@@ -79,6 +79,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("qtVersion", qVersion());
     engine.rootContext()->setContextProperty("testMode", false);
     engine.rootContext()->setContextProperty("isAndroidStyle", false);
+    engine.rootContext()->setContextProperty("defaultLightHeader", Checks::defaultLightHeader());
+    engine.rootContext()->setContextProperty("defaultLightColor", Checks::defaultLightColor());
+    engine.rootContext()->setContextProperty("defaultLightInactiveColor", Checks::defaultLightInactiveColor());
+    engine.rootContext()->setContextProperty("defaultDarkColor", Checks::defaultDarkColor());
+    engine.rootContext()->setContextProperty("defaultDarkInactiveColor", Checks::defaultDarkInactiveColor());
 
     auto qzxing = false;
 

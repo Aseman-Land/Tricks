@@ -7,7 +7,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QDir>
-#include <QCoreApplication>
+#include <QApplication>
 #include <QSettings>
 #include <QAsemanApplication>
 #include <QPixmap>
@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QRegExp>
+#include <QPalette>
 
 void Checks::checkLinuxDesktopIcon()
 {
@@ -35,7 +36,7 @@ void Checks::checkLinuxDesktopIcon()
         return;
 
     auto check = new QCheckBox(QDialog::tr("Do not ask again"));
-    auto label = new QLabel(QDialog::tr("Do you want to install application shortcut to the main meny?"));
+    auto label = new QLabel(QDialog::tr("Do you want to install application shortcut to the main menu?"));
 
     auto labelLayout = new QVBoxLayout;
     labelLayout->addWidget(label);
@@ -114,4 +115,90 @@ void Checks::checkLinuxDesktopIcon()
     });
 
     dialog.exec();
+}
+
+bool Checks::defaultLightHeader()
+{
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return true;
+    if (desktop == "plasma")
+        return true;
+    if (desktop == "gnome")
+        return true;
+    return false;
+#else
+    return false;
+#endif
+}
+
+QColor Checks::defaultLightColor()
+{
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return QStringLiteral("#ebebeb");
+    if (desktop == "gnome")
+        return QStringLiteral("#d3d1cf");
+    if (desktop == "plasma")
+    {
+        auto res = qApp->palette().color(QPalette::Window);
+        if ((res.redF() + res.greenF() + res.blueF())/3 < 0.5) // is dark
+            return QStringLiteral("#eeeeee");
+        else
+            return res;
+    }
+    return QStringLiteral("#eeeeee");
+#else
+    return QStringLiteral("#eeeeee");
+#endif
+}
+
+QColor Checks::defaultLightInactiveColor()
+{
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return "#fafafa";
+    else
+        return defaultLightColor();
+#else
+    return defaultLightColor();
+#endif
+}
+
+QColor Checks::defaultDarkColor()
+{
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return QStringLiteral("#222222");
+    if (desktop == "gnome")
+        return QStringLiteral("#272727");
+    if (desktop == "plasma")
+    {
+        auto res = qApp->palette().color(QPalette::Window);
+        if ((res.redF() + res.greenF() + res.blueF())/3 < 0.5) // is dark
+            return res;
+        else
+            return QStringLiteral("#282828");
+    }
+    return QStringLiteral("#282828");
+#else
+    return QStringLiteral("#282828");
+#endif
+}
+
+QColor Checks::defaultDarkInactiveColor()
+{
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    auto desktop = qEnvironmentVariable("DESKTOP_SESSION");
+    if (desktop == "ubuntu")
+        return "#2c2c2c";
+    else
+        return defaultDarkColor();
+#else
+    return defaultDarkColor();
+#endif
 }
