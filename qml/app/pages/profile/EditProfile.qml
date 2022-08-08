@@ -42,7 +42,7 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.googleConnectSessionId = response.result.session_id;
-            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+            if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
             else
                 Qt.openUrlExternally(response.result.authorize_url);
@@ -54,7 +54,7 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubConnectSessionId = response.result.session_id;
-            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+            if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
             else
                 Qt.openUrlExternally(response.result.authorize_url);
@@ -66,7 +66,7 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.appleConnectSessionId = response.result.session_id;
-            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+            if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
             else
                 Qt.openUrlExternally(response.result.authorize_url);

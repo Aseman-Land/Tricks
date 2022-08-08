@@ -27,6 +27,7 @@ AsemanObject {
     readonly property bool appleSignIn: { try { if (features.appleSignIn == undefined) throw "error";return features.appleSignIn; } catch (e) { return false; } }
     readonly property bool googleSignIn: { try { if (features.googleSignIn == undefined) throw "error";return features.googleSignIn; } catch (e) { return !Devices.isIOS; } }
     readonly property bool githubSignIn: { try { if (features.githubSignIn == undefined) throw "error"; return features.githubSignIn; } catch (e) { return !Devices.isIOS; } }
+    readonly property bool bultInBrowser: { try { if (features.bultInBrowser == undefined) throw "error"; return features.bultInBrowser; } catch (e) { return Devices.isIOS; } }
 
     property variant limits
     property variant features

@@ -45,7 +45,7 @@ Page {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.googleRegisterSessionId = response.result.session_id;
-            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+            if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
             else
                 Qt.openUrlExternally(response.result.authorize_url);
@@ -57,7 +57,7 @@ Page {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubRegisterSessionId = response.result.session_id;
-            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+            if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
             else
                 Qt.openUrlExternally(response.result.authorize_url);
@@ -69,7 +69,7 @@ Page {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.appleRegisterSessionId = response.result.session_id;
-            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+            if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
             else
                 Qt.openUrlExternally(response.result.authorize_url);
