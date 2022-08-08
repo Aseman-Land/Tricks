@@ -28,7 +28,7 @@ Item {
         anchors.centerIn: parent
         font.family: MaterialIcons.family
         font.pixelSize: 12 * Devices.fontDensity
-        color: "#ffffff"
+        color: Colors.darkMode || !GlobalSettings.lightHeader? "#ffffff" : "#333333"
         text: MaterialIcons.mdi_close
     }
 

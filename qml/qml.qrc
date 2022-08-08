@@ -250,5 +250,9 @@
         <file>app/pages/gallery/private/ImageViewer.qml</file>
         <file>app/files/dialog-information.png</file>
         <file>imports/components/TWindowMovable.qml</file>
+        <file>imports/requests/AppleCheckStateRequest.qml</file>
+        <file>imports/requests/AppleConnectRequest.qml</file>
+        <file>imports/requests/AppleGetLinkRequest.qml</file>
+        <file>imports/requests/AppleRegisterRequest.qml</file>
     </qresource>
 </RCC>

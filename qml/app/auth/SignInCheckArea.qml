@@ -36,6 +36,21 @@ Item {
         }
     }
 
+    AppleCheckStateRequest {
+        id: appleCheckReq
+        session_id: GlobalSettings.appleRegisterSessionId
+        onErrorChanged: if (error.length) GlobalSettings.appleRegisterSessionId = "";
+        onSuccessfull: {
+            if (response.result.register_token) {
+                Viewport.controller.trigger("float:/auth/signup", {"appleRegisterToken": response.result.register_token});
+            } else {
+                GlobalSettings.loggedInWithoutPassword = true;
+                GlobalSettings.accessToken = response.result.access_token;
+            }
+            GlobalSettings.appleRegisterSessionId = "";
+        }
+    }
+
     GoogleCheckStateRequest {
         id: googleConnectCheckReq
         session_id: GlobalSettings.googleConnectSessionId
@@ -66,6 +81,21 @@ Item {
         }
     }
 
+    AppleCheckStateRequest {
+        id: appleConnectCheckReq
+        session_id: GlobalSettings.appleConnectSessionId
+        onErrorChanged: if (error.length) GlobalSettings.appleConnectSessionId = "";
+        onSuccessfull: {
+            if (response.result.register_token) {
+                appleConnectReq.register_token = response.result.register_token;
+                appleConnectReq.doRequest();
+            } else {
+                GlobalSignals.fatalRequest(qsTr("This account assigned to another account. You can't assign it to your account."))
+            }
+            GlobalSettings.appleConnectSessionId = "";
+        }
+    }
+
     GoogleConnectRequest {
         id: googleConnectReq
         allowGlobalBusy: true
@@ -84,6 +114,15 @@ Item {
         }
     }
 
+    AppleConnectRequest {
+        id: appleConnectReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSignals.reloadMeRequest();
+            GlobalSignals.snackRequest(qsTr("Apple account connected successfully."));
+        }
+    }
+
     Connections {
         target: GlobalSignals
         function onUnsuspend() {
@@ -95,6 +134,10 @@ Item {
                 githubCheckReq.allowGlobalBusy = true;
                 githubCheckReq.doRequest();
             }
+            if (appleCheckReq.session_id.length != 0) {
+                appleCheckReq.allowGlobalBusy = true;
+                appleCheckReq.doRequest();
+            }
             if (googleConnectCheckReq.session_id.length != 0) {
                 googleConnectCheckReq.allowGlobalBusy = true;
                 googleConnectCheckReq.doRequest();
@@ -102,6 +145,10 @@ Item {
             if (githubConnectCheckReq.session_id.length != 0) {
                 githubConnectCheckReq.allowGlobalBusy = true;
                 githubConnectCheckReq.doRequest();
+            }
+            if (appleConnectCheckReq.session_id.length != 0) {
+                appleConnectCheckReq.allowGlobalBusy = true;
+                appleConnectCheckReq.doRequest();
             }
         }
     }

@@ -25,6 +25,7 @@ AsemanObject {
     property int agreement_version
     property int github
     property int google
+    property int apple
 
     property variant details: Tools.toVariantMap("{}")
 

@@ -11,14 +11,18 @@
 #include <QSettings>
 #include <QAsemanApplication>
 #include <QPixmap>
-#include <QProcess>
 #include <QMessageBox>
 #include <QDebug>
 #include <QRegExp>
 #include <QPalette>
 
+#ifndef Q_OS_IOS
+#include <QProcess>
+#endif
+
 void Checks::checkLinuxDesktopIcon()
 {
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     auto exePath = qApp->applicationFilePath();
     if (qEnvironmentVariableIsSet("APPIMAGE"))
         exePath = qEnvironmentVariable("APPIMAGE");
@@ -115,6 +119,7 @@ void Checks::checkLinuxDesktopIcon()
     });
 
     dialog.exec();
+#endif
 }
 
 bool Checks::defaultLightHeader()
@@ -128,6 +133,8 @@ bool Checks::defaultLightHeader()
     if (desktop == "gnome")
         return true;
     return false;
+#elif defined(Q_OS_WIN32) || defined(Q_OS_MACOS)
+    return true;
 #else
     return false;
 #endif

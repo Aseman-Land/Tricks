@@ -164,6 +164,7 @@ TPage {
             try {
                 GlobalSettings.google = response.result.google;
                 GlobalSettings.github = response.result.github;
+                GlobalSettings.apple = response.result.apple;
             } catch (e) {}
             try {
                 GlobalSettings.userInviteCode = response.result.invitation_code;

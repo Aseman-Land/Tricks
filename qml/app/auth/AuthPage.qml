@@ -19,6 +19,7 @@ TPage {
     Component.onCompleted: {
         GlobalSettings.googleRegisterSessionId = "";
         GlobalSettings.githubRegisterSessionId = "";
+        GlobalSettings.appleRegisterSessionId = "";
     }
 
     LoginRequest {
@@ -45,6 +46,15 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubRegisterSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    AppleGetLinkRequest {
+        id: appleReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.appleRegisterSessionId = response.result.session_id;
             Qt.openUrlExternally(response.result.authorize_url);
         }
     }
@@ -320,6 +330,19 @@ TPage {
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
                             onClicked: githubReq.doRequest()
+                        }
+
+                        TIconButton {
+                            id: appleBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("Apple") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_apple
+                            materialBold: true
+                            materialColor: Colors.foreground
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: appleReq.doRequest()
                         }
                     }
                 }

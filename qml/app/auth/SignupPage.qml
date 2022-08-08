@@ -19,7 +19,7 @@ Page {
 
     function signupSuccessfull(accessToken) {
         GlobalSettings.introDone = false;
-        GlobalSettings.loggedInWithoutPassword = (googleRegisterToken.length || githubRegisterToken.length);
+        GlobalSettings.loggedInWithoutPassword = (googleRegisterToken.length || githubRegisterToken.length || appleRegisterToken.length);
         GlobalSettings.accessToken = accessToken;
     }
 
@@ -31,8 +31,13 @@ Page {
         githubReq.doRequest();
     }
 
+    function appleSignupRequest() {
+        appleReq.doRequest();
+    }
+
     property alias googleRegisterToken: googleRegReq.google_register_token
     property alias githubRegisterToken: githubRegReq.github_register_token
+    property alias appleRegisterToken: appleRegReq.apple_register_token
 
     GoogleGetLinkRequest {
         id: googleReq
@@ -48,6 +53,15 @@ Page {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubRegisterSessionId = response.result.session_id;
+            Qt.openUrlExternally(response.result.authorize_url);
+        }
+    }
+
+    AppleGetLinkRequest {
+        id: appleReq
+        allowGlobalBusy: true
+        onSuccessfull: {
+            GlobalSettings.appleRegisterSessionId = response.result.session_id;
             Qt.openUrlExternally(response.result.authorize_url);
         }
     }
@@ -98,6 +112,18 @@ Page {
         }
     }
 
+    AppleRegisterRequest {
+        id: appleRegReq
+        allowGlobalBusy: true
+        username: userLbl.text.toLowerCase()
+        fullname: nameLbl.text
+        agreement_version: Bootstrap.agreement.version
+        onSuccessfull: {
+            dis.ViewportType.open = false;
+            signupSuccessfull(response.result.access_token);
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
@@ -127,7 +153,7 @@ Page {
                     id: columnLyt
                     width: parent.width * 0.6
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: googleRegisterToken.length == 0 && githubRegisterToken.length == 0? 0 : -50 * Devices.density
+                    anchors.verticalCenterOffset: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0? 0 : -50 * Devices.density
                     spacing: 4 * Devices.density
 
                     TLabel {
@@ -137,6 +163,8 @@ Page {
                             if (googleRegisterToken.length)
                                 return qsTr("Complete Registration") + Translations.refresher;
                             if (githubRegisterToken.length)
+                                return qsTr("Complete Registration") + Translations.refresher;
+                            if (appleRegisterToken.length)
                                 return qsTr("Complete Registration") + Translations.refresher;
                             return qsTr("Register") + Translations.refresher;
                         }
@@ -183,7 +211,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
-                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
                         minimumCharacters: Bootstrap.user.password_min_length
                         maximumCharacters: Bootstrap.user.password_max_length
                         inputMethodHints: Qt.ImhNoPredictiveText
@@ -236,7 +264,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
-                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
                         validator: RegExpValidator { regExp: /[a-z0-9\._]+\@[a-z0-9\._]+/ }
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
                         onAccepted: (invitationLbl.visible? invitationLbl : passLbl).focus = true
@@ -264,7 +292,7 @@ Page {
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                        visible: Bootstrap.signup.invitation_code && googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+                        visible: Bootstrap.signup.invitation_code && googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
                         onAccepted: passLbl.focus = true
 
                         TLabel {
@@ -302,6 +330,9 @@ Page {
                                     if (githubRegisterToken.length)
                                         githubRegReq.doRequest();
                                     else
+                                    if (appleRegisterToken.length)
+                                        appleRegReq.doRequest();
+                                    else
                                         regReq.doRequest(passLbl.text);
                                 });
                             }
@@ -321,7 +352,7 @@ Page {
 
                     RowLayout {
                         Layout.topMargin: 6 * Devices.density
-                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
 
                         THListSeprator {
                             opacity: 1
@@ -344,7 +375,7 @@ Page {
                         spacing: 6 * Devices.density
                         Layout.alignment: Qt.AlignHCenter
                         Layout.fillWidth: true
-                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0
+                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
 
                         TIconButton {
                             id: googleBtn
@@ -370,6 +401,19 @@ Page {
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
                             onClicked: githubSignupRequest()
+                        }
+
+                        TIconButton {
+                            id: appleBtn
+                            Layout.alignment: Qt.AlignHCenter
+                            materialText: qsTr("Apple") + Translations.refresher
+                            materialIcon: MaterialIcons.mdi_apple
+                            materialBold: true
+                            materialColor: Colors.foreground
+                            highlighted: true
+                            flat: true
+                            font.pixelSize: 9 * Devices.fontDensity
+                            onClicked: appleSignupRequest()
                         }
                     }
                 }
