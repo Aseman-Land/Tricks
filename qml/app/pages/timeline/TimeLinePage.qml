@@ -217,13 +217,14 @@ TPage {
             TLabel {
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 10 * Devices.fontDensity
+                visible: text.length
                 text: {
                     if (GlobalSettings.homeCurrentTag.length)
                         return GlobalSettings.homeCurrentTag;
 
                     switch (GlobalSettings.homeTabIndex) {
                     case 0:
-                        return Bootstrap.title;
+                        return qsTr("Home") + Translations.refresher;
                     case 1:
                         return qsTr("Global") + Translations.refresher;
                     case 2:

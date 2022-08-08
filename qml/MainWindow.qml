@@ -14,8 +14,8 @@ import "app"
 
 AsemanWindow {
     id: mwin
-    width: GlobalSettings.width;    onWidthChanged: GlobalSettings.width = width;
-    height: GlobalSettings.height;  onHeightChanged: GlobalSettings.height = height;
+    width: 800;    onWidthChanged: GlobalSettings.width = width;
+    height: 600;  onHeightChanged: GlobalSettings.height = height;
     flags: GlobalSettings.frameless? Qt.FramelessWindowHint | Qt.Window : Qt.Window
     color: GlobalSettings.frameless? "#00000000" : Colors.background
 
@@ -77,6 +77,7 @@ AsemanWindow {
                 id: marea
                 anchors.fill: parent
                 visible: GlobalSettings.frameless
+                onDoubleClicked: mwin.visibility == Window.Maximized? mwin.showNormal() : mwin.showMaximized()
                 onPressed: {
                     pin = Qt.point(mouseX, mouseY);
                 }
@@ -111,40 +112,9 @@ AsemanWindow {
         }
     }
 
-    MouseArea {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 6 * Devices.density
-        cursorShape: Qt.SizeVerCursor
+    TWindowMovable {
+        anchors.fill: parent
         visible: GlobalSettings.frameless
-        onMouseYChanged: {
-            mwin.height = y + mouseY;
-        }
-    }
-
-    MouseArea {
-        x: parent.width - width
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: 6 * Devices.density
-        cursorShape: Qt.SizeHorCursor
-        visible: GlobalSettings.frameless
-        onPositionChanged: {
-            mwin.width = x + mouseX;
-        }
-    }
-
-    MouseArea {
-        x: parent.width - width
-        anchors.bottom: parent.bottom
-        width: 6 * Devices.density
-        height: 6 * Devices.density
-        cursorShape: Qt.SizeFDiagCursor
-        visible: GlobalSettings.frameless
-        onPositionChanged: {
-            mwin.height = y + mouseY;
-            mwin.width = x + mouseX;
-        }
+        mWin: mwin
     }
 }
