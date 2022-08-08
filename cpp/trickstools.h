@@ -20,6 +20,8 @@ public Q_SLOTS:
     QString removeTagsAndLinks(const QString &text, const QStringList &tags, const QVariantList &links);
     static int directionOf(const QString &str);
 
+    bool iosOpenUrl(const QString &url);
+
 protected:
     QString linkName(const QString &name);
 };

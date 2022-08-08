@@ -1,7 +1,6 @@
 #ifndef MACMANAGER_H
 #define MACMANAGER_H
 
-
 #include <QGuiApplication>
 #include <QWindow>
 

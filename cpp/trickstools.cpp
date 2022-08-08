@@ -5,6 +5,9 @@
 #ifdef Q_OS_MACX
 #include "objective-c/macmanager.h"
 #endif
+#ifdef Q_OS_IOS
+#include "objective-c/iosmanager.h"
+#endif
 
 TricksTools::TricksTools(QObject *parent) :
     QObject(parent)
@@ -126,4 +129,15 @@ int TricksTools::directionOf(const QString &str)
         res = Qt::RightToLeft;
 
     return res;
+}
+
+bool TricksTools::iosOpenUrl(const QString &url)
+{
+#ifdef Q_OS_IOS
+    return IOSManager::openUrlInSafari(url);
+#else
+    Q_UNUSED(url)
+    return false;
+#endif
+
 }

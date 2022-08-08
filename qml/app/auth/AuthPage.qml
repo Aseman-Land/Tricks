@@ -7,6 +7,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.IOSStyle 2.0
 import QtQuick.Controls.Material 2.0
+import Tricks 1.0
 import globals 1.0
 import components 1.0
 import requests 1.0
@@ -37,7 +38,10 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.googleRegisterSessionId = response.result.session_id;
-            Qt.openUrlExternally(response.result.authorize_url);
+            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+                GlobalSignals.unsuspend();
+            else
+                Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
@@ -46,7 +50,10 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubRegisterSessionId = response.result.session_id;
-            Qt.openUrlExternally(response.result.authorize_url);
+            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+                GlobalSignals.unsuspend();
+            else
+                Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
@@ -55,7 +62,10 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.appleRegisterSessionId = response.result.session_id;
-            Qt.openUrlExternally(response.result.authorize_url);
+            if (Devices.isIOS)
+                TricksTools.iosOpenUrl(response.result.authorize_url);
+            else
+                Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 

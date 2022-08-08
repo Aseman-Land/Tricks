@@ -4,6 +4,7 @@ import AsemanQml.Controls 2.0
 import AsemanQml.Viewport 2.0
 import AsemanQml.MaterialIcons 2.0
 import QtQuick.Layouts 1.3
+import Tricks 1.0
 import components 1.0
 import models 1.0
 import requests 1.0
@@ -41,7 +42,10 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.googleConnectSessionId = response.result.session_id;
-            Qt.openUrlExternally(response.result.authorize_url);
+            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+                GlobalSignals.unsuspend();
+            else
+                Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
@@ -50,7 +54,10 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.githubConnectSessionId = response.result.session_id;
-            Qt.openUrlExternally(response.result.authorize_url);
+            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+                GlobalSignals.unsuspend();
+            else
+                Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
@@ -59,7 +66,10 @@ TPage {
         allowGlobalBusy: true
         onSuccessfull: {
             GlobalSettings.appleConnectSessionId = response.result.session_id;
-            Qt.openUrlExternally(response.result.authorize_url);
+            if (Devices.isIOS && TricksTools.iosOpenUrl(response.result.authorize_url))
+                GlobalSignals.unsuspend();
+            else
+                Qt.openUrlExternally(response.result.authorize_url);
         }
     }
 
