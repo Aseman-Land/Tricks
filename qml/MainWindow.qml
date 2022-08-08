@@ -14,8 +14,8 @@ import "app"
 
 AsemanWindow {
     id: mwin
-    width: 800;    onWidthChanged: GlobalSettings.width = width;
-    height: 600;  onHeightChanged: GlobalSettings.height = height;
+    width: GlobalSettings.width;    onWidthChanged: GlobalSettings.width = width;
+    height: GlobalSettings.height;  onHeightChanged: GlobalSettings.height = height;
     flags: GlobalSettings.frameless? Qt.FramelessWindowHint | Qt.Window : Qt.Window
     color: GlobalSettings.frameless? "#00000000" : Colors.background
 
