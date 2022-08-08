@@ -335,10 +335,13 @@ TPage {
                         font.pixelSize: 12 * Devices.fontDensity
                         text: qsTr("Authentication Methods") + Translations.refresher
                         color: Colors.accent
+                        visible: authMethodsRow.visible
                     }
 
                     RowLayout {
+                        id: authMethodsRow
                         spacing: 8 * Devices.density
+                        visible: Bootstrap.appleSignIn || Bootstrap.googleSignIn || Bootstrap.githubSignIn
 
                         Rectangle {
                             Layout.leftMargin: 8 * Devices.density
@@ -354,6 +357,7 @@ TPage {
                             RowLayout {
                                 spacing: 4 * Devices.density
                                 Layout.topMargin: -10 * Devices.density
+                                visible: Bootstrap.googleSignIn
 
                                 TLabel {
                                     Layout.fillWidth: true
@@ -374,6 +378,7 @@ TPage {
                             RowLayout {
                                 spacing: 4 * Devices.density
                                 Layout.topMargin: -10 * Devices.density
+                                visible: Bootstrap.githubSignIn
 
                                 TLabel {
                                     Layout.fillWidth: true
@@ -394,6 +399,7 @@ TPage {
                             RowLayout {
                                 spacing: 4 * Devices.density
                                 Layout.topMargin: -10 * Devices.density
+                                visible: Bootstrap.appleSignIn
 
                                 TLabel {
                                     Layout.fillWidth: true

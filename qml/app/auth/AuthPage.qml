@@ -251,6 +251,7 @@ TPage {
                     }
 
                     RowLayout {
+                        visible: flow.visible
                         Layout.topMargin: 6 * Devices.density
 
                         THListSeprator {
@@ -271,9 +272,11 @@ TPage {
                     }
 
                     Flow {
+                        id: flow
                         spacing: 6 * Devices.density
                         Layout.alignment: Qt.AlignHCenter
                         Layout.fillWidth: true
+                        visible: Bootstrap.appleSignIn || Bootstrap.googleSignIn || Bootstrap.githubSignIn || (qzxing && Bootstrap.qrLogin)
 
                         TIconButton {
                             id: qrBtn
@@ -316,6 +319,7 @@ TPage {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: Bootstrap.googleSignIn
                             onClicked: googleReq.doRequest()
                         }
 
@@ -329,6 +333,7 @@ TPage {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: Bootstrap.githubSignIn
                             onClicked: githubReq.doRequest()
                         }
 
@@ -342,6 +347,7 @@ TPage {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: Bootstrap.appleSignIn
                             onClicked: appleReq.doRequest()
                         }
                     }

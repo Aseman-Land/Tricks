@@ -352,7 +352,7 @@ Page {
 
                     RowLayout {
                         Layout.topMargin: 6 * Devices.density
-                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
+                        visible: flow.visible
 
                         THListSeprator {
                             opacity: 1
@@ -372,10 +372,11 @@ Page {
                     }
 
                     Flow {
+                        id: flow
                         spacing: 6 * Devices.density
                         Layout.alignment: Qt.AlignHCenter
                         Layout.fillWidth: true
-                        visible: googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
+                        visible: (Bootstrap.appleSignIn || Bootstrap.googleSignIn || Bootstrap.githubSignIn) && googleRegisterToken.length == 0 && githubRegisterToken.length == 0 && appleRegisterToken.length == 0
 
                         TIconButton {
                             id: googleBtn
@@ -387,6 +388,7 @@ Page {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: Bootstrap.googleSignIn
                             onClicked: googleSignupRequest()
                         }
 
@@ -400,6 +402,7 @@ Page {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: Bootstrap.githubSignIn
                             onClicked: githubSignupRequest()
                         }
 
@@ -413,6 +416,7 @@ Page {
                             highlighted: true
                             flat: true
                             font.pixelSize: 9 * Devices.fontDensity
+                            visible: Bootstrap.appleSignIn
                             onClicked: appleSignupRequest()
                         }
                     }
