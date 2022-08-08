@@ -161,8 +161,8 @@ TPage {
             }
         }
 
-        IOSStyle.theme: Colors.lightHeader && cover.length == 0? IOSStyle.theme : IOSStyle.Dark
-        Material.theme: Colors.lightHeader && cover.length == 0? Material.theme : Material.Dark
+        IOSStyle.theme: Colors.headerIsDark || cover.length != 0? IOSStyle.Dark : IOSStyle.Light
+        Material.theme: Colors.headerIsDark || cover.length != 0? Material.Dark : Material.Light
         color: cover.length? "transparent" : Colors.header
     }
 
