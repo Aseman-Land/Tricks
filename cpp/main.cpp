@@ -8,6 +8,7 @@
 #include "appoptions.h"
 #include "trickstools.h"
 #include "checks.h"
+#include "systemcolors.h"
 
 #ifdef QZXING_AVAILABLE
 #include "QZXing.h"
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
 #endif
 
     qmlRegisterType<AppOptions>("Tricks", 1, 0, "AppOptions");
+    qmlRegisterType<SystemColors>("Tricks", 1, 0, "SystemColors");
     qmlRegisterSingletonType<TricksTools>("Tricks", 1, 0, "TricksTools", create_trickstoole_singleton);
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     qmlRegisterType(QUrl("qrc:/imports/components/TScrollViewMobile.qml"), "components", 1, 0, "TScrollView");
@@ -79,11 +81,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("qtVersion", qVersion());
     engine.rootContext()->setContextProperty("testMode", false);
     engine.rootContext()->setContextProperty("isAndroidStyle", false);
-    engine.rootContext()->setContextProperty("defaultLightHeader", Checks::defaultLightHeader());
-    engine.rootContext()->setContextProperty("defaultLightColor", Checks::defaultLightColor());
-    engine.rootContext()->setContextProperty("defaultLightInactiveColor", Checks::defaultLightInactiveColor());
-    engine.rootContext()->setContextProperty("defaultDarkColor", Checks::defaultDarkColor());
-    engine.rootContext()->setContextProperty("defaultDarkInactiveColor", Checks::defaultDarkInactiveColor());
+    engine.rootContext()->setContextProperty("defaultLightHeader", SystemColors::defaultLightHeader());
 
     auto qzxing = false;
 

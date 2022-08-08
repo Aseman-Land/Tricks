@@ -62,6 +62,7 @@ AsemanObject {
     property alias introDone: _settings.introDone
     property alias lightHeader: _settings.lightHeader
     property alias forceCodeTheme: _settings.forceCodeTheme
+    property alias defaultUIColor: _settings.defaultUIColor
     property alias language: _settings.language
     property alias defaultCodeDefinition: _settings.defaultCodeDefinition
     property alias defaultCodeTheme: _settings.defaultCodeTheme
@@ -169,6 +170,7 @@ AsemanObject {
         property real height: 680
 
         property string language: "en"
+        property string defaultUIColor
 
         property string defaultCodeDefinition: "C++"
         property string defaultCodeTheme: "Breeze Light"

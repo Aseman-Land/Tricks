@@ -32,7 +32,10 @@ AsemanWindow {
     LayoutMirroring.enabled: GTranslations.reverseLayout
     LayoutMirroring.childrenInherit: true
 
-    Component.onCompleted: GlobalMethods.window = mwin
+    Component.onCompleted: {
+        GlobalMethods.window = mwin;
+        Colors.window = mwin;
+    }
 
     FastRectengleShadow {
         anchors.fill: mainScene

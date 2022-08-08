@@ -258,8 +258,8 @@ TPage {
             height: 38 * Devices.density
             visible: GlobalSettings.homeTabIndex == 1 && GlobalSettings.viewMode == 2
             onSearchRequest: dis.keyword = GlobalMethods.fixUrlProperties(keyword)
-            IOSStyle.theme: Colors.lightHeader && !Colors.darkMode? IOSStyle.Light : IOSStyle.Dark
-            Material.theme: Colors.lightHeader && !Colors.darkMode? Material.Light : Material.Dark
+            IOSStyle.theme: Colors.headerIsDark? IOSStyle.Dark : IOSStyle.Light
+            Material.theme: Colors.headerIsDark? Material.Dark : Material.Light
         }
 
         TAvatar {

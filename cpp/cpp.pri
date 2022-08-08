@@ -22,9 +22,11 @@ SOURCES += \
     $$PWD/appoptions.cpp \
     $$PWD/checks.cpp \
     $$PWD/main.cpp \
+    $$PWD/systemcolors.cpp \
     $$PWD/trickstools.cpp
 
 HEADERS += \
     $$PWD/appoptions.h \
     $$PWD/checks.h \
+    $$PWD/systemcolors.h \
     $$PWD/trickstools.h

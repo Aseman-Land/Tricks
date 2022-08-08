@@ -168,7 +168,7 @@ TPage {
 
                                 TLabel {
                                     Layout.fillWidth: true
-                                    text: qsTr("Color Header") + Translations.refresher
+                                    text: Devices.isLinux && Devices.isDesktop? qsTr("Static Header Color") : qsTr("Color Header") + Translations.refresher
                                 }
 
                                 TSwitch {

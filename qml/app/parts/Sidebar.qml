@@ -27,8 +27,8 @@ EscapeItem {
         anchors.right: parent.right
         height: Constants.headerHeight
 
-        IOSStyle.theme: (GlobalSettings.viewMode == 2 || Colors.lightHeader) && !Colors.darkMode? IOSStyle.Light : IOSStyle.Dark
-        Material.theme: (GlobalSettings.viewMode == 2 || Colors.lightHeader) && !Colors.darkMode? Material.Light : Material.Dark
+        IOSStyle.theme: Colors.headerIsDark? IOSStyle.Dark : IOSStyle.Light
+        Material.theme: Colors.headerIsDark? Material.Dark : Material.Light
 
         TSearchField {
             anchors.left: parent.left
