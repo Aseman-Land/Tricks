@@ -7,14 +7,16 @@ AsemanObject {
     property int dailyPostLimit: 0
 
     function init() {
-        Tools.jsDelayCall(100, refresh);
+        refresh();
     }
 
     function refresh() {
-        if (req.refreshing)
-            return;
+        Tools.jsDelayCall(100, function(){
+            if (req.refreshing)
+                return;
 
-        req.doRequest();
+            req.doRequest();
+        });
     }
 
     GetMyTricksLimitsRequest {
