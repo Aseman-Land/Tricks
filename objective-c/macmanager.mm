@@ -7,14 +7,14 @@ void MacManager::removeTitlebarFromWindow(double r, double g, double b)
     QWindow* win = windows.first();
     long winId = win->winId();
 
-    NSView *nativeView = reinterpret_cast<NSView *>(winId);
-    NSWindow* nativeWindow = [nativeView window];
+    auto nativeView = reinterpret_cast<NSView *>(winId);
+    auto nativeWindow = [nativeView window];
 
     nativeWindow.titlebarAppearsTransparent=YES;
     nativeWindow.titleVisibility = NSWindowTitleHidden;
 
-    NSColor *myColor = [NSColor colorWithRed:r green:g blue:b alpha:1.0f];
-    nativeWindow.backgroundColor = myColor;
+    auto color = [NSColor colorWithRed:r green:g blue:b alpha:1.0f];
+    nativeWindow.backgroundColor = color;
 
     [nativeWindow setStyleMask:[nativeWindow styleMask] | NSWindowTitleHidden];
     [nativeWindow setTitlebarAppearsTransparent:YES];
