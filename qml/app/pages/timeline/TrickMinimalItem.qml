@@ -20,6 +20,29 @@ TItemDelegate {
     focusPolicy: Qt.ClickFocus
     clip: true
 
+    TrickItem {
+        anchors.fill: parent
+        cachePath: Constants.cachePath
+        font.pixelSize: 9 * Devices.fontDensity
+        font.family: Fonts.globalFont
+        fontIcon.family: MaterialIcons.family
+        fontIcon.pixelSize: 9 * Devices.fontDensity
+        tagIcon: codeIcon.text
+        highlightColor: Colors.primary
+        fullname: fullnameLbl.text
+        username: usernameLbl.text
+        tagDelimiterIcon: MaterialIcons.mdi_chevron_right
+        tags: dis.tags
+        viewCount: dis.viewCount
+        viewIcon: MaterialIcons.mdi_eye
+        body: bodyLbl.text
+        avatar: dis.avatar.length? Constants.baseUrl + "/" + dis.avatar : ""
+        image: dis.trickImage.length? Constants.baseUrl + "/" + dis.trickImage : ""
+        imageSize: Qt.size(imageWidth, imageHeight)
+        imageRoundness: Constants.radius
+        z: 100
+    }
+
     readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && isRetrick
     readonly property real defaultHeight: columnLyt.height + columnLyt.y + (actionsRow.visible? 0 : columnLyt.y)
 
@@ -110,7 +133,7 @@ TItemDelegate {
 
         dis.trickId = data.id;
         dis.fullname = data.owner.fullname;
-        dis.username = "@" + data.owner.username;
+        dis.username = data.owner.username;
         dis.ownerId = data.owner.id;
         dis.originalOwnerId = data.owner.id;
         dis.avatar = data.owner.avatar;
@@ -494,6 +517,7 @@ TItemDelegate {
                 spacing: 8 * Devices.density
 
                 RowLayout {
+                    opacity: 0
 
                     TLabel {
                         id: fullnameLbl
@@ -528,6 +552,7 @@ TItemDelegate {
 
                 RowLayout {
                     visible: !commentMode && !dis.parentId
+                    opacity: 0
 
                     TMaterialIcon {
                         id: codeIcon
@@ -721,6 +746,7 @@ TItemDelegate {
                             Layout.fillWidth: true
                             textFormat: TextEdit.RichText
                             visible: text.length
+                            opacity: 0
                             onLinkActivated: {
                                 if (link.slice(0, 4) == "go:/") {
                                     Viewport.controller.trigger("float:/tag", {"tag": link.slice(5)})
@@ -753,6 +779,7 @@ TItemDelegate {
                             visible: active
                             Layout.preferredHeight: imageHeight * width / imageWidth
                             asynchronous: true
+                            opacity: 0
                             sourceComponent: Item {
                                 anchors.fill: parent
 
