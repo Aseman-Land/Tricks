@@ -21,8 +21,11 @@ TItemDelegate {
     clip: true
 
     TrickItem {
+        id: titem
         anchors.fill: parent
+        serverAddress: Constants.baseUrl
         cachePath: Constants.cachePath
+        itemData: dis.trickData
         font.pixelSize: 9 * Devices.fontDensity
         font.family: Fonts.globalFont
         fontIcon.family: MaterialIcons.family
@@ -35,11 +38,20 @@ TItemDelegate {
         tags: dis.tags
         viewCount: dis.viewCount
         viewIcon: MaterialIcons.mdi_eye
-        body: bodyLbl.text
-        avatar: dis.avatar.length? Constants.baseUrl + "/" + dis.avatar : ""
-        image: dis.trickImage.length? Constants.baseUrl + "/" + dis.trickImage : ""
-        imageSize: Qt.size(imageWidth, imageHeight)
         imageRoundness: Constants.radius
+        isRetrick: dis.isRetrick
+        parentId: dis.parentId
+        parentOwnerId: dis.parentOwnerId
+        linkId: dis.link_id
+        trickId: dis.trickId
+        retrickText: qsTr("%1 (@%2) Retricked...").arg(retrickFullname).arg(retrickUsername) + Translations.refresher
+        retrickIcon: MaterialIcons.mdi_repeat
+        replyText: dis.parentOwnerId? qsTr("In reply to %1's (@%2) trick...").arg(parentOwnerFullName).arg(parentOwnerUsername) : qsTr("In reply to a deleted trick...") + Translations.refresher
+        replyIcon: MaterialIcons.mdi_replay
+        parentOwnerFullName: dis.parentOwnerFullName
+        parentOwnerUsername: dis.parentOwnerUsername
+        stateHeader: dis.stateHeaderVisible
+        commentMode: dis.commentMode
         z: 100
     }
 
@@ -397,6 +409,7 @@ TItemDelegate {
             spacing: 4 * Devices.density
             Layout.bottomMargin: Constants.margins / 2
             visible: isRetrick && stateHeaderVisible && !commentMode
+            opacity: 0
 
             TMaterialIcon {
                 text: MaterialIcons.mdi_repeat
@@ -416,6 +429,7 @@ TItemDelegate {
             spacing: 4 * Devices.density
             visible: dis.parentId && stateHeaderVisible && !commentMode && (link_id == 0 || link_id > trickId)
             Layout.bottomMargin: Constants.margins / 2
+            opacity: 0
 
             TMaterialIcon {
                 text: MaterialIcons.mdi_replay

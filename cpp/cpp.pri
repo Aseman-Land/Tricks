@@ -17,6 +17,7 @@ INCLUDEPATH += $$PWD
 
 include(quick/quick.pri)
 include(thirdparty/thirdparty.pri)
+include(material/material.pri)
 
 SOURCES += \
     $$PWD/appoptions.cpp \

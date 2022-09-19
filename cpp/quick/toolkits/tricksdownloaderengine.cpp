@@ -268,7 +268,11 @@ void TricksDownloaderEngine::emitFinished(const QSet<TricksDownloaderEngine *> &
 
         auto runnable = [size, finisher, path]() {
             QImageReader r(path);
-            r.setScaledSize(STRING_TO_SIZE(size));
+
+            const auto request_size = STRING_TO_SIZE(size);
+            const auto size = r.size();
+
+            r.setScaledSize(size.scaled(request_size, Qt::KeepAspectRatioByExpanding));
 
             const auto &img = r.read();
             QMetaObject::invokeMethod(finisher, "finished", Qt::QueuedConnection, Q_ARG(QImage, img));

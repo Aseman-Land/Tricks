@@ -1,4 +1,5 @@
 #include "trickitemdelegate.h"
+#include "material/materialicons.h"
 
 #include <QPainter>
 #include <QPainterPath>
@@ -7,6 +8,9 @@
 
 #include <QAsemanDevices>
 #include <QAsemanApplication>
+#include <QAsemanTools>
+
+#include <math.h>
 
 TrickItemDelegate::TrickItemDelegate(QQuickItem *parent)
     : QQuickPaintedItem(parent)
@@ -111,6 +115,750 @@ QTextDocument *TrickItemDelegate::createTextDocument() const
     return doc;
 }
 
+QString TrickItemDelegate::styleText(QString text) const
+{
+    Qt::TextFormat textFormat = Qt::RichText;
+    const auto &tags = QAsemanTools::stringRegExp(text, QStringLiteral("\\#[\\w\\+\\-\\#]+"), false);
+    for (const auto &v: tags)
+    {
+        const auto &t = v.toString();
+        if (textFormat == Qt::MarkdownText)
+            text = QAsemanTools::stringReplace(text, t, '[' + t + QStringLiteral("](go:/") + t + ')');
+        else
+            text = QAsemanTools::stringReplace(text, t, QStringLiteral("<a href=\"go:/%1\">").arg(t) + t + QStringLiteral("</a>"));
+    }
+
+    const auto &mentions = QAsemanTools::stringRegExp(text, QStringLiteral("\\@\\w+"), false);
+    for (const auto &v: mentions)
+    {
+        const auto &t = v.toString();
+        if (textFormat == Qt::MarkdownText)
+            text = QAsemanTools::stringReplace(text, t, QStringLiteral("[") + QString(t).remove('@') + QStringLiteral("](user:/") + t + ')');
+        else
+            text = QAsemanTools::stringReplace(text, t, QStringLiteral("<a href=\"user:/%1\">").arg(QString(t).remove('@')) + t + QStringLiteral("</a>"));
+    }
+
+    return text;
+}
+
+bool TrickItemDelegate::quoteCodeFrameIsDark() const
+{
+    return mQuoteCodeFrameIsDark;
+}
+
+void TrickItemDelegate::setQuoteCodeFrameIsDark(bool newQuoteCodeFrameIsDark)
+{
+    if (mQuoteCodeFrameIsDark == newQuoteCodeFrameIsDark)
+        return;
+    mQuoteCodeFrameIsDark = newQuoteCodeFrameIsDark;
+    Q_EMIT quoteCodeFrameIsDarkChanged();
+}
+
+QSize TrickItemDelegate::quoteImageSize() const
+{
+    return mQuoteImageSize;
+}
+
+void TrickItemDelegate::setQuoteImageSize(const QSize &newQuoteImageSize)
+{
+    if (mQuoteImageSize == newQuoteImageSize)
+        return;
+    mQuoteImageSize = newQuoteImageSize;
+    Q_EMIT quoteImageSizeChanged();
+}
+
+QUrl TrickItemDelegate::quoteImage() const
+{
+    return mQuoteImage;
+}
+
+void TrickItemDelegate::setQuoteImage(const QUrl &newQuoteImage)
+{
+    if (mQuoteImage == newQuoteImage)
+        return;
+    mQuoteImage = newQuoteImage;
+    Q_EMIT quoteImageChanged();
+}
+
+QUrl TrickItemDelegate::quoteAvatar() const
+{
+    return mQuoteAvatar;
+}
+
+void TrickItemDelegate::setQuoteAvatar(const QUrl &newQuoteAvatar)
+{
+    if (mQuoteAvatar == newQuoteAvatar)
+        return;
+    mQuoteAvatar = newQuoteAvatar;
+    Q_EMIT quoteAvatarChanged();
+}
+
+qint32 TrickItemDelegate::quoteUserId() const
+{
+    return mQuoteUserId;
+}
+
+void TrickItemDelegate::setQuoteUserId(qint32 newQuoteUserId)
+{
+    if (mQuoteUserId == newQuoteUserId)
+        return;
+    mQuoteUserId = newQuoteUserId;
+    Q_EMIT quoteUserIdChanged();
+}
+
+QString TrickItemDelegate::quoteFullname() const
+{
+    return mQuoteFullname;
+}
+
+void TrickItemDelegate::setQuoteFullname(const QString &newQuoteFullname)
+{
+    if (mQuoteFullname == newQuoteFullname)
+        return;
+    mQuoteFullname = newQuoteFullname;
+    Q_EMIT quoteFullnameChanged();
+}
+
+QString TrickItemDelegate::quoteUsername() const
+{
+    return mQuoteUsername;
+}
+
+void TrickItemDelegate::setQuoteUsername(const QString &newQuoteUsername)
+{
+    if (mQuoteUsername == newQuoteUsername)
+        return;
+    mQuoteUsername = newQuoteUsername;
+    Q_EMIT quoteUsernameChanged();
+}
+
+qint32 TrickItemDelegate::quoteId() const
+{
+    return mQuoteId;
+}
+
+void TrickItemDelegate::setQuoteId(qint32 newQuoteId)
+{
+    if (mQuoteId == newQuoteId)
+        return;
+    mQuoteId = newQuoteId;
+    Q_EMIT quoteIdChanged();
+}
+
+const QVariantList &TrickItemDelegate::quotedReferences() const
+{
+    return mQuotedReferences;
+}
+
+void TrickItemDelegate::setQuotedReferences(const QVariantList &newQuotedReferences)
+{
+    if (mQuotedReferences == newQuotedReferences)
+        return;
+    mQuotedReferences = newQuotedReferences;
+    Q_EMIT quotedReferencesChanged();
+}
+
+QString TrickItemDelegate::quote() const
+{
+    return mQuote;
+}
+
+void TrickItemDelegate::setQuote(const QString &newQuote)
+{
+    if (mQuote == newQuote)
+        return;
+    mQuote = newQuote;
+    Q_EMIT quoteChanged();
+}
+
+QUrl TrickItemDelegate::retrickAvatar() const
+{
+    return mRetrickAvatar;
+}
+
+void TrickItemDelegate::setRetrickAvatar(const QUrl &newRetrickAvatar)
+{
+    if (mRetrickAvatar == newRetrickAvatar)
+        return;
+    mRetrickAvatar = newRetrickAvatar;
+    Q_EMIT retrickAvatarChanged();
+}
+
+QString TrickItemDelegate::retrickFullname() const
+{
+    return mRetrickFullname;
+}
+
+void TrickItemDelegate::setRetrickFullname(const QString &newRetrickFullname)
+{
+    if (mRetrickFullname == newRetrickFullname)
+        return;
+    mRetrickFullname = newRetrickFullname;
+    Q_EMIT retrickFullnameChanged();
+}
+
+QString TrickItemDelegate::retrickUsername() const
+{
+    return mRetrickUsername;
+}
+
+void TrickItemDelegate::setRetrickUsername(const QString &newRetrickUsername)
+{
+    if (mRetrickUsername == newRetrickUsername)
+        return;
+    mRetrickUsername = newRetrickUsername;
+    Q_EMIT retrickUsernameChanged();
+}
+
+qint32 TrickItemDelegate::retrickUserId() const
+{
+    return mRetrickUserId;
+}
+
+void TrickItemDelegate::setRetrickUserId(qint32 newRetrickUserId)
+{
+    if (mRetrickUserId == newRetrickUserId)
+        return;
+    mRetrickUserId = newRetrickUserId;
+    Q_EMIT retrickUserIdChanged();
+}
+
+qint32 TrickItemDelegate::retrickTrickId() const
+{
+    return mRetrickTrickId;
+}
+
+void TrickItemDelegate::setRetrickTrickId(qint32 newRetrickTrickId)
+{
+    if (mRetrickTrickId == newRetrickTrickId)
+        return;
+    mRetrickTrickId = newRetrickTrickId;
+    Q_EMIT retrickTrickIdChanged();
+}
+
+QString TrickItemDelegate::roleIcon() const
+{
+    return mRoleIcon;
+}
+
+void TrickItemDelegate::setRoleIcon(const QString &newRoleIcon)
+{
+    if (mRoleIcon == newRoleIcon)
+        return;
+    mRoleIcon = newRoleIcon;
+    Q_EMIT roleIconChanged();
+}
+
+QString TrickItemDelegate::codeIcon() const
+{
+    return mCodeIcon;
+}
+
+void TrickItemDelegate::setCodeIcon(const QString &newCodeIcon)
+{
+    if (mCodeIcon == newCodeIcon)
+        return;
+    mCodeIcon = newCodeIcon;
+    Q_EMIT codeIconChanged();
+}
+
+bool TrickItemDelegate::bookmarked() const
+{
+    return mBookmarked;
+}
+
+void TrickItemDelegate::setBookmarked(bool newBookmarked)
+{
+    if (mBookmarked == newBookmarked)
+        return;
+    mBookmarked = newBookmarked;
+    Q_EMIT bookmarkedChanged();
+}
+
+QString TrickItemDelegate::shareLink() const
+{
+    return mShareLink;
+}
+
+void TrickItemDelegate::setShareLink(const QString &newShareLink)
+{
+    if (mShareLink == newShareLink)
+        return;
+    mShareLink = newShareLink;
+    Q_EMIT shareLinkChanged();
+}
+
+int TrickItemDelegate::tipState() const
+{
+    return mTipState;
+}
+
+void TrickItemDelegate::setTipState(int newTipState)
+{
+    if (mTipState == newTipState)
+        return;
+    mTipState = newTipState;
+    Q_EMIT tipStateChanged();
+}
+
+bool TrickItemDelegate::rateState() const
+{
+    return mRateState;
+}
+
+void TrickItemDelegate::setRateState(bool newRateState)
+{
+    if (mRateState == newRateState)
+        return;
+    mRateState = newRateState;
+    Q_EMIT rateStateChanged();
+}
+
+qint32 TrickItemDelegate::comments() const
+{
+    return mComments;
+}
+
+void TrickItemDelegate::setComments(qint32 newComments)
+{
+    if (mComments == newComments)
+        return;
+    mComments = newComments;
+    Q_EMIT commentsChanged();
+}
+
+qint32 TrickItemDelegate::tipsSat() const
+{
+    return mTipsSat;
+}
+
+void TrickItemDelegate::setTipsSat(qint32 newTipsSat)
+{
+    if (mTipsSat == newTipsSat)
+        return;
+    mTipsSat = newTipsSat;
+    Q_EMIT tipsSatChanged();
+}
+
+qint32 TrickItemDelegate::ratricks() const
+{
+    return mRatricks;
+}
+
+void TrickItemDelegate::setRatricks(qint32 newRatricks)
+{
+    if (mRatricks == newRatricks)
+        return;
+    mRatricks = newRatricks;
+    Q_EMIT ratricksChanged();
+}
+
+qint32 TrickItemDelegate::rates() const
+{
+    return mRates;
+}
+
+void TrickItemDelegate::setRates(qint32 newRates)
+{
+    if (mRates == newRates)
+        return;
+    mRates = newRates;
+    Q_EMIT ratesChanged();
+}
+
+const QVariantList &TrickItemDelegate::references() const
+{
+    return mReferences;
+}
+
+void TrickItemDelegate::setReferences(const QVariantList &newReferences)
+{
+    if (mReferences == newReferences)
+        return;
+    mReferences = newReferences;
+    Q_EMIT referencesChanged();
+}
+
+QString TrickItemDelegate::code() const
+{
+    return mCode;
+}
+
+void TrickItemDelegate::setCode(const QString &newCode)
+{
+    if (mCode == newCode)
+        return;
+    mCode = newCode;
+    Q_EMIT codeChanged();
+}
+
+QString TrickItemDelegate::serverAddress() const
+{
+    return mServerAddress;
+}
+
+void TrickItemDelegate::setServerAddress(const QString &newServerAddress)
+{
+    if (mServerAddress == newServerAddress)
+        return;
+    mServerAddress = newServerAddress;
+    Q_EMIT serverAddressChanged();
+}
+
+qint32 TrickItemDelegate::ownerId() const
+{
+    return mOwnerId;
+}
+
+void TrickItemDelegate::setOwnerId(qint32 newOwnerId)
+{
+    if (mOwnerId == newOwnerId)
+        return;
+    mOwnerId = newOwnerId;
+    Q_EMIT ownerIdChanged();
+}
+
+qint32 TrickItemDelegate::originalOwnerId() const
+{
+    return mOriginalOwnerId;
+}
+
+void TrickItemDelegate::setOriginalOwnerId(qint32 newOriginalOwnerId)
+{
+    if (mOriginalOwnerId == newOriginalOwnerId)
+        return;
+    mOriginalOwnerId = newOriginalOwnerId;
+    Q_EMIT originalOwnerIdChanged();
+}
+
+QVariantMap TrickItemDelegate::itemData() const
+{
+    return mItemData;
+}
+
+void TrickItemDelegate::setItemData(const QVariantMap &m)
+{
+    if (mItemData == m)
+        return;
+
+    mItemData = m;
+
+    const auto owner = m.value(QStringLiteral("owner")).toMap();
+    const auto owner_details = owner.value(QStringLiteral("details")).toMap();
+    const auto type = m.value(QStringLiteral("type")).toMap();
+    const auto frame = m.value(QStringLiteral("code_frame")).toMap();
+
+    mTrickId = m.value(QStringLiteral("id")).toInt();
+    mFullname = owner.value(QStringLiteral("fullname")).toString();
+    mUsername = owner.value(QStringLiteral("username")).toString();
+    mOwnerId = owner.value(QStringLiteral("id")).toInt();
+    mOriginalOwnerId = owner.value(QStringLiteral("id")).toInt();
+    auto avatar = owner.value(QStringLiteral("avatar")).toString();
+    if (!avatar.isEmpty())
+        mAvatar = mServerAddress + '/' + avatar;
+    else
+        mAvatar.clear();
+
+    mDatetime = m.value(QStringLiteral("datetime")).toString();
+    mViewCount = m.value(QStringLiteral("views")).toInt();
+
+    mLanguage = m.value(QStringLiteral("programing_language")).toMap().value(QStringLiteral("name")).toString();
+
+    mOriginalBody = m.value(QStringLiteral("body")).toString();
+    mBody = styleText(mOriginalBody);
+
+    auto image = m.value(QStringLiteral("filename")).toString();
+    if (!avatar.isEmpty())
+        mImage = mServerAddress + '/' + image;
+    else
+        mImage.clear();
+
+    auto imageSize = m.value("image_size").toMap();
+    mImageSize = QSize(imageSize.value("width", 1000).toInt(), imageSize.value("height", 1).toInt());
+
+    mLinkId = m.value("link_id").toInt();
+    if (mLinkId == 0)
+    {
+        if (mLinkId < mTrickId)
+            mCommentLineTop = true;
+        if (mLinkId > mTrickId)
+            mCommentLineBottom = true;
+    }
+
+    mCode = m.value(QStringLiteral("code")).toString();
+    mReferences = m.value(QStringLiteral("references")).toList();
+
+    mRates = m.value(QStringLiteral("rates")).toInt();
+    mRatricks = m.value(QStringLiteral("retricks")).toInt();
+    mTipsSat = std::floor(m.value(QStringLiteral("tips")).toInt() / 1000);
+    mComments = m.value(QStringLiteral("comments")).toInt();
+    mRateState = m.value(QStringLiteral("rate_state")).toBool();
+    mTipState = m.value(QStringLiteral("tip_state")).toInt();
+    mShareLink = m.value(QStringLiteral("share_link")).toString();
+    mTags = m.value(QStringLiteral("tags")).toStringList();
+    mBookmarked = m.value(QStringLiteral("bookmarked")).toBool();
+
+    const auto type_id = type.value(QStringLiteral("id")).toInt();
+    if (type_id > 100000)
+    {
+        mLanguage = type.value(QStringLiteral("name")).toString();
+        switch (type_id - 100000)
+        {
+        case 1:
+            mCodeIcon = MaterialIcons::mdi_bug;
+            break;
+        case 2:
+            mCodeIcon = MaterialIcons::mdi_pen;
+            break;
+        case 3:
+            mCodeIcon = MaterialIcons::mdi_chess_queen;
+            break;
+        }
+    }
+
+    mCodeFrameIsDark = frame.value(QStringLiteral("id")).toInt() == 1;
+    mOwnerRole = owner_details.value(QStringLiteral("role")).toInt();
+    if (mOwnerRole & 1)
+        mRoleIcon = MaterialIcons::mdi_check_decagram;
+
+    mIsRetrick = false;
+    if (m.contains(QStringLiteral("retricker")))
+    { // It's retrick
+        const auto retricker = m.value(QStringLiteral("retricker")).toMap();
+        mIsRetrick = true;
+        mRetrickTrickId = m.value(QStringLiteral("retrick_trick_id")).toInt();
+        mRetrickUserId = retricker.value(QStringLiteral("id")).toInt();
+        mRetrickUsername = retricker.value(QStringLiteral("username")).toString();
+        mRetrickFullname = retricker.value(QStringLiteral("fullname")).toString();
+        mRetrickAvatar = retricker.value(QStringLiteral("avatar")).toString();
+    }
+
+    if (m.contains(QStringLiteral("quote")))
+    { // It's quote
+        const auto trk = m.value(QStringLiteral("quote")).toMap();
+        mQuote = styleText(m.value(QStringLiteral("body")).toString());
+        mQuotedReferences = m.value(QStringLiteral("references")).toList();
+
+        mQuoteId = trk.value(QStringLiteral("id")).toInt();
+        mQuoteUsername = trk.value(QStringLiteral("username")).toString();
+        mQuoteFullname = trk.value(QStringLiteral("fullname")).toString();
+        mQuoteUserId = trk.value(QStringLiteral("owner")).toInt();
+        mQuoteAvatar = trk.value(QStringLiteral("avatar")).toString();
+
+        mQuoteImage = mImage;
+        mQuoteImageSize = mImageSize;
+        mQuoteCodeFrameIsDark = mCodeFrameIsDark;
+
+        if (trk.value(QStringLiteral("filename")).toString().count())
+        {
+            mImage = trk.value(QStringLiteral("filename")).toString();
+            const auto trk_imageSize = trk.value("image_size").toMap();
+            mImageSize = QSize(trk_imageSize.value("width", 1000).toInt(), trk_imageSize.value("height", 1).toInt());
+
+            const auto trk_frame = trk.value(QStringLiteral("code_frame")).toMap();
+            mCodeFrameIsDark = trk_frame.value(QStringLiteral("id")).toInt() == 1;
+        } else {
+            mImage.clear();
+            mImageSize = QSize(1000, 1);
+            mCodeFrameIsDark = 0;
+        }
+
+        mOriginalBody = trk.value(QStringLiteral("body")).toString();
+        mBody = styleText(mOriginalBody);
+        mReferences = trk.value(QStringLiteral("references")).toList();
+    }
+
+    const auto parent_owner = m.value(QStringLiteral("parent_owner")).toMap();
+    mParentId = m.value(QStringLiteral("parent_id")).toInt();
+    mParentOwnerId = parent_owner.value(QStringLiteral("id")).toInt();
+    mParentOwnerFullName = parent_owner.value(QStringLiteral("fullname")).toString();
+    mParentOwnerUsername = parent_owner.value(QStringLiteral("username")).toString();
+
+    Q_EMIT itemDataChanged();
+}
+
+bool TrickItemDelegate::isRetrick() const
+{
+    return mIsRetrick;
+}
+
+void TrickItemDelegate::setIsRetrick(bool newIsRetrick)
+{
+    if (mIsRetrick == newIsRetrick)
+        return;
+    mIsRetrick = newIsRetrick;
+    Q_EMIT isRetrickChanged();
+}
+
+QString TrickItemDelegate::parentOwnerUsername() const
+{
+    return mParentOwnerUsername;
+}
+
+void TrickItemDelegate::setParentOwnerUsername(const QString &newParentOwnerUsername)
+{
+    if (mParentOwnerUsername == newParentOwnerUsername)
+        return;
+    mParentOwnerUsername = newParentOwnerUsername;
+    Q_EMIT parentOwnerUsernameChanged();
+}
+
+QString TrickItemDelegate::parentOwnerFullName() const
+{
+    return mParentOwnerFullName;
+}
+
+void TrickItemDelegate::setParentOwnerFullName(const QString &newParentOwnerFullName)
+{
+    if (mParentOwnerFullName == newParentOwnerFullName)
+        return;
+    mParentOwnerFullName = newParentOwnerFullName;
+    Q_EMIT parentOwnerFullNameChanged();
+}
+
+bool TrickItemDelegate::globalViewMode() const
+{
+    return mGlobalViewMode;
+}
+
+void TrickItemDelegate::setGlobalViewMode(bool newGlobalViewMode)
+{
+    if (mGlobalViewMode == newGlobalViewMode)
+        return;
+    mGlobalViewMode = newGlobalViewMode;
+    Q_EMIT globalViewModeChanged();
+}
+
+qint32 TrickItemDelegate::linkId() const
+{
+    return mLinkId;
+}
+
+void TrickItemDelegate::setLinkId(qint32 newLinkId)
+{
+    if (mLinkId == newLinkId)
+        return;
+    mLinkId = newLinkId;
+    Q_EMIT linkIdChanged();
+}
+
+qint32 TrickItemDelegate::trickId() const
+{
+    return mTrickId;
+}
+
+void TrickItemDelegate::setTrickId(qint32 newTrickId)
+{
+    if (mTrickId == newTrickId)
+        return;
+    mTrickId = newTrickId;
+    Q_EMIT trickIdChanged();
+}
+
+bool TrickItemDelegate::commentMode() const
+{
+    return mCommentMode;
+}
+
+void TrickItemDelegate::setCommentMode(bool newCommentMode)
+{
+    if (mCommentMode == newCommentMode)
+        return;
+    mCommentMode = newCommentMode;
+    Q_EMIT commentModeChanged();
+}
+
+qint32 TrickItemDelegate::parentOwnerId() const
+{
+    return mParentOwnerId;
+}
+
+void TrickItemDelegate::setParentOwnerId(qint32 newParentOwnerId)
+{
+    if (mParentOwnerId == newParentOwnerId)
+        return;
+    mParentOwnerId = newParentOwnerId;
+    Q_EMIT parentOwnerIdChanged();
+}
+
+qint32 TrickItemDelegate::parentId() const
+{
+    return mParentId;
+}
+
+void TrickItemDelegate::setParentId(qint32 newParentId)
+{
+    if (mParentId == newParentId)
+        return;
+    mParentId = newParentId;
+    Q_EMIT parentIdChanged();
+}
+
+bool TrickItemDelegate::stateHeader() const
+{
+    return mStateHeader;
+}
+
+void TrickItemDelegate::setStateHeader(bool newStateHeader)
+{
+    if (mStateHeader == newStateHeader)
+        return;
+    mStateHeader = newStateHeader;
+    Q_EMIT stateHeaderChanged();
+}
+
+QString TrickItemDelegate::retrickText() const
+{
+    return mRetrickText;
+}
+
+void TrickItemDelegate::setRetrickText(const QString &newRetrickText)
+{
+    if (mRetrickText == newRetrickText)
+        return;
+    mRetrickText = newRetrickText;
+    Q_EMIT retrickTextChanged();
+}
+
+QString TrickItemDelegate::retrickIcon() const
+{
+    return mRetrickIcon;
+}
+
+void TrickItemDelegate::setRetrickIcon(const QString &newRetrickIcon)
+{
+    if (mRetrickIcon == newRetrickIcon)
+        return;
+    mRetrickIcon = newRetrickIcon;
+    Q_EMIT retrickIconChanged();
+}
+
+QString TrickItemDelegate::replyText() const
+{
+    return mReplyText;
+}
+
+void TrickItemDelegate::setReplyText(const QString &newReplyText)
+{
+    if (mReplyText == newReplyText)
+        return;
+    mReplyText = newReplyText;
+    Q_EMIT replyTextChanged();
+}
+
+QString TrickItemDelegate::replyIcon() const
+{
+    return mReplyIcon;
+}
+
+void TrickItemDelegate::setReplyIcon(const QString &newReplyIcon)
+{
+    if (mReplyIcon == newReplyIcon)
+        return;
+    mReplyIcon = newReplyIcon;
+    Q_EMIT replyIconChanged();
+}
+
 qreal TrickItemDelegate::imageRoundness() const
 {
     return mImageRoundness;
@@ -121,7 +869,7 @@ void TrickItemDelegate::setImageRoundness(qreal newImageRoundness)
     if (qFuzzyCompare(mImageRoundness, newImageRoundness))
         return;
     mImageRoundness = newImageRoundness;
-    emit imageRoundnessChanged();
+    Q_EMIT imageRoundnessChanged();
 }
 
 QString TrickItemDelegate::cachePath() const
@@ -134,7 +882,7 @@ void TrickItemDelegate::setCachePath(const QString &newCachePath)
     if (mCachePath == newCachePath)
         return;
     mCachePath = newCachePath;
-    emit cachePathChanged();
+    Q_EMIT cachePathChanged();
 }
 
 void TrickItemDelegate::paint(QPainter *painter)
@@ -151,6 +899,66 @@ void TrickItemDelegate::paint(QPainter *painter)
     QRectF drawedRect, rect;
     QColor color;
     QFont font, fontIcon;
+
+
+    // Paint State Header
+    if (mIsRetrick && mStateHeader && !mCommentMode)
+    {
+        rect = QRectF(fullRect.topLeft(), QPointF(fullRect.right(), 32));
+
+        color = mHighlightColor;
+        fontIcon = mFontIcon;
+        fontIcon.setPixelSize(fontIcon.pixelSize() * 12 / 9);
+
+        painter->setFont(fontIcon);
+        painter->setPen(color);
+        painter->drawText(rect, Qt::AlignVCenter, mRetrickIcon, &drawedRect);
+
+        rect.setLeft(drawedRect.right() + 4);
+
+        color = mForegroundColor;
+        color.setAlphaF(0.4);
+
+        font = mFont;
+        font.setBold(true);
+        font.setPixelSize(font.pixelSize() * 8 / 9);
+
+        painter->setFont(font);
+        painter->setPen(color);
+        painter->drawText(rect, Qt::AlignVCenter, mRetrickText, &drawedRect);
+
+        painter->translate(0, 28);
+    }
+
+    if (mParentId && mStateHeader && !mCommentMode && (mLinkId == 0 || mLinkId > mTrickId))
+    {
+        rect = QRectF(fullRect.topLeft(), QPointF(fullRect.right(), 32));
+
+        color = mHighlightColor;
+        fontIcon = mFontIcon;
+        fontIcon.setPixelSize(fontIcon.pixelSize() * 12 / 9);
+
+        painter->setFont(fontIcon);
+        painter->setPen(color);
+        painter->drawText(rect, Qt::AlignVCenter, mReplyIcon, &drawedRect);
+
+        rect.setLeft(drawedRect.right() + 4);
+
+        color = mForegroundColor;
+        color.setAlphaF(0.4);
+
+        font = mFont;
+        font.setBold(true);
+        font.setPixelSize(font.pixelSize() * 8 / 9);
+
+        painter->setFont(font);
+        painter->setPen(color);
+        painter->drawText(rect, Qt::AlignVCenter, mReplyText, &drawedRect);
+
+        painter->translate(0, 28);
+    }
+    // End State Header
+
 
     // Paint Avatar
     const auto avatarRect = QRectF(fullRect.left(), fullRect.top(), mAvatarSize, mAvatarSize);
