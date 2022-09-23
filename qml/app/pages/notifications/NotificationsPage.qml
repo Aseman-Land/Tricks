@@ -350,15 +350,15 @@ TPage {
                                     materialColor: Colors.buttonsColor
                                     materialText: notItem.masterObject.comments? notItem.masterObject.comments : ""
                                     onClicked: {
-                                        var trickData = Tools.toVariantMap(notItem.masterObject);
-                                        trickData["owner"] = Tools.toVariantMap(model.users[0]);
-                                        trickData["image_size"] = {
+                                        var itemData = Tools.toVariantMap(notItem.masterObject);
+                                        itemData["owner"] = Tools.toVariantMap(model.users[0]);
+                                        itemData["image_size"] = {
                                             "width": 10,
                                             "height": 0,
                                         };
 
                                         if (model.tip_amount) {
-                                            trickData["owner"] = {
+                                            itemData["owner"] = {
                                                 "id": GlobalSettings.userId,
                                                 "username": GlobalSettings.username,
                                                 "fullname": GlobalSettings.fullname,
@@ -366,12 +366,12 @@ TPage {
                                             };
                                         }
                                         if (model.comment) {
-                                            trickData["views"] = 0;
-                                            trickData["body"] = trickData.message;
-                                            trickData["filename"] = "";
+                                            itemData["views"] = 0;
+                                            itemData["body"] = itemData.message;
+                                            itemData["filename"] = "";
                                         }
 
-                                        Viewport.controller.trigger("float:/tricks/add", {"parentId": trickData.id, "trickData": trickData})
+                                        Viewport.controller.trigger("float:/tricks/add", {"parentId": itemData.id, "itemData": itemData})
                                     }
                                 }
 

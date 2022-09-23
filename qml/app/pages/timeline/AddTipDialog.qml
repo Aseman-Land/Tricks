@@ -22,10 +22,10 @@ TNullableArea {
     property alias headerItem: headerItem
 
     property alias trickId: tipReq._trick_id
-    property variant trickData
+    property variant itemData
 
-    onTrickDataChanged: {
-        tipItem.pushData(trickData)
+    onItemDataChanged: {
+        tipItem.pushData(itemData)
         tipItem.parentId = 0;
         tipItem.quoteId = 0;
         tipItem.commentLineTop = false;

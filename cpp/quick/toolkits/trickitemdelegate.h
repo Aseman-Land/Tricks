@@ -15,76 +15,80 @@
 class TrickItemDelegate : public QQuickPaintedItem
 {
     Q_OBJECT
+    Q_ENUMS(ButtonActions)
     Q_PROPERTY(QVariantMap itemData READ itemData WRITE setItemData NOTIFY itemDataChanged)
     Q_PROPERTY(qint32 sceneWidth READ sceneWidth WRITE setSceneWidth NOTIFY sceneWidthChanged)
     Q_PROPERTY(qreal avatarSize READ avatarSize WRITE setAvatarSize NOTIFY avatarSizeChanged)
     Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
     Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor NOTIFY foregroundColorChanged)
-    Q_PROPERTY(QString fullname READ fullname WRITE setFullname NOTIFY fullnameChanged)
-    Q_PROPERTY(QString username READ username WRITE setUsername NOTIFY usernameChanged)
-    Q_PROPERTY(QString datetime READ datetime WRITE setDatetime NOTIFY datetimeChanged)
+    Q_PROPERTY(QString fullname READ fullname NOTIFY fullnameChanged)
+    Q_PROPERTY(QString username READ username NOTIFY usernameChanged)
+    Q_PROPERTY(QString datetime READ datetime NOTIFY datetimeChanged)
     Q_PROPERTY(QFont fontIcon READ fontIcon WRITE setFontIcon NOTIFY fontIconChanged)
-    Q_PROPERTY(QString tagIcon READ tagIcon WRITE setTagIcon NOTIFY tagIconChanged)
     Q_PROPERTY(QColor highlightColor READ highlightColor WRITE setHighlightColor NOTIFY highlightColorChanged)
-    Q_PROPERTY(QStringList tags READ tags WRITE setTags NOTIFY tagsChanged)
-    Q_PROPERTY(QString tagDelimiterIcon READ tagDelimiterIcon WRITE setTagDelimiterIcon NOTIFY tagDelimiterIconChanged)
-    Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
-    Q_PROPERTY(qint32 viewCount READ viewCount WRITE setViewCount NOTIFY viewCountChanged)
-    Q_PROPERTY(QString viewIcon READ viewIcon WRITE setViewIcon NOTIFY viewIconChanged)
-    Q_PROPERTY(QString body READ body WRITE setBody NOTIFY bodyChanged)
+    Q_PROPERTY(QStringList tags READ tags NOTIFY tagsChanged)
+    Q_PROPERTY(QString language READ language NOTIFY languageChanged)
+    Q_PROPERTY(qint32 viewCount READ viewCount NOTIFY viewCountChanged)
+    Q_PROPERTY(QString body READ body NOTIFY bodyChanged)
     Q_PROPERTY(QRectF bodyRect READ bodyRect NOTIFY bodyRectChanged)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged)
-    Q_PROPERTY(QUrl image READ image WRITE setImage NOTIFY imageChanged)
-    Q_PROPERTY(QUrl avatar READ avatar WRITE setAvatar NOTIFY avatarChanged)
-    Q_PROPERTY(QSize imageSize READ imageSize WRITE setImageSize NOTIFY imageSizeChanged)
+    Q_PROPERTY(QUrl image READ image NOTIFY imageChanged)
+    Q_PROPERTY(QUrl avatar READ avatar NOTIFY avatarChanged)
+    Q_PROPERTY(QSize imageSize READ imageSize NOTIFY imageSizeChanged)
     Q_PROPERTY(QString cachePath READ cachePath WRITE setCachePath NOTIFY cachePathChanged)
     Q_PROPERTY(qreal imageRoundness READ imageRoundness WRITE setImageRoundness NOTIFY imageRoundnessChanged)
-    Q_PROPERTY(QString replyIcon READ replyIcon WRITE setReplyIcon NOTIFY replyIconChanged)
-    Q_PROPERTY(QString replyText READ replyText WRITE setReplyText NOTIFY replyTextChanged)
-    Q_PROPERTY(QString retrickIcon READ retrickIcon WRITE setRetrickIcon NOTIFY retrickIconChanged)
-    Q_PROPERTY(QString retrickText READ retrickText WRITE setRetrickText NOTIFY retrickTextChanged)
-    Q_PROPERTY(bool stateHeader READ stateHeader WRITE setStateHeader NOTIFY stateHeaderChanged)
-    Q_PROPERTY(qint32 parentId READ parentId WRITE setParentId NOTIFY parentIdChanged)
-    Q_PROPERTY(qint32 parentOwnerId READ parentOwnerId WRITE setParentOwnerId NOTIFY parentOwnerIdChanged)
+    Q_PROPERTY(QString replyText READ replyText NOTIFY replyTextChanged)
+    Q_PROPERTY(QString retrickText READ retrickText NOTIFY retrickTextChanged)
+    Q_PROPERTY(qint32 parentId READ parentId NOTIFY parentIdChanged)
+    Q_PROPERTY(qint32 parentOwnerId READ parentOwnerId NOTIFY parentOwnerIdChanged)
     Q_PROPERTY(bool commentMode READ commentMode WRITE setCommentMode NOTIFY commentModeChanged)
-    Q_PROPERTY(qint32 trickId READ trickId WRITE setTrickId NOTIFY trickIdChanged)
-    Q_PROPERTY(qint32 linkId READ linkId WRITE setLinkId NOTIFY linkIdChanged)
+    Q_PROPERTY(qint32 trickId READ trickId NOTIFY trickIdChanged)
+    Q_PROPERTY(qint32 linkId READ linkId NOTIFY linkIdChanged)
     Q_PROPERTY(bool globalViewMode READ globalViewMode WRITE setGlobalViewMode NOTIFY globalViewModeChanged)
-    Q_PROPERTY(QString parentOwnerFullName READ parentOwnerFullName WRITE setParentOwnerFullName NOTIFY parentOwnerFullNameChanged)
-    Q_PROPERTY(QString parentOwnerUsername READ parentOwnerUsername WRITE setParentOwnerUsername NOTIFY parentOwnerUsernameChanged)
-    Q_PROPERTY(bool isRetrick READ isRetrick WRITE setIsRetrick NOTIFY isRetrickChanged)
-    Q_PROPERTY(qint32 originalOwnerId READ originalOwnerId WRITE setOriginalOwnerId NOTIFY originalOwnerIdChanged)
-    Q_PROPERTY(qint32 ownerId READ ownerId WRITE setOwnerId NOTIFY ownerIdChanged)
+    Q_PROPERTY(QString parentOwnerFullName READ parentOwnerFullName NOTIFY parentOwnerFullNameChanged)
+    Q_PROPERTY(QString parentOwnerUsername READ parentOwnerUsername NOTIFY parentOwnerUsernameChanged)
+    Q_PROPERTY(bool isRetrick READ isRetrick NOTIFY isRetrickChanged)
+    Q_PROPERTY(qint32 originalOwnerId READ originalOwnerId NOTIFY originalOwnerIdChanged)
+    Q_PROPERTY(qint32 ownerId READ ownerId NOTIFY ownerIdChanged)
     Q_PROPERTY(QString serverAddress READ serverAddress WRITE setServerAddress NOTIFY serverAddressChanged)
-    Q_PROPERTY(QString code READ code WRITE setCode NOTIFY codeChanged)
-    Q_PROPERTY(QVariantList references READ references WRITE setReferences NOTIFY referencesChanged)
-    Q_PROPERTY(qint32 rates READ rates WRITE setRates NOTIFY ratesChanged)
-    Q_PROPERTY(qint32 ratricks READ ratricks WRITE setRatricks NOTIFY ratricksChanged)
-    Q_PROPERTY(qint32 tipsSat READ tipsSat WRITE setTipsSat NOTIFY tipsSatChanged)
-    Q_PROPERTY(qint32 comments READ comments WRITE setComments NOTIFY commentsChanged)
-    Q_PROPERTY(bool rateState READ rateState WRITE setRateState NOTIFY rateStateChanged)
-    Q_PROPERTY(int tipState READ tipState WRITE setTipState NOTIFY tipStateChanged)
-    Q_PROPERTY(QString shareLink READ shareLink WRITE setShareLink NOTIFY shareLinkChanged)
-    Q_PROPERTY(bool bookmarked READ bookmarked WRITE setBookmarked NOTIFY bookmarkedChanged)
-    Q_PROPERTY(QString codeIcon READ codeIcon WRITE setCodeIcon NOTIFY codeIconChanged)
-    Q_PROPERTY(QString roleIcon READ roleIcon WRITE setRoleIcon NOTIFY roleIconChanged)
-    Q_PROPERTY(qint32 retrickTrickId READ retrickTrickId WRITE setRetrickTrickId NOTIFY retrickTrickIdChanged)
-    Q_PROPERTY(qint32 retrickUserId READ retrickUserId WRITE setRetrickUserId NOTIFY retrickUserIdChanged)
-    Q_PROPERTY(QString retrickUsername READ retrickUsername WRITE setRetrickUsername NOTIFY retrickUsernameChanged)
-    Q_PROPERTY(QString retrickFullname READ retrickFullname WRITE setRetrickFullname NOTIFY retrickFullnameChanged)
-    Q_PROPERTY(QUrl retrickAvatar READ retrickAvatar WRITE setRetrickAvatar NOTIFY retrickAvatarChanged)
-    Q_PROPERTY(QString quote READ quote WRITE setQuote NOTIFY quoteChanged)
-    Q_PROPERTY(QVariantList quotedReferences READ quotedReferences WRITE setQuotedReferences NOTIFY quotedReferencesChanged)
-    Q_PROPERTY(qint32 quoteId READ quoteId WRITE setQuoteId NOTIFY quoteIdChanged)
-    Q_PROPERTY(QString quoteUsername READ quoteUsername WRITE setQuoteUsername NOTIFY quoteUsernameChanged)
-    Q_PROPERTY(QString quoteFullname READ quoteFullname WRITE setQuoteFullname NOTIFY quoteFullnameChanged)
-    Q_PROPERTY(qint32 quoteUserId READ quoteUserId WRITE setQuoteUserId NOTIFY quoteUserIdChanged)
-    Q_PROPERTY(QUrl quoteAvatar READ quoteAvatar WRITE setQuoteAvatar NOTIFY quoteAvatarChanged)
-    Q_PROPERTY(QUrl quoteImage READ quoteImage WRITE setQuoteImage NOTIFY quoteImageChanged)
-    Q_PROPERTY(QSize quoteImageSize READ quoteImageSize WRITE setQuoteImageSize NOTIFY quoteImageSizeChanged)
-    Q_PROPERTY(bool quoteCodeFrameIsDark READ quoteCodeFrameIsDark WRITE setQuoteCodeFrameIsDark NOTIFY quoteCodeFrameIsDarkChanged)
+    Q_PROPERTY(QString code READ code NOTIFY codeChanged)
+    Q_PROPERTY(QVariantList references READ references NOTIFY referencesChanged)
+    Q_PROPERTY(qint32 rates READ rates NOTIFY ratesChanged)
+    Q_PROPERTY(qint32 ratricks READ ratricks NOTIFY ratricksChanged)
+    Q_PROPERTY(qint32 tipsSat READ tipsSat NOTIFY tipsSatChanged)
+    Q_PROPERTY(qint32 comments READ comments NOTIFY commentsChanged)
+    Q_PROPERTY(bool rateState READ rateState NOTIFY rateStateChanged)
+    Q_PROPERTY(int tipState READ tipState NOTIFY tipStateChanged)
+    Q_PROPERTY(QString shareLink READ shareLink NOTIFY shareLinkChanged)
+    Q_PROPERTY(bool bookmarked READ bookmarked NOTIFY bookmarkedChanged)
+    Q_PROPERTY(qint32 retrickTrickId READ retrickTrickId NOTIFY retrickTrickIdChanged)
+    Q_PROPERTY(qint32 retrickUserId READ retrickUserId NOTIFY retrickUserIdChanged)
+    Q_PROPERTY(QString retrickUsername READ retrickUsername NOTIFY retrickUsernameChanged)
+    Q_PROPERTY(QString retrickFullname READ retrickFullname NOTIFY retrickFullnameChanged)
+    Q_PROPERTY(QUrl retrickAvatar READ retrickAvatar NOTIFY retrickAvatarChanged)
+    Q_PROPERTY(QString quote READ quote NOTIFY quoteChanged)
+    Q_PROPERTY(QVariantList quotedReferences READ quotedReferences NOTIFY quotedReferencesChanged)
+    Q_PROPERTY(qint32 quoteId READ quoteId NOTIFY quoteIdChanged)
+    Q_PROPERTY(QString quoteUsername READ quoteUsername NOTIFY quoteUsernameChanged)
+    Q_PROPERTY(QString quoteFullname READ quoteFullname NOTIFY quoteFullnameChanged)
+    Q_PROPERTY(qint32 quoteUserId READ quoteUserId NOTIFY quoteUserIdChanged)
+    Q_PROPERTY(QUrl quoteAvatar READ quoteAvatar NOTIFY quoteAvatarChanged)
+    Q_PROPERTY(QUrl quoteImage READ quoteImage NOTIFY quoteImageChanged)
+    Q_PROPERTY(QSize quoteImageSize READ quoteImageSize NOTIFY quoteImageSizeChanged)
+    Q_PROPERTY(bool quoteCodeFrameIsDark READ quoteCodeFrameIsDark NOTIFY quoteCodeFrameIsDarkChanged)
+    Q_PROPERTY(QString originalBody READ originalBody NOTIFY originalBodyChanged)
 
 public:
+    enum ButtonActions {
+        NoneButton = 0,
+        RateButton = 1000,
+        CommentButton,
+        RetrickButton,
+        TipButton,
+        FavoriteButton,
+        MoreButton
+    };
+
     TrickItemDelegate(QQuickItem *parent = Q_NULLPTR);
     virtual ~TrickItemDelegate();
 
@@ -102,53 +106,8 @@ public:
     QColor foregroundColor() const;
     void setForegroundColor(const QColor &newForegroundColor);
 
-    QString fullname() const;
-    void setFullname(const QString &newFullname);
-
-    QString username() const;
-    void setUsername(const QString &newUsername);
-
-    QString datetime() const;
-    void setDatetime(const QString &newDatetime);
-
-    QFont fontIcon() const;
-    void setFontIcon(const QFont &newFontIcon);
-
-    QString tagIcon() const;
-    void setTagIcon(const QString &newTagIcon);
-
     QColor highlightColor() const;
     void setHighlightColor(const QColor &newHighlightColor);
-
-    QStringList tags() const;
-    void setTags(const QStringList &newTags);
-
-    QString tagDelimiterIcon() const;
-    void setTagDelimiterIcon(const QString &newTagDelimiterIcon);
-
-    QString language() const;
-    void setLanguage(const QString &newLanguage);
-
-    qint32 viewCount() const;
-    void setViewCount(qint32 newViewCount);
-
-    QString viewIcon() const;
-    void setViewIcon(const QString &newViewIcon);
-
-    QString body() const;
-    void setBody(const QString &newBody);
-
-    QRectF bodyRect() const;
-    QRectF contentRect() const;
-
-    QUrl image() const;
-    void setImage(const QUrl &newImage);
-
-    QUrl avatar() const;
-    void setAvatar(const QUrl &newAvatar);
-
-    QSize imageSize() const;
-    void setImageSize(const QSize &newImageSize);
 
     QString cachePath() const;
     void setCachePath(const QString &newCachePath);
@@ -156,142 +115,78 @@ public:
     qreal imageRoundness() const;
     void setImageRoundness(qreal newImageRoundness);
 
-    QString replyIcon() const;
-    void setReplyIcon(const QString &newReplyIcon);
-
-    QString replyText() const;
-    void setReplyText(const QString &newReplyText);
-
-    QString retrickIcon() const;
-    void setRetrickIcon(const QString &newRetrickIcon);
-
-    QString retrickText() const;
-    void setRetrickText(const QString &newRetrickText);
-
-    bool stateHeader() const;
-    void setStateHeader(bool newStateHeader);
-
-    qint32 parentId() const;
-    void setParentId(qint32 newParentId);
-
-    qint32 parentOwnerId() const;
-    void setParentOwnerId(qint32 newParentOwnerId);
-
     bool commentMode() const;
     void setCommentMode(bool newCommentMode);
-
-    qint32 trickId() const;
-    void setTrickId(qint32 newTrickId);
-
-    qint32 linkId() const;
-    void setLinkId(qint32 newLinkId);
 
     bool globalViewMode() const;
     void setGlobalViewMode(bool newGlobalViewMode);
 
-    QString parentOwnerFullName() const;
-    void setParentOwnerFullName(const QString &newParentOwnerFullName);
-
-    QString parentOwnerUsername() const;
-    void setParentOwnerUsername(const QString &newParentOwnerUsername);
-
-    bool isRetrick() const;
-    void setIsRetrick(bool newIsRetrick);
-
     QVariantMap itemData() const;
     void setItemData(const QVariantMap &newItemData);
-
-    qint32 originalOwnerId() const;
-    void setOriginalOwnerId(qint32 newOriginalOwnerId);
-
-    qint32 ownerId() const;
-    void setOwnerId(qint32 newOwnerId);
 
     QString serverAddress() const;
     void setServerAddress(const QString &newServerAddress);
 
+    QFont fontIcon() const;
+    void setFontIcon(const QFont &font);
+
+    QRectF bodyRect() const;
+    QRectF contentRect() const;
+
+    QString fullname() const;
+    QString username() const;
+    QString datetime() const;
+    QStringList tags() const;
+    QString language() const;
+    qint32 viewCount() const;
+    QString body() const;
+    QUrl image() const;
+    QUrl avatar() const;
+    QSize imageSize() const;
+    QString replyText() const;
+    QString retrickText() const;
+    qint32 parentId() const;
+    qint32 parentOwnerId() const;
+    qint32 trickId() const;
+    qint32 linkId() const;
+    QString parentOwnerFullName() const;
+    QString parentOwnerUsername() const;
+    bool isRetrick() const;
+    qint32 originalOwnerId() const;
+    qint32 ownerId() const;
     QString code() const;
-    void setCode(const QString &newCode);
-
     const QVariantList &references() const;
-    void setReferences(const QVariantList &newReferences);
-
     qint32 rates() const;
-    void setRates(qint32 newRates);
-
     qint32 ratricks() const;
-    void setRatricks(qint32 newRatricks);
-
     qint32 tipsSat() const;
-    void setTipsSat(qint32 newTipsSat);
-
     qint32 comments() const;
-    void setComments(qint32 newComments);
-
     bool rateState() const;
-    void setRateState(bool newRateState);
-
     int tipState() const;
-    void setTipState(int newTipState);
-
     QString shareLink() const;
-    void setShareLink(const QString &newShareLink);
-
     bool bookmarked() const;
-    void setBookmarked(bool newBookmarked);
-
-    QString codeIcon() const;
-    void setCodeIcon(const QString &newCodeIcon);
-
-    QString roleIcon() const;
-    void setRoleIcon(const QString &newRoleIcon);
-
     qint32 retrickTrickId() const;
-    void setRetrickTrickId(qint32 newRetrickTrickId);
-
     qint32 retrickUserId() const;
-    void setRetrickUserId(qint32 newRetrickUserId);
-
     QString retrickUsername() const;
-    void setRetrickUsername(const QString &newRetrickUsername);
-
     QString retrickFullname() const;
-    void setRetrickFullname(const QString &newRetrickFullname);
-
     QUrl retrickAvatar() const;
-    void setRetrickAvatar(const QUrl &newRetrickAvatar);
-
     QString quote() const;
-    void setQuote(const QString &newQuote);
-
     const QVariantList &quotedReferences() const;
-    void setQuotedReferences(const QVariantList &newQuotedReferences);
-
     qint32 quoteId() const;
-    void setQuoteId(qint32 newQuoteId);
-
     QString quoteUsername() const;
-    void setQuoteUsername(const QString &newQuoteUsername);
-
     QString quoteFullname() const;
-    void setQuoteFullname(const QString &newQuoteFullname);
-
     qint32 quoteUserId() const;
-    void setQuoteUserId(qint32 newQuoteUserId);
-
     QUrl quoteAvatar() const;
-    void setQuoteAvatar(const QUrl &newQuoteAvatar);
-
     QUrl quoteImage() const;
-    void setQuoteImage(const QUrl &newQuoteImage);
-
     QSize quoteImageSize() const;
-    void setQuoteImageSize(const QSize &newQuoteImageSize);
-
     bool quoteCodeFrameIsDark() const;
-    void setQuoteCodeFrameIsDark(bool newQuoteCodeFrameIsDark);
+    QString originalBody() const;
+
+    bool stateHeader() const;
+    void setStateHeader(bool newStateHeader);
 
 Q_SIGNALS:
+    void buttonClicked(ButtonActions action, const QRectF &rect);
+    void clicked();
     void sceneWidthChanged();
     void avatarSizeChanged();
     void fontChanged();
@@ -300,13 +195,10 @@ Q_SIGNALS:
     void usernameChanged();
     void datetimeChanged();
     void fontIconChanged();
-    void tagIconChanged();
     void highlightColorChanged();
     void tagsChanged();
-    void tagDelimiterIconChanged();
     void languageChanged();
     void viewCountChanged();
-    void viewIconChanged();
     void bodyChanged();
     void bodyRectChanged();
     void contentRectChanged();
@@ -315,9 +207,7 @@ Q_SIGNALS:
     void imageSizeChanged();
     void cachePathChanged();
     void imageRoundnessChanged();
-    void replyIconChanged();
     void replyTextChanged();
-    void retrickIconChanged();
     void retrickTextChanged();
     void stateHeaderChanged();
     void parentIdChanged();
@@ -343,8 +233,6 @@ Q_SIGNALS:
     void tipStateChanged();
     void shareLinkChanged();
     void bookmarkedChanged();
-    void codeIconChanged();
-    void roleIconChanged();
     void retrickTrickIdChanged();
     void retrickUserIdChanged();
     void retrickUsernameChanged();
@@ -360,6 +248,7 @@ Q_SIGNALS:
     void quoteImageChanged();
     void quoteImageSizeChanged();
     void quoteCodeFrameIsDarkChanged();
+    void originalBodyChanged();
 
 private Q_SLOTS:
     void refreshWidth();
@@ -367,10 +256,38 @@ private Q_SLOTS:
     void downloadAvatar();
 
 protected:
+    void setupLeftButtons();
+    void setupRightButtons();
+
     QTextDocument *createTextDocument() const;
     QString styleText(QString t) const;
+    QSize calculateImageSize() const;
+
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void hoverEnterEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
+    void hoverLeaveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
+    void hoverMoveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
 
 private:
+    struct Button {
+        QRectF rect;
+        QString normalIcon;
+        QString fillIcon;
+        ButtonActions action = NoneButton;
+        int counter = 0;
+
+        bool operator==(const Button &b) const {
+            return rect == b.rect && normalIcon == b.normalIcon &&
+                   fillIcon == b.fillIcon && action == b.action &&
+                   counter == b.counter;
+        }
+        bool operator!=(const Button &b) const {
+            return !operator==(b);
+        }
+    };
+
     TricksDownloaderEngine *mImageDownloader = Q_NULLPTR;
     TricksDownloaderEngine *mAvatarDownloader = Q_NULLPTR;
 
@@ -381,6 +298,8 @@ private:
     qreal mAvatarSize = 42;
     qreal mVerticalPadding = 16;
     qreal mSpacing = 10;
+    qreal mStateHeaderHeight = 32;
+    qreal mButtonsHeight = 32;
     QFont mFont;
     QFont mFontIcon;
     QColor mForegroundColor;
@@ -390,6 +309,9 @@ private:
     QImage mCacheImage;
     QImage mCacheAvatar;
     qreal mImageRoundness = 10;
+
+    QList<Button> mLeftSideButtons;
+    QList<Button> mRightSideButtons;
 
     QString mFullname;
     QString mUsername;
@@ -458,6 +380,9 @@ private:
     bool mCommentLineBottom = false;
 
     QVariantMap mItemData;
+
+    Button mSelectedButton;
+    Q_PROPERTY(bool stateHeader READ stateHeader WRITE setStateHeader NOTIFY stateHeaderChanged)
 };
 
 #endif // TRICKITEMDELEGATE_H

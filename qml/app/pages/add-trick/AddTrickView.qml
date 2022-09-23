@@ -25,7 +25,7 @@ Item {
     readonly property bool sendingMode: GlobalSettings.viewMode != 2 && (postReq.refreshing || reTrickReq.refreshing || reloadTimer.running || uploadImageReq.refreshing)
 
     property int parentId
-    property variant trickData
+    property variant itemData
 
     property string imageRequestId
 
@@ -74,8 +74,8 @@ Item {
         });
     }
 
-    onTrickDataChanged: {
-        replyItem.pushData(trickData);
+    onItemDataChanged: {
+        replyItem.pushData(itemData);
         replyItem.parentId = 0;
         replyItem.quoteId = 0;
         replyItem.commentLineTop = false;

@@ -18,7 +18,7 @@ TPage {
 
     property variant quote
     property alias parentId: addView.parentId
-    property alias trickData: addView.trickData
+    property alias itemData: addView.itemData
 
     onQuoteChanged: addView.quote(quote)
 
@@ -80,7 +80,7 @@ TPage {
             TLabel {
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 10 * Devices.fontDensity
-                text: parentId? qsTr("Reply to %1").arg(trickData.owner.fullname) : quote? qsTr("Quote") : qsTr("New Trick") + Translations.refresher
+                text: parentId? qsTr("Reply to %1").arg(itemData.owner.fullname) : quote? qsTr("Quote") : qsTr("New Trick") + Translations.refresher
                 color: Colors.headerText
             }
 

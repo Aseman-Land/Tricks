@@ -271,7 +271,7 @@ TPage {
 
                     TMouseArea {
                         anchors.fill: parent
-                        onClicked: Viewport.controller.trigger("float:/tricks/add", {"parentId": dis.trickId, "trickData": item.trickData})
+                        onClicked: Viewport.controller.trigger("float:/tricks/add", {"parentId": dis.trickId, "itemData": item.itemData})
                     }
                 }
 

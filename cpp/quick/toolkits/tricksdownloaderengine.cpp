@@ -105,7 +105,22 @@ void TricksDownloaderEngine::doStart()
 
     QMutexLocker lock(&mMutex);
     if (mDownloadUnits.contains(mUrl))
+    {
+        auto &u = mDownloadUnits[mUrl];
+        if (!u.engines.contains(this))
+        {
+            u.engines << this;
+            const auto url = mUrl;
+            connect(this, &TricksDownloaderEngine::destroyed, this, [url, this](){
+                if (!mDownloadUnits.contains(url))
+                    return;
+
+                auto &u = mDownloadUnits[url];
+                u.engines.remove(this);
+            });
+        }
         return;
+    }
 
     const auto current_days = QDate::currentDate().toJulianDay();
     const auto current_folder = QString::number(current_days);
@@ -139,14 +154,7 @@ void TricksDownloaderEngine::doStart()
     const auto file_parent = root_path + '/' + current_folder;
     const auto file_path = file_parent + '/' + current_file;
 
-    if (mDownloadUnits.contains(mUrl))
-    {
-        auto &u = mDownloadUnits[mUrl];
-        if (!u.engines.contains(this))
-            u.engines << this;
-        return;
-    }
-    else if (QFileInfo::exists(file_path))
+    if (QFileInfo::exists(file_path))
     {
         TricksDownloaderEngine::emitFinished({this}, file_path);
         return;
