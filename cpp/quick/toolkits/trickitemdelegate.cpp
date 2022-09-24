@@ -281,6 +281,9 @@ void TrickItemDelegate::mousePressEvent(QMouseEvent *e)
     if (mUserAreaRect.contains(e->pos()))
         ;
     else
+    if (mImageRect.contains(e->pos()))
+        ;
+    else
     if (e->button() == Qt::LeftButton)
         mPressedPos = e->pos();
 
@@ -329,6 +332,9 @@ void TrickItemDelegate::mouseReleaseEvent(QMouseEvent *e)
     else
     if (mUserAreaRect.contains(e->pos()))
         Q_EMIT userClicked();
+    else
+    if (mImageRect.contains(e->pos()))
+        Q_EMIT imageClicked();
     else
         Q_EMIT clicked();
 }
@@ -510,6 +516,21 @@ bool TrickItemDelegate::rateState() const
     return mRateState;
 }
 
+void TrickItemDelegate::setRateState(bool rateState)
+{
+    if (rateState == mRateState)
+        return;
+
+    mRateState = rateState;
+
+    auto btn = button(RateButton);
+    if (btn)
+        btn->highlighted = rateState;
+
+    update();
+    Q_EMIT rateStateChanged();
+}
+
 qint32 TrickItemDelegate::comments() const
 {
     return mComments;
@@ -620,7 +641,15 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mRatricks = m.value(QStringLiteral("retricks")).toInt();
     mTipsSat = std::floor(m.value(QStringLiteral("tips")).toInt() / 1000);
     mComments = m.value(QStringLiteral("comments")).toInt();
+
     mRateState = m.value(QStringLiteral("rate_state")).toBool();
+    auto btn = button(RateButton);
+    if (btn)
+    {
+        btn->highlighted = mRateState;
+        btn->counter = mRates;
+    }
+
     mTipState = m.value(QStringLiteral("tip_state")).toInt();
     mShareLink = m.value(QStringLiteral("share_link")).toString();
     mTags = m.value(QStringLiteral("tags")).toStringList();
@@ -1077,7 +1106,11 @@ void TrickItemDelegate::paint(QPainter *painter)
             painter->setFont(font);
             painter->drawText(rect, Qt::AlignCenter, tr("Loading..."));
         }
+
+        mImageRect = rect;
     }
+    else
+        mImageRect = QRectF();
     // End Image
 
 

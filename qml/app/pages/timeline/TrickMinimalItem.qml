@@ -51,6 +51,9 @@ TrickItem {
     }
 
     onUserClicked: if (!globalViewMode) Viewport.controller.trigger("float:/users", {"userId": ownerId, "title": fullname})
+    onImageClicked: if (!globalViewMode) Viewport.controller.trigger("activity:/gallery", {"model": [image]})
+    onContextMenuRequest: if (!globalViewMode) showMenu(point)
+    onPressAndHold: if (!globalViewMode) showMenu(point)
 
     readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && isRetrick
     readonly property real defaultHeight: contentRect.height
@@ -73,9 +76,6 @@ TrickItem {
     property bool stateHeaderVisible: !commentMode
 
     property bool actions
-
-    onContextMenuRequest: if (!globalViewMode) showMenu(point)
-    onPressAndHold: if (!globalViewMode) showMenu(point)
 
     signal trickDeleted()
 

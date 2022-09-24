@@ -1,6 +1,8 @@
 import QtQuick 2.12
 import AsemanQml.Base 2.0
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.3
+import QtQuick.Controls.IOSStyle 2.3
 import components 1.0
 import "private"
 
@@ -43,11 +45,19 @@ Rectangle {
             height: listv.height
 
             TRemoteImage {
+                id: img
                 anchors.fill: parent
                 anchors.margins: 10 * Devices.density
-                remoteUrl: roleName.length? model[roleName] : modelData
+                source: roleName.length? model[roleName] : modelData
                 asynchronous: true
                 fillMode: Image.PreserveAspectFit
+
+                TBusyIndicator {
+                    anchors.centerIn: parent
+                    IOSStyle.foreground: "#fff"
+                    Material.accent: "#fff"
+                    running: img.status != Image.Ready
+                }
             }
         }
     }
