@@ -9,6 +9,7 @@
 #include <QAsemanDevices>
 #include <QAsemanApplication>
 #include <QAsemanTools>
+#include <QAsemanCalendarConverter>
 
 #include <math.h>
 
@@ -16,7 +17,7 @@ TrickItemDelegate::TrickItemDelegate(QQuickItem *parent)
     : QQuickPaintedItem(parent)
 {
     mFont.setLetterSpacing(QFont::PercentageSpacing, 94);
-    mForegroundColor = QColor("#000000");
+    mForegroundColor = QColor(QStringLiteral("#000000"));
 
     mTagDelimiterIcon = MaterialIcons::mdi_chevron_right;
     mViewIcon = MaterialIcons::mdi_eye;
@@ -24,7 +25,7 @@ TrickItemDelegate::TrickItemDelegate(QQuickItem *parent)
     mReplyIcon = MaterialIcons::mdi_replay;
     mTagIcon = MaterialIcons::mdi_code_braces;
 
-    mDatetime = "2 Days ago";
+    mDatetime = QDateTime::currentDateTime();
 
     connect(this, &QQuickItem::widthChanged, this, &TrickItemDelegate::refreshWidth);
 
@@ -218,6 +219,47 @@ QString TrickItemDelegate::styleText(QString text) const
     return text;
 }
 
+QString TrickItemDelegate::dateToString(const QDateTime &date)
+{
+    auto secs = QDateTime::currentDateTime().toSecsSinceEpoch() - date.toSecsSinceEpoch();
+    auto min_length = 60;
+    auto hour_length = 60 * min_length;
+    auto day_length = 24 * hour_length;
+    auto week_length = 7 * day_length;
+    auto month_length = 30 * day_length;
+    auto year_length = 365 * day_length;
+
+    struct Unit {
+        int len;
+        QString oneText;
+        QString manyText;
+        int next_len;
+    };
+
+    QList<Unit> array = {
+        // Length, Unit Str, Many String, Max
+        {1, tr("1 sec ago"), tr("%1 secs ago"), min_length},
+        {min_length, tr("1 min ago"), tr("%1 mins ago"), hour_length},
+        {hour_length, tr("1 hour ago"), tr("%1 hours ago"), day_length},
+        {day_length, tr("1 day ago"), tr("%1 days ago"), week_length},
+        {week_length, tr("1 week ago"), tr("%1 weeks ago"), month_length},
+        {month_length, tr("1 month ago"), tr("%1 months ago"), year_length},
+        {year_length, tr("1 year ago"), tr("%1 years ago"), 100 * year_length},
+    };
+
+    for (int i=0; i<array.length(); i++)
+    {
+        auto it = array.value(i);
+        if (secs <= it.len)
+            return it.oneText;
+        if (secs < it.next_len)
+            return it.manyText.arg( std::floor(secs/it.len) );
+    }
+
+    QAsemanCalendarConverter cal;
+    return cal.convertDateTimeToLittleString(date.date());
+}
+
 QSize TrickItemDelegate::calculateImageSize() const
 {
     return QSize(bodyRect().width(), bodyRect().width() * mImageSize.height() / mImageSize.width());
@@ -230,17 +272,65 @@ void TrickItemDelegate::mouseMoveEvent(QMouseEvent *e)
 
 void TrickItemDelegate::mousePressEvent(QMouseEvent *e)
 {
+    forceActiveFocus();
+    setFocus(true);
+
+    if (!mSelectedButton.rect.isNull())
+        ;
+    else
+    if (mUserAreaRect.contains(e->pos()))
+        ;
+    else
+    if (e->button() == Qt::LeftButton)
+        mPressedPos = e->pos();
+
+    if (!mPressAndHoldTimer)
+    {
+        mPressAndHoldTimer = new QTimer(this);
+        mPressAndHoldTimer->setInterval(400);
+        mPressAndHoldTimer->setSingleShot(true);
+        connect(mPressAndHoldTimer, &QTimer::timeout, this, [this](){
+            if (mPressedPos.isNull())
+                return;
+
+            Q_EMIT pressAndHold(mPressedPos);
+            mPressAndHoldTimer->deleteLater();
+            mPressAndHoldTimer = Q_NULLPTR;
+            update();
+        });
+    }
+
+    mPressAndHoldTimer->start();
+
     e->accept();
+    update();
 }
 
 void TrickItemDelegate::mouseReleaseEvent(QMouseEvent *e)
 {
+    e->accept();
+
+    mPressedPos = QPointF();
+    update();
+
+    if (mPressAndHoldTimer)
+    {
+        mPressAndHoldTimer->deleteLater();
+        mPressAndHoldTimer = Q_NULLPTR;
+    }
+    else
+        return;
+
+    if (e->button() == Qt::RightButton)
+        Q_EMIT contextMenuRequest(e->pos());
+    else
     if (!mSelectedButton.rect.isNull())
         Q_EMIT buttonClicked(mSelectedButton.action, mSelectedButton.rect);
     else
+    if (mUserAreaRect.contains(e->pos()))
+        Q_EMIT userClicked();
+    else
         Q_EMIT clicked();
-
-    e->accept();
 }
 
 void TrickItemDelegate::hoverEnterEvent(QHoverEvent *e)
@@ -281,6 +371,30 @@ void TrickItemDelegate::hoverMoveEvent(QHoverEvent *e)
 
     e->ignore();
     QQuickPaintedItem::hoverMoveEvent(e);
+}
+
+void TrickItemDelegate::mouseUngrabEvent()
+{
+    mPressedPos = QPointF();
+    if (mPressAndHoldTimer)
+    {
+        mPressAndHoldTimer->deleteLater();
+        mPressAndHoldTimer = Q_NULLPTR;
+    }
+
+    QQuickPaintedItem::mouseUngrabEvent();
+    update();
+}
+
+TrickItemDelegate::Button *TrickItemDelegate::button(ButtonActions action)
+{
+    for (auto &b: mLeftSideButtons)
+        if (b.action == action)
+            return &b;
+    for (auto &b: mRightSideButtons)
+        if (b.action == action)
+            return &b;
+    return Q_NULLPTR;
 }
 
 bool TrickItemDelegate::stateHeader() const
@@ -477,7 +591,7 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     else
         mAvatar.clear();
 
-    mDatetime = m.value(QStringLiteral("datetime")).toString();
+    mDatetime = m.value(QStringLiteral("datetime")).toDateTime();
     mViewCount = m.value(QStringLiteral("views")).toInt();
 
     mLanguage = m.value(QStringLiteral("programing_language")).toMap().value(QStringLiteral("name")).toString();
@@ -592,8 +706,8 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mParentOwnerFullName = parent_owner.value(QStringLiteral("fullname")).toString();
     mParentOwnerUsername = parent_owner.value(QStringLiteral("username")).toString();
 
-    mRetrickText = tr("%1 (@%2) Retricked...").arg(mRetrickFullname).arg(mRetrickUsername);
-    mReplyText = mParentOwnerId? tr("In reply to %1's (@%2) trick...").arg(mParentOwnerFullName).arg(mParentOwnerUsername) : tr("In reply to a deleted trick...");
+    mRetrickText = tr("%1 (@%2) Retricked...").arg(mRetrickFullname, mRetrickUsername);
+    mReplyText = mParentOwnerId? tr("In reply to %1's (@%2) trick...").arg(mParentOwnerFullName, mParentOwnerUsername) : tr("In reply to a deleted trick...");
 
     downloadImage();
     downloadAvatar();
@@ -714,6 +828,17 @@ void TrickItemDelegate::paint(QPainter *painter)
     QFont font, fontIcon;
 
 
+    // Paint Background
+    if (!mPressedPos.isNull())
+    {
+        color = mForegroundColor;
+        color.setAlphaF(0.1);
+
+        painter->fillRect(QRectF(0,0,width(), height()), color);
+    }
+    // End Background
+
+
     // Paint State Header
     if (mIsRetrick && mStateHeader && !mCommentMode)
     {
@@ -802,6 +927,8 @@ void TrickItemDelegate::paint(QPainter *painter)
     painter->drawText(rect, Qt::AlignLeft, mFullname, &drawedRect);
     // End Fullname
 
+    mUserAreaRect = avatarRect;
+    mUserAreaRect.setRight(drawedRect.right());
 
     // Paint Username
     rect = QRectF(drawedRect.topRight(), QPointF(fullRect.right(), drawedRect.bottom()));
@@ -826,7 +953,7 @@ void TrickItemDelegate::paint(QPainter *painter)
 
     painter->setPen(color);
     painter->setFont(font);
-    painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, mDatetime, &drawedRect);
+    painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, dateToString(mDatetime), &drawedRect);
     // End DateTime
 
 
@@ -924,7 +1051,7 @@ void TrickItemDelegate::paint(QPainter *painter)
 
 
     // Print Image
-    if (!mImageSize.isEmpty())
+    if (mImageSize.height() > 1)
     {
         rect = QRectF(rect.bottomLeft(), QSizeF(rect.width(), rect.width() * mImageSize.height() / mImageSize.width()));
         rect.setY(rect.y() + mSpacing);
@@ -937,6 +1064,18 @@ void TrickItemDelegate::paint(QPainter *painter)
             painter->setClipPath(path);
             painter->drawImage(rect, mCacheImage);
             painter->setClipping(false);
+        }
+        else
+        {
+            color = mForegroundColor;
+            color.setAlphaF(0.7);
+
+            font = mFont;
+            font.setPixelSize(mFont.pixelSize() * 8 / 9);
+
+            painter->setPen(color);
+            painter->setFont(font);
+            painter->drawText(rect, Qt::AlignCenter, tr("Loading..."));
         }
     }
     // End Image
@@ -962,25 +1101,53 @@ void TrickItemDelegate::paint(QPainter *painter)
     fontIcon = mFontIcon;
     fontIcon.setPixelSize(fontIcon.pixelSize() * 12 / 9);
 
+    font = mFont;
+    font.setPixelSize(font.pixelSize() * 8 / 9);
+
     color = mForegroundColor;
     color.setAlphaF(0.7);
 
     for (auto &b: mLeftSideButtons)
     {
-        painter->setPen(color);
+        fontIcon.setBold(b.highlighted && b.fillIcon == b.normalIcon);
+        painter->setPen(b.highlighted? mHighlightColor : color);
         painter->setFont(fontIcon);
-        painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, b.normalIcon, &drawedRect);
+        painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, (b.highlighted? b.fillIcon : b.normalIcon), &drawedRect);
 
         b.rect = drawedRect.adjusted(-6, -6, 6, 6);
+
+        if (b.counter)
+        {
+            rect.setLeft(drawedRect.right() + 4);
+
+            painter->setFont(font);
+            painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, QString::number(b.counter), &drawedRect);
+
+            b.rect.setRight(drawedRect.right() + 6);
+        }
 
         rect.setLeft(drawedRect.right() + 12);
     }
 
     for (auto &b: mRightSideButtons)
     {
-        painter->setPen(color);
+        painter->setPen(b.highlighted? mHighlightColor : color);
+        if (b.counter)
+        {
+            painter->setFont(font);
+            painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(b.counter), &drawedRect);
+
+            b.rect = drawedRect;
+
+            rect.setRight(drawedRect.left() - 4);
+        }
+
+        fontIcon.setBold(b.highlighted && b.fillIcon == b.normalIcon);
         painter->setFont(fontIcon);
-        painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, b.normalIcon, &drawedRect);
+        painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, (b.highlighted? b.fillIcon : b.normalIcon), &drawedRect);
+
+        if (b.counter)
+            drawedRect.setRight(b.rect.right());
 
         b.rect = drawedRect.adjusted(-6, -6, 6, 6);
 
@@ -1066,7 +1233,7 @@ QString TrickItemDelegate::username() const
     return mUsername;
 }
 
-QString TrickItemDelegate::datetime() const
+QDateTime TrickItemDelegate::datetime() const
 {
     return mDatetime;
 }

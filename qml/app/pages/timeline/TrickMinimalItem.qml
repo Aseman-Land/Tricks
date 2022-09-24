@@ -50,6 +50,8 @@ TrickItem {
         }
     }
 
+    onUserClicked: if (!globalViewMode) Viewport.controller.trigger("float:/users", {"userId": ownerId, "title": fullname})
+
     readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && isRetrick
     readonly property real defaultHeight: contentRect.height
 
@@ -72,8 +74,8 @@ TrickItem {
 
     property bool actions
 
-//    onContextMenuRequest: if (!globalViewMode) moreBtnObj.showMenu( dis.mapToItem(moreBtnObj, Qt.point(mouseX, mouseY)))
-//    onPressAndHold: if (!globalViewMode) moreBtnObj.showMenu( dis.mapToItem(moreBtnObj, Qt.point(mouseX, mouseY)))
+    onContextMenuRequest: if (!globalViewMode) showMenu(point)
+    onPressAndHold: if (!globalViewMode) showMenu(point)
 
     signal trickDeleted()
 

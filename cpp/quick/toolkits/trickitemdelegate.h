@@ -11,6 +11,7 @@
 #include <QMutex>
 #include <QImage>
 #include <QVariantMap>
+#include <QTimer>
 
 class TrickItemDelegate : public QQuickPaintedItem
 {
@@ -23,7 +24,7 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor NOTIFY foregroundColorChanged)
     Q_PROPERTY(QString fullname READ fullname NOTIFY fullnameChanged)
     Q_PROPERTY(QString username READ username NOTIFY usernameChanged)
-    Q_PROPERTY(QString datetime READ datetime NOTIFY datetimeChanged)
+    Q_PROPERTY(QDateTime datetime READ datetime NOTIFY datetimeChanged)
     Q_PROPERTY(QFont fontIcon READ fontIcon WRITE setFontIcon NOTIFY fontIconChanged)
     Q_PROPERTY(QColor highlightColor READ highlightColor WRITE setHighlightColor NOTIFY highlightColorChanged)
     Q_PROPERTY(QStringList tags READ tags NOTIFY tagsChanged)
@@ -77,6 +78,7 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(QSize quoteImageSize READ quoteImageSize NOTIFY quoteImageSizeChanged)
     Q_PROPERTY(bool quoteCodeFrameIsDark READ quoteCodeFrameIsDark NOTIFY quoteCodeFrameIsDarkChanged)
     Q_PROPERTY(QString originalBody READ originalBody NOTIFY originalBodyChanged)
+    Q_PROPERTY(bool stateHeader READ stateHeader WRITE setStateHeader NOTIFY stateHeaderChanged)
 
 public:
     enum ButtonActions {
@@ -135,7 +137,7 @@ public:
 
     QString fullname() const;
     QString username() const;
-    QString datetime() const;
+    QDateTime datetime() const;
     QStringList tags() const;
     QString language() const;
     qint32 viewCount() const;
@@ -186,7 +188,10 @@ public:
 
 Q_SIGNALS:
     void buttonClicked(ButtonActions action, const QRectF &rect);
+    void userClicked();
     void clicked();
+    void pressAndHold(const QPointF &point);
+    void contextMenuRequest(const QPointF &point);
     void sceneWidthChanged();
     void avatarSizeChanged();
     void fontChanged();
@@ -261,6 +266,7 @@ protected:
 
     QTextDocument *createTextDocument() const;
     QString styleText(QString t) const;
+    QString dateToString(const QDateTime &dateTime);
     QSize calculateImageSize() const;
 
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -269,6 +275,7 @@ protected:
     void hoverEnterEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
     void hoverLeaveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
     void hoverMoveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
+    void mouseUngrabEvent() Q_DECL_OVERRIDE;
 
 private:
     struct Button {
@@ -277,6 +284,7 @@ private:
         QString fillIcon;
         ButtonActions action = NoneButton;
         int counter = 0;
+        bool highlighted = false;
 
         bool operator==(const Button &b) const {
             return rect == b.rect && normalIcon == b.normalIcon &&
@@ -288,8 +296,13 @@ private:
         }
     };
 
+    Button *button(ButtonActions action);
+
     TricksDownloaderEngine *mImageDownloader = Q_NULLPTR;
     TricksDownloaderEngine *mAvatarDownloader = Q_NULLPTR;
+
+    QTimer *mPressAndHoldTimer = Q_NULLPTR;
+    QPointF mPressedPos;
 
     QMutex mMutex;
 
@@ -315,7 +328,7 @@ private:
 
     QString mFullname;
     QString mUsername;
-    QString mDatetime;
+    QDateTime mDatetime;
     QString mTagIcon;
     QStringList mTags;
     QString mLanguage;
@@ -332,6 +345,7 @@ private:
     QString mOriginalBody;
     QUrl mImage;
     QUrl mAvatar;
+    QRectF mUserAreaRect;
     QSize mImageSize;
     QString mCode;
     QVariantList mReferences;
@@ -382,7 +396,6 @@ private:
     QVariantMap mItemData;
 
     Button mSelectedButton;
-    Q_PROPERTY(bool stateHeader READ stateHeader WRITE setStateHeader NOTIFY stateHeaderChanged)
 };
 
 #endif // TRICKITEMDELEGATE_H

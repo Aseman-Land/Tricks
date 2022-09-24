@@ -103,6 +103,7 @@ void TricksDownloaderEngine::doStart()
     if (mUrl.isEmpty() || !mUrl.isValid())
         return;
 
+    const auto url = mUrl;
     QMutexLocker lock(&mMutex);
     if (mDownloadUnits.contains(mUrl))
     {
@@ -110,7 +111,6 @@ void TricksDownloaderEngine::doStart()
         if (!u.engines.contains(this))
         {
             u.engines << this;
-            const auto url = mUrl;
             connect(this, &TricksDownloaderEngine::destroyed, this, [url, this](){
                 if (!mDownloadUnits.contains(url))
                     return;
@@ -180,6 +180,13 @@ void TricksDownloaderEngine::doStart()
     }
 
     u.reply = u.am->get(req);
+    connect(this, &TricksDownloaderEngine::destroyed, this, [url, this](){
+        if (!mDownloadUnits.contains(url))
+            return;
+
+        auto &u = mDownloadUnits[url];
+        u.engines.remove(this);
+    });
     connect(u.reply, &QNetworkReply::readyRead, [u](){
         u.file->write(u.reply->readAll());
     });
