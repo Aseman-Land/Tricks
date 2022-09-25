@@ -18,6 +18,7 @@ TrickItem {
     id: dis
     implicitHeight: defaultHeight
     clip: true
+    sceneWidth: Math.min(450*Devices.density, width - 2*Constants.margins)
     serverAddress: Constants.baseUrl
     cachePath: Constants.cachePath
     font.pixelSize: 9 * Devices.fontDensity
@@ -25,6 +26,8 @@ TrickItem {
     fontIcon.family: MaterialIcons.family
     fontIcon.pixelSize: 9 * Devices.fontDensity
     highlightColor: Colors.primary
+    rateColor: Colors.likeColors
+    favoriteColor: Colors.bookmarksColors
     imageRoundness: Constants.radius
     z: 1000
     onButtonClicked: {
@@ -70,9 +73,6 @@ TrickItem {
     }
 
     property int mainId: isRetrick? retrickTrickId : trickId
-
-    property bool commentLineTop
-    property bool commentLineBottom
     property bool stateHeaderVisible: !commentMode
 
     property bool actions
@@ -150,6 +150,7 @@ TrickItem {
             deleteBookmarkReq.doRequest();
         else
             addBookmarkReq.doRequest();
+        bookmarked = !bookmarked;
     }
 
     function showMenu(point, rect) {
@@ -205,8 +206,9 @@ TrickItem {
     AddBookmarkRequest {
         id: addBookmarkReq
         trick_id: dis.trickId
+        _debug: true
         onSuccessfull: {
-            itemData.bookmarked = true;
+            bookmarked = true;
             GlobalSignals.trickUpdated(itemData);
         }
     }
@@ -215,7 +217,7 @@ TrickItem {
         id: deleteBookmarkReq
         _trick_id: dis.trickId
         onSuccessfull: {
-            itemData.bookmarked = false;
+            bookmarked = false;
             GlobalSignals.trickUpdated(itemData);
         }
     }

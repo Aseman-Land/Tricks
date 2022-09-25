@@ -2,12 +2,13 @@
 #define TRICKITEMDELEGATE_H
 
 #include "tricksdownloaderengine.h"
+#include "trickitemcacheengine.h"
 
 #include <QQuickPaintedItem>
 #include <QDateTime>
 #include <QStringList>
 #include <QTextDocument>
-#include <QUrl>
+#include <QString>
 #include <QMutex>
 #include <QImage>
 #include <QVariantMap>
@@ -33,14 +34,14 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(QString body READ body NOTIFY itemDataChanged)
     Q_PROPERTY(QRectF bodyRect READ bodyRect NOTIFY bodyRectChanged)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged)
-    Q_PROPERTY(QUrl image READ image NOTIFY itemDataChanged)
-    Q_PROPERTY(QUrl avatar READ avatar NOTIFY itemDataChanged)
+    Q_PROPERTY(QString image READ image NOTIFY itemDataChanged)
+    Q_PROPERTY(QString avatar READ avatar NOTIFY itemDataChanged)
     Q_PROPERTY(QSize imageSize READ imageSize NOTIFY itemDataChanged)
     Q_PROPERTY(QString cachePath READ cachePath WRITE setCachePath NOTIFY cachePathChanged)
     Q_PROPERTY(qreal imageRoundness READ imageRoundness WRITE setImageRoundness NOTIFY imageRoundnessChanged)
     Q_PROPERTY(QString replyText READ replyText NOTIFY itemDataChanged)
     Q_PROPERTY(QString retrickText READ retrickText NOTIFY itemDataChanged)
-    Q_PROPERTY(qint32 parentId READ parentId NOTIFY itemDataChanged)
+    Q_PROPERTY(qint32 parentId READ parentId WRITE setParentId NOTIFY parentIdChanged)
     Q_PROPERTY(qint32 parentOwnerId READ parentOwnerId NOTIFY itemDataChanged)
     Q_PROPERTY(bool commentMode READ commentMode WRITE setCommentMode NOTIFY commentModeChanged)
     Q_PROPERTY(qint32 trickId READ trickId NOTIFY itemDataChanged)
@@ -61,24 +62,28 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(bool rateState READ rateState WRITE setRateState NOTIFY rateStateChanged)
     Q_PROPERTY(int tipState READ tipState NOTIFY itemDataChanged)
     Q_PROPERTY(QString shareLink READ shareLink NOTIFY itemDataChanged)
-    Q_PROPERTY(bool bookmarked READ bookmarked NOTIFY itemDataChanged)
+    Q_PROPERTY(bool bookmarked READ bookmarked WRITE setBookmarked NOTIFY bookmarkedChanged)
     Q_PROPERTY(qint32 retrickTrickId READ retrickTrickId NOTIFY itemDataChanged)
     Q_PROPERTY(qint32 retrickUserId READ retrickUserId NOTIFY itemDataChanged)
     Q_PROPERTY(QString retrickUsername READ retrickUsername NOTIFY itemDataChanged)
     Q_PROPERTY(QString retrickFullname READ retrickFullname NOTIFY itemDataChanged)
-    Q_PROPERTY(QUrl retrickAvatar READ retrickAvatar NOTIFY itemDataChanged)
+    Q_PROPERTY(QString retrickAvatar READ retrickAvatar NOTIFY itemDataChanged)
     Q_PROPERTY(QString quote READ quote NOTIFY itemDataChanged)
     Q_PROPERTY(QVariantList quotedReferences READ quotedReferences NOTIFY itemDataChanged)
     Q_PROPERTY(qint32 quoteId READ quoteId NOTIFY itemDataChanged)
     Q_PROPERTY(QString quoteUsername READ quoteUsername NOTIFY itemDataChanged)
     Q_PROPERTY(QString quoteFullname READ quoteFullname NOTIFY itemDataChanged)
     Q_PROPERTY(qint32 quoteUserId READ quoteUserId NOTIFY itemDataChanged)
-    Q_PROPERTY(QUrl quoteAvatar READ quoteAvatar NOTIFY itemDataChanged)
-    Q_PROPERTY(QUrl quoteImage READ quoteImage NOTIFY itemDataChanged)
+    Q_PROPERTY(QString quoteAvatar READ quoteAvatar NOTIFY itemDataChanged)
+    Q_PROPERTY(QString quoteImage READ quoteImage NOTIFY itemDataChanged)
     Q_PROPERTY(QSize quoteImageSize READ quoteImageSize NOTIFY itemDataChanged)
     Q_PROPERTY(bool quoteCodeFrameIsDark READ quoteCodeFrameIsDark NOTIFY itemDataChanged)
     Q_PROPERTY(QString originalBody READ originalBody NOTIFY itemDataChanged)
     Q_PROPERTY(bool stateHeader READ stateHeader WRITE setStateHeader NOTIFY stateHeaderChanged)
+    Q_PROPERTY(QColor favoriteColor READ favoriteColor WRITE setFavoriteColor NOTIFY favoriteColorChanged)
+    Q_PROPERTY(QColor rateColor READ rateColor WRITE setRateColor NOTIFY rateColorChanged)
+    Q_PROPERTY(bool commentLineTop READ commentLineTop WRITE setCommentLineTop NOTIFY commentLineTopChanged)
+    Q_PROPERTY(bool commentLineBottom READ commentLineBottom WRITE setCommentLineBottom NOTIFY commentLineBottomChanged)
 
 public:
     enum ButtonActions {
@@ -135,6 +140,12 @@ public:
     bool rateState() const;
     void setRateState(bool rateState);
 
+    bool bookmarked() const;
+    void setBookmarked(bool bookmarked);
+
+    qint32 parentId() const;
+    void setParentId(qint32 parentId);
+
     QRectF bodyRect() const;
     QRectF contentRect() const;
 
@@ -145,12 +156,11 @@ public:
     QString language() const;
     qint32 viewCount() const;
     QString body() const;
-    QUrl image() const;
-    QUrl avatar() const;
+    QString image() const;
+    QString avatar() const;
     QSize imageSize() const;
     QString replyText() const;
     QString retrickText() const;
-    qint32 parentId() const;
     qint32 parentOwnerId() const;
     qint32 trickId() const;
     qint32 linkId() const;
@@ -160,33 +170,44 @@ public:
     qint32 originalOwnerId() const;
     qint32 ownerId() const;
     QString code() const;
-    const QVariantList &references() const;
+    QVariantList references() const;
     qint32 rates() const;
     qint32 ratricks() const;
     qint32 tipsSat() const;
     qint32 comments() const;
     int tipState() const;
     QString shareLink() const;
-    bool bookmarked() const;
     qint32 retrickTrickId() const;
     qint32 retrickUserId() const;
     QString retrickUsername() const;
     QString retrickFullname() const;
-    QUrl retrickAvatar() const;
+    QString retrickAvatar() const;
     QString quote() const;
-    const QVariantList &quotedReferences() const;
+    QVariantList quotedReferences() const;
     qint32 quoteId() const;
     QString quoteUsername() const;
     QString quoteFullname() const;
     qint32 quoteUserId() const;
-    QUrl quoteAvatar() const;
-    QUrl quoteImage() const;
+    QString quoteAvatar() const;
+    QString quoteImage() const;
     QSize quoteImageSize() const;
     bool quoteCodeFrameIsDark() const;
     QString originalBody() const;
 
     bool stateHeader() const;
     void setStateHeader(bool newStateHeader);
+
+    QColor favoriteColor() const;
+    void setFavoriteColor(const QColor &newFavoriteColor);
+
+    QColor rateColor() const;
+    void setRateColor(const QColor &newRateColor);
+
+    bool commentLineTop() const;
+    void setCommentLineTop(bool newCommentLineTop);
+
+    bool commentLineBottom() const;
+    void setCommentLineBottom(bool newCommentLineBottom);
 
 Q_SIGNALS:
     void buttonClicked(ButtonActions action, const QRectF &rect);
@@ -203,6 +224,7 @@ Q_SIGNALS:
     void fontIconChanged();
     void highlightColorChanged();
     void bodyRectChanged();
+    void bookmarkedChanged();
     void contentRectChanged();
     void cachePathChanged();
     void imageRoundnessChanged();
@@ -211,6 +233,11 @@ Q_SIGNALS:
     void globalViewModeChanged();
     void serverAddressChanged();
     void rateStateChanged();
+    void favoriteColorChanged();
+    void rateColorChanged();
+    void commentLineTopChanged();
+    void commentLineBottomChanged();
+    void parentIdChanged();
 
 private Q_SLOTS:
     void refreshWidth();
@@ -242,6 +269,7 @@ private:
         ButtonActions action = NoneButton;
         int counter = 0;
         bool highlighted = false;
+        QColor highlightColor;
 
         bool operator==(const Button &b) const {
             return rect == b.rect && normalIcon == b.normalIcon &&
@@ -276,12 +304,15 @@ private:
     QColor mHighlightColor;
     QString mServerAddress;
     QString mCachePath;
-    QImage mCacheImage;
-    QImage mCacheAvatar;
+    TrickItemCacheEngine *mCacheImage = Q_NULLPTR;
+    TrickItemCacheEngine *mCacheAvatar = Q_NULLPTR;
     qreal mImageRoundness = 10;
 
     QList<Button> mLeftSideButtons;
     QList<Button> mRightSideButtons;
+
+    QColor mFavoriteColor;
+    QColor mRateColor;
 
     QString mFullname;
     QString mUsername;
@@ -300,8 +331,8 @@ private:
     int mTipState = 0;
     QString mBody;
     QString mOriginalBody;
-    QUrl mImage;
-    QUrl mAvatar;
+    QString mImage;
+    QString mAvatar;
     QRectF mUserAreaRect;
     QRectF mImageRect;
     QSize mImageSize;
@@ -323,9 +354,9 @@ private:
     QString mQuoteUsername;
     QString mQuoteFullname;
     qint32 mQuoteUserId = 0;
-    QUrl mQuoteAvatar;
+    QString mQuoteAvatar;
 
-    QUrl mQuoteImage;
+    QString mQuoteImage;
     QSize mQuoteImageSize;
     bool mQuoteCodeFrameIsDark = false;
 
@@ -346,7 +377,7 @@ private:
     qint32 mRetrickUserId = 0;
     QString mRetrickUsername;
     QString mRetrickFullname;
-    QUrl mRetrickAvatar;
+    QString mRetrickAvatar;
     bool mIsRetrick = false;
     bool mCommentLineTop = false;
     bool mCommentLineBottom = false;

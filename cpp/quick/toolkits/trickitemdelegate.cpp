@@ -27,6 +27,9 @@ TrickItemDelegate::TrickItemDelegate(QQuickItem *parent)
 
     mDatetime = QDateTime::currentDateTime();
 
+    mCacheAvatar = new TrickItemCacheEngine(this);
+    mCacheImage = new TrickItemCacheEngine(this);
+
     connect(this, &QQuickItem::widthChanged, this, &TrickItemDelegate::refreshWidth);
 
     setupLeftButtons();
@@ -56,7 +59,10 @@ QRectF TrickItemDelegate::contentRect() const
 {
     auto doc = createTextDocument();
 
-    int height = mSpacing + mAvatarSize + mSpacing + doc->size().height() + mSpacing + mButtonsHeight + mSpacing;
+    int height = mSpacing + mAvatarSize + mSpacing + doc->size().height() + mSpacing;
+
+    if (!mCommentMode)
+        height += mButtonsHeight + mSpacing;
     if (!mImage.isEmpty())
         height += calculateImageSize().height() + mSpacing;
     if (mIsRetrick && mStateHeader && !mCommentMode)
@@ -86,8 +92,7 @@ void TrickItemDelegate::downloadImage()
     {
         mImageDownloader = new TricksDownloaderEngine(this);
         connect(mImageDownloader, &TricksDownloaderEngine::finishedImage, this, [this](const QImage &img){
-            qDebug() << "Finished Image" << this << img.size();
-            mCacheImage = img;
+            mCacheImage->cache(image(), img);
             update();
         });
     }
@@ -98,7 +103,7 @@ void TrickItemDelegate::downloadImage()
 
     mImageDownloader->setCachePath(mCachePath);
     mImageDownloader->setImageSize(calculateImageSize() * std::max<qreal>(2, QAsemanDevices::deviceDensity()));
-    mImageDownloader->setUrl(mImage);
+    mImageDownloader->setUrl(image());
     mImageDownloader->start();
 }
 
@@ -108,8 +113,7 @@ void TrickItemDelegate::downloadAvatar()
     {
         mAvatarDownloader = new TricksDownloaderEngine(this);
         connect(mAvatarDownloader, &TricksDownloaderEngine::finishedImage, this, [this](const QImage &img){
-            qDebug() << "Finished Avatar" << this << img.size();
-            mCacheAvatar = img;
+            mCacheAvatar->cache(avatar(), img);
             update();
         });
     }
@@ -120,7 +124,7 @@ void TrickItemDelegate::downloadAvatar()
 
     mAvatarDownloader->setCachePath(mCachePath);
     mAvatarDownloader->setImageSize(QSize(mAvatarSize, mAvatarSize) * std::max<qreal>(2, QAsemanDevices::deviceDensity()));
-    mAvatarDownloader->setUrl(mAvatar);
+    mAvatarDownloader->setUrl(avatar());
     mAvatarDownloader->start();
 }
 
@@ -134,6 +138,7 @@ void TrickItemDelegate::setupLeftButtons()
         .fillIcon = MaterialIcons::mdi_thumb_up,
         .action = RateButton,
         .counter = 0,
+        .highlightColor = QColor(),
     };
     Button commentBtn = {
         .rect = QRect(),
@@ -141,6 +146,7 @@ void TrickItemDelegate::setupLeftButtons()
         .fillIcon = MaterialIcons::mdi_comment,
         .action = CommentButton,
         .counter = 0,
+        .highlightColor = QColor(),
     };
     Button retrickBtn = {
         .rect = QRect(),
@@ -148,6 +154,7 @@ void TrickItemDelegate::setupLeftButtons()
         .fillIcon = MaterialIcons::mdi_repeat,
         .action = RetrickButton,
         .counter = 0,
+        .highlightColor = QColor(),
     };
 
     mLeftSideButtons << rateBtn << commentBtn << retrickBtn;
@@ -163,6 +170,7 @@ void TrickItemDelegate::setupRightButtons()
         .fillIcon = MaterialIcons::mdi_dots_horizontal,
         .action = MoreButton,
         .counter = 0,
+        .highlightColor = QColor(),
     };
     Button favoriteBtn = {
         .rect = QRect(),
@@ -170,6 +178,7 @@ void TrickItemDelegate::setupRightButtons()
         .fillIcon = MaterialIcons::mdi_star,
         .action = FavoriteButton,
         .counter = 0,
+        .highlightColor = QColor(),
     };
     Button tipBtn = {
         .rect = QRect(),
@@ -177,6 +186,7 @@ void TrickItemDelegate::setupRightButtons()
         .fillIcon = MaterialIcons::mdi_bitcoin,
         .action = TipButton,
         .counter = 0,
+        .highlightColor = QColor(),
     };
 
     mRightSideButtons << moreBtn << favoriteBtn << tipBtn;
@@ -403,6 +413,74 @@ TrickItemDelegate::Button *TrickItemDelegate::button(ButtonActions action)
     return Q_NULLPTR;
 }
 
+bool TrickItemDelegate::commentLineBottom() const
+{
+    return mCommentLineBottom;
+}
+
+void TrickItemDelegate::setCommentLineBottom(bool newCommentLineBottom)
+{
+    if (mCommentLineBottom == newCommentLineBottom)
+        return;
+    mCommentLineBottom = newCommentLineBottom;
+    update();
+    Q_EMIT commentLineBottomChanged();
+}
+
+bool TrickItemDelegate::commentLineTop() const
+{
+    return mCommentLineTop;
+}
+
+void TrickItemDelegate::setCommentLineTop(bool newCommentLineTop)
+{
+    if (mCommentLineTop == newCommentLineTop)
+        return;
+    mCommentLineTop = newCommentLineTop;
+    update();
+    Q_EMIT commentLineTopChanged();
+}
+
+QColor TrickItemDelegate::rateColor() const
+{
+    return mRateColor;
+}
+
+void TrickItemDelegate::setRateColor(const QColor &newRateColor)
+{
+    if (mRateColor == newRateColor)
+        return;
+    mRateColor = newRateColor;
+    auto btn = button(RateButton);
+    if (btn)
+    {
+        btn->highlightColor = mRateColor;
+        update();
+    }
+
+    Q_EMIT rateColorChanged();
+}
+
+QColor TrickItemDelegate::favoriteColor() const
+{
+    return mFavoriteColor;
+}
+
+void TrickItemDelegate::setFavoriteColor(const QColor &newFavoriteColor)
+{
+    if (mFavoriteColor == newFavoriteColor)
+        return;
+    mFavoriteColor = newFavoriteColor;
+    auto btn = button(FavoriteButton);
+    if (btn)
+    {
+        btn->highlightColor = mFavoriteColor;
+        update();
+    }
+
+    Q_EMIT favoriteColorChanged();
+}
+
 bool TrickItemDelegate::stateHeader() const
 {
     return mStateHeader;
@@ -431,14 +509,14 @@ QSize TrickItemDelegate::quoteImageSize() const
     return mQuoteImageSize;
 }
 
-QUrl TrickItemDelegate::quoteImage() const
+QString TrickItemDelegate::quoteImage() const
 {
-    return mQuoteImage;
+    return mServerAddress + '/' +mQuoteImage;
 }
 
-QUrl TrickItemDelegate::quoteAvatar() const
+QString TrickItemDelegate::quoteAvatar() const
 {
-    return mQuoteAvatar;
+    return mServerAddress + '/' +mQuoteAvatar;
 }
 
 qint32 TrickItemDelegate::quoteUserId() const
@@ -461,7 +539,7 @@ qint32 TrickItemDelegate::quoteId() const
     return mQuoteId;
 }
 
-const QVariantList &TrickItemDelegate::quotedReferences() const
+QVariantList TrickItemDelegate::quotedReferences() const
 {
     return mQuotedReferences;
 }
@@ -471,9 +549,9 @@ QString TrickItemDelegate::quote() const
     return mQuote;
 }
 
-QUrl TrickItemDelegate::retrickAvatar() const
+QString TrickItemDelegate::retrickAvatar() const
 {
-    return mRetrickAvatar;
+    return mServerAddress + '/' +mRetrickAvatar;
 }
 
 QString TrickItemDelegate::retrickFullname() const
@@ -501,6 +579,21 @@ bool TrickItemDelegate::bookmarked() const
     return mBookmarked;
 }
 
+void TrickItemDelegate::setBookmarked(bool bookmarked)
+{
+    if (mBookmarked == bookmarked)
+        return;
+
+    mBookmarked = bookmarked;
+    mItemData[QStringLiteral("bookmarked")] = mBookmarked;
+    auto btn = button(FavoriteButton);
+    if (btn)
+        btn->highlighted = bookmarked;
+
+    update();
+    Q_EMIT bookmarkedChanged();
+}
+
 QString TrickItemDelegate::shareLink() const
 {
     return mShareLink;
@@ -522,7 +615,6 @@ void TrickItemDelegate::setRateState(bool rateState)
         return;
 
     mRateState = rateState;
-
     auto btn = button(RateButton);
     if (btn)
         btn->highlighted = rateState;
@@ -551,7 +643,7 @@ qint32 TrickItemDelegate::rates() const
     return mRates;
 }
 
-const QVariantList &TrickItemDelegate::references() const
+QVariantList TrickItemDelegate::references() const
 {
     return mReferences;
 }
@@ -608,7 +700,7 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mOriginalOwnerId = owner.value(QStringLiteral("id")).toInt();
     auto avatar = owner.value(QStringLiteral("avatar")).toString();
     if (!avatar.isEmpty())
-        mAvatar = mServerAddress + '/' + avatar;
+        mAvatar = avatar;
     else
         mAvatar.clear();
 
@@ -619,15 +711,18 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
 
     auto image = m.value(QStringLiteral("filename")).toString();
     if (!avatar.isEmpty())
-        mImage = mServerAddress + '/' + image;
+        mImage = image;
     else
         mImage.clear();
 
     auto imageSize = m.value("image_size").toMap();
     mImageSize = QSize(imageSize.value("width", 1000).toInt(), imageSize.value("height", 1).toInt());
 
+    mCommentLineTop = false;
+    mCommentLineBottom = false;
+
     mLinkId = m.value("link_id").toInt();
-    if (mLinkId == 0)
+    if (mLinkId != 0)
     {
         if (mLinkId < mTrickId)
             mCommentLineTop = true;
@@ -654,6 +749,10 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mShareLink = m.value(QStringLiteral("share_link")).toString();
     mTags = m.value(QStringLiteral("tags")).toStringList();
     mBookmarked = m.value(QStringLiteral("bookmarked")).toBool();
+
+    btn = button(FavoriteButton);
+    if (btn)
+        btn->highlighted = mBookmarked;
 
     mCode = m.value(QStringLiteral("code")).toString();
     mOriginalBody = m.value(QStringLiteral("body")).toString();
@@ -738,8 +837,8 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mRetrickText = tr("%1 (@%2) Retricked...").arg(mRetrickFullname, mRetrickUsername);
     mReplyText = mParentOwnerId? tr("In reply to %1's (@%2) trick...").arg(mParentOwnerFullName, mParentOwnerUsername) : tr("In reply to a deleted trick...");
 
-    downloadImage();
-    downloadAvatar();
+    QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadImage, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadAvatar, Qt::QueuedConnection);
     Q_EMIT itemDataChanged();
     Q_EMIT contentRectChanged();
 }
@@ -792,6 +891,7 @@ void TrickItemDelegate::setCommentMode(bool newCommentMode)
     if (mCommentMode == newCommentMode)
         return;
     mCommentMode = newCommentMode;
+    update();
     Q_EMIT commentModeChanged();
 }
 
@@ -803,6 +903,14 @@ qint32 TrickItemDelegate::parentOwnerId() const
 qint32 TrickItemDelegate::parentId() const
 {
     return mParentId;
+}
+
+void TrickItemDelegate::setParentId(qint32 parentId)
+{
+    if (mParentId == parentId)
+        return;
+    mParentId = parentId;
+    Q_EMIT parentIdChanged();
 }
 
 QString TrickItemDelegate::retrickText() const
@@ -935,13 +1043,32 @@ void TrickItemDelegate::paint(QPainter *painter)
 
     painter->fillPath(avatar, mHighlightColor);
 
-    if (!mCacheAvatar.isNull())
+    auto cacheAvatar = mCacheAvatar->check(TrickItemDelegate::avatar());
+    if (!cacheAvatar.isNull())
     {
         painter->setClipPath(avatar);
-        painter->drawImage(avatarRect, mCacheAvatar);
+        painter->drawImage(avatarRect, cacheAvatar);
         painter->setClipping(false);
     }
     // End Avatar
+
+
+    // Paint Comment Line
+    color = mHighlightColor;
+    color.setAlphaF(0.2);
+
+    if (mCommentLineBottom)
+    {
+        rect = QRectF(QPointF(avatarRect.center().x() - 1, avatarRect.bottom() + 2), QPointF(avatarRect.center().x() + 1, height()));
+        painter->fillRect(rect, color);
+    }
+
+    if (mCommentLineTop)
+    {
+        rect = QRectF(QPointF(avatarRect.center().x() - 1, 0), QPointF(avatarRect.center().x() + 1, avatarRect.top() - 2));
+        painter->fillRect(rect, color);
+    }
+    // End Comment Line
 
 
     // Paint Fullname
@@ -1085,13 +1212,14 @@ void TrickItemDelegate::paint(QPainter *painter)
         rect = QRectF(rect.bottomLeft(), QSizeF(rect.width(), rect.width() * mImageSize.height() / mImageSize.width()));
         rect.setY(rect.y() + mSpacing);
 
-        if (!mCacheImage.isNull())
+        auto cacheImage = mCacheImage->check(TrickItemDelegate::image());
+        if (!cacheImage.isNull())
         {
             QPainterPath path;
             path.addRoundedRect(rect, mImageRoundness, mImageRoundness);
 
             painter->setClipPath(path);
-            painter->drawImage(rect, mCacheImage);
+            painter->drawImage(rect, cacheImage);
             painter->setClipping(false);
         }
         else
@@ -1115,78 +1243,92 @@ void TrickItemDelegate::paint(QPainter *painter)
 
 
     // Print Buttons
-    if (!mSelectedButton.rect.isNull())
+    if (!mCommentMode)
+    {
+        if (!mSelectedButton.rect.isNull())
+        {
+            color = mForegroundColor;
+            color.setAlphaF(0.1);
+
+            QPainterPath path;
+            path.addRoundedRect(mSelectedButton.rect, 4, 4);
+
+            painter->fillPath(path, color);
+        }
+
+        rect = QRectF(rect.bottomLeft(), QSizeF(rect.width(), mButtonsHeight));
+        rect.setTop(rect.top() + mSpacing);
+        rect.setLeft(rect.left() + mSpacing);
+        rect.setRight(rect.right() - mSpacing);
+
+        fontIcon = mFontIcon;
+        fontIcon.setPixelSize(fontIcon.pixelSize() * 12 / 9);
+
+        font = mFont;
+        font.setPixelSize(font.pixelSize() * 8 / 9);
+
+        color = mForegroundColor;
+        color.setAlphaF(0.7);
+
+        for (auto &b: mLeftSideButtons)
+        {
+            fontIcon.setBold(b.highlighted && b.fillIcon == b.normalIcon);
+            painter->setPen(b.highlighted? (b.highlightColor.isValid()? b.highlightColor : mHighlightColor) : color);
+            painter->setFont(fontIcon);
+            painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, (b.highlighted? b.fillIcon : b.normalIcon), &drawedRect);
+
+            b.rect = drawedRect.adjusted(-6, -6, 6, 6);
+
+            if (b.counter)
+            {
+                rect.setLeft(drawedRect.right() + 4);
+
+                painter->setFont(font);
+                painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, QString::number(b.counter), &drawedRect);
+
+                b.rect.setRight(drawedRect.right() + 6);
+            }
+
+            rect.setLeft(drawedRect.right() + 12);
+        }
+
+        for (auto &b: mRightSideButtons)
+        {
+            painter->setPen(b.highlighted? (b.highlightColor.isValid()? b.highlightColor : mHighlightColor) : color);
+            if (b.counter)
+            {
+                painter->setFont(font);
+                painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(b.counter), &drawedRect);
+
+                b.rect = drawedRect;
+
+                rect.setRight(drawedRect.left() - 4);
+            }
+
+            fontIcon.setBold(b.highlighted && b.fillIcon == b.normalIcon);
+            painter->setFont(fontIcon);
+            painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, (b.highlighted? b.fillIcon : b.normalIcon), &drawedRect);
+
+            if (b.counter)
+                drawedRect.setRight(b.rect.right());
+
+            b.rect = drawedRect.adjusted(-6, -6, 6, 6);
+
+            rect.setRight(drawedRect.left() - 12);
+        }
+    }
+    // End Buttons
+
+
+    // Print separete
+    if (!mCommentLineBottom)
     {
         color = mForegroundColor;
         color.setAlphaF(0.1);
 
-        QPainterPath path;
-        path.addRoundedRect(mSelectedButton.rect, 4, 4);
-
-        painter->fillPath(path, color);
+        painter->fillRect(QRect(0, height()-1, width(), height()), color);
     }
-
-    rect = QRectF(rect.bottomLeft(), QSizeF(rect.width(), mButtonsHeight));
-    rect.setTop(rect.top() + mSpacing);
-    rect.setLeft(rect.left() + mSpacing);
-    rect.setRight(rect.right() - mSpacing);
-
-    fontIcon = mFontIcon;
-    fontIcon.setPixelSize(fontIcon.pixelSize() * 12 / 9);
-
-    font = mFont;
-    font.setPixelSize(font.pixelSize() * 8 / 9);
-
-    color = mForegroundColor;
-    color.setAlphaF(0.7);
-
-    for (auto &b: mLeftSideButtons)
-    {
-        fontIcon.setBold(b.highlighted && b.fillIcon == b.normalIcon);
-        painter->setPen(b.highlighted? mHighlightColor : color);
-        painter->setFont(fontIcon);
-        painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, (b.highlighted? b.fillIcon : b.normalIcon), &drawedRect);
-
-        b.rect = drawedRect.adjusted(-6, -6, 6, 6);
-
-        if (b.counter)
-        {
-            rect.setLeft(drawedRect.right() + 4);
-
-            painter->setFont(font);
-            painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, QString::number(b.counter), &drawedRect);
-
-            b.rect.setRight(drawedRect.right() + 6);
-        }
-
-        rect.setLeft(drawedRect.right() + 12);
-    }
-
-    for (auto &b: mRightSideButtons)
-    {
-        painter->setPen(b.highlighted? mHighlightColor : color);
-        if (b.counter)
-        {
-            painter->setFont(font);
-            painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(b.counter), &drawedRect);
-
-            b.rect = drawedRect;
-
-            rect.setRight(drawedRect.left() - 4);
-        }
-
-        fontIcon.setBold(b.highlighted && b.fillIcon == b.normalIcon);
-        painter->setFont(fontIcon);
-        painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, (b.highlighted? b.fillIcon : b.normalIcon), &drawedRect);
-
-        if (b.counter)
-            drawedRect.setRight(b.rect.right());
-
-        b.rect = drawedRect.adjusted(-6, -6, 6, 6);
-
-        rect.setRight(drawedRect.left() - 12);
-    }
-    // End Buttons
+    // End Separete
 }
 
 QSize TrickItemDelegate::imageSize() const
@@ -1209,6 +1351,7 @@ void TrickItemDelegate::setSceneWidth(qreal newSceneWidth)
     Q_EMIT sceneWidthChanged();
     Q_EMIT bodyRectChanged();
     Q_EMIT contentRectChanged();
+    update();
 }
 
 qreal TrickItemDelegate::avatarSize() const
@@ -1239,6 +1382,8 @@ void TrickItemDelegate::setFont(const QFont &newFont)
     QMutexLocker locker(&mMutex);
     mFont = newFont;
     Q_EMIT fontChanged();
+    Q_EMIT contentRectChanged();
+    Q_EMIT bodyRectChanged();
 }
 
 QColor TrickItemDelegate::foregroundColor() const
@@ -1320,14 +1465,14 @@ QString TrickItemDelegate::body() const
     return mBody;
 }
 
-QUrl TrickItemDelegate::avatar() const
+QString TrickItemDelegate::avatar() const
 {
-    return mAvatar;
+    return mServerAddress + '/' +mAvatar;
 }
 
-QUrl TrickItemDelegate::image() const
+QString TrickItemDelegate::image() const
 {
-    return mImage;
+    return mServerAddress + '/' + mImage;
 }
 
 static void register_qml_trick_item_delegate() {

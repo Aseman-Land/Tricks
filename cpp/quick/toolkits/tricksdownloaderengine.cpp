@@ -285,11 +285,15 @@ void TricksDownloaderEngine::emitFinished(const QSet<TricksDownloaderEngine *> &
             QImageReader r(path);
 
             const auto request_size = STRING_TO_SIZE(size);
-            const auto size = r.size();
+            const auto size = r.size().scaled(request_size, Qt::KeepAspectRatioByExpanding);
 
-            r.setScaledSize(size.scaled(request_size, Qt::KeepAspectRatioByExpanding));
+            r.setScaledSize(size);
+            r.setScaledClipRect( QRect((size.width() - request_size.width())/2,
+                                       (size.height() - request_size.height())/2,
+                                       request_size.width(), request_size.height()) );
 
             const auto &img = r.read();
+
             QMetaObject::invokeMethod(finisher, "finished", Qt::QueuedConnection, Q_ARG(QImage, img));
         };
 
