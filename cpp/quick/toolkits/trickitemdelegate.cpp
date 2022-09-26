@@ -10,6 +10,7 @@
 #include <QAsemanApplication>
 #include <QAsemanTools>
 #include <QAsemanCalendarConverter>
+#include <QJsonDocument>
 
 #include <math.h>
 
@@ -29,6 +30,8 @@ TrickItemDelegate::TrickItemDelegate(QQuickItem *parent)
 
     mCacheAvatar = new TrickItemCacheEngine(this);
     mCacheImage = new TrickItemCacheEngine(this);
+    mCacheQuoteAvatar = new TrickItemCacheEngine(this);
+    mCacheQuoteImage = new TrickItemCacheEngine(this);
 
     connect(this, &QQuickItem::widthChanged, this, &TrickItemDelegate::refreshWidth);
 
@@ -58,18 +61,18 @@ QRectF TrickItemDelegate::bodyRect() const
 QSizeF TrickItemDelegate::quoteSize() const
 {
     QSizeF r;
-    r.setWidth(mSceneWidth - mAvatarSize - mSpacing);
+    r.setWidth(mSceneWidth - mAvatarSize - mSpacing*3);
 
-    auto height = mSpacing + mAvatarSize + mSpacing;
+    auto height = mQuoteSpacing + mAvatarSize + mQuoteSpacing;
     if (mQuote.length())
     {
         auto doc = createQuoteTextDocument();
         const auto size = doc->size();
-        height += mSpacing + size.height();
+        height += size.height() + mQuoteSpacing;
         delete doc;
     }
     if (!mQuoteImageSize.isEmpty())
-        height += (r.width() - mSpacing*2) * mQuoteImageSize.height() / mQuoteImageSize.width();
+        height += (r.width() - mQuoteSpacing*2) * mQuoteImageSize.height() / mQuoteImageSize.width();
 
     r.setHeight(height);
     return r;
@@ -79,7 +82,7 @@ QRectF TrickItemDelegate::contentRect() const
 {
     auto doc = createBodyTextDocument();
 
-    int height = mSpacing + mAvatarSize + mSpacing + doc->size().height();
+    int height = mSpacing + mAvatarSize + mSpacing + doc->size().height() + mSpacing;
 
     if (!mCommentMode)
         height += mButtonsHeight + mSpacing;
@@ -149,6 +152,48 @@ void TrickItemDelegate::downloadAvatar()
     mAvatarDownloader->setImageSize(QSize(mAvatarSize, mAvatarSize) * std::max<qreal>(2, QAsemanDevices::deviceDensity()));
     mAvatarDownloader->setUrl(avatar());
     mAvatarDownloader->start();
+}
+
+void TrickItemDelegate::downloadQuoteImage()
+{
+    if (!mQuoteImageDownloader)
+    {
+        mQuoteImageDownloader = new TricksDownloaderEngine(this);
+        connect(mQuoteImageDownloader, &TricksDownloaderEngine::finishedImage, this, [this](const QImage &img){
+            mCacheQuoteImage->cache(quoteImage(), img);
+            update();
+        });
+    }
+
+    mQuoteImageDownloader->stop();
+    if (mQuoteImageSize.isNull() || mQuoteImage.isEmpty() || mCachePath.isEmpty())
+        return;
+
+    mQuoteImageDownloader->setCachePath(mCachePath);
+    mQuoteImageDownloader->setImageSize(calculateQuoteImageSize() * std::max<qreal>(2, QAsemanDevices::deviceDensity()));
+    mQuoteImageDownloader->setUrl(quoteImage());
+    mQuoteImageDownloader->start();
+}
+
+void TrickItemDelegate::downloadQuoteAvatar()
+{
+    if (!mQuoteAvatarDownloader)
+    {
+        mQuoteAvatarDownloader = new TricksDownloaderEngine(this);
+        connect(mQuoteAvatarDownloader, &TricksDownloaderEngine::finishedImage, this, [this](const QImage &img){
+            mCacheQuoteAvatar->cache(quoteAvatar(), img);
+            update();
+        });
+    }
+
+    mQuoteAvatarDownloader->stop();
+    if (mQuoteAvatar.isEmpty() || mCachePath.isEmpty())
+        return;
+
+    mQuoteAvatarDownloader->setCachePath(mCachePath);
+    mQuoteAvatarDownloader->setImageSize(QSize(mQuoteAvatarSize, mQuoteAvatarSize) * std::max<qreal>(2, QAsemanDevices::deviceDensity()));
+    mQuoteAvatarDownloader->setUrl(quoteAvatar());
+    mQuoteAvatarDownloader->start();
 }
 
 void TrickItemDelegate::setupLeftButtons()
@@ -232,7 +277,7 @@ QTextDocument *TrickItemDelegate::createQuoteTextDocument() const
     doc->setUseDesignMetrics(true);
     doc->setDefaultFont(mFont);
     doc->setDocumentMargin(0);
-    doc->setTextWidth(mSceneWidth - mAvatarSize - mSpacing * 3);
+    doc->setTextWidth(mSceneWidth - mAvatarSize - mQuoteSpacing * 3);
     doc->setHtml(mQuote);
     return doc;
 }
@@ -311,7 +356,8 @@ QSize TrickItemDelegate::calculateImageSize() const
 
 QSize TrickItemDelegate::calculateQuoteImageSize() const
 {
-    return QSize(quoteSize().width(), quoteSize().width() * mQuoteImageSize.height() / mQuoteImageSize.width());
+    const auto width = quoteSize().width() - mSpacing*2;
+    return QSize(width, width * mQuoteImageSize.height() / mQuoteImageSize.width());
 }
 
 void TrickItemDelegate::mouseMoveEvent(QMouseEvent *e)
@@ -330,8 +376,14 @@ void TrickItemDelegate::mousePressEvent(QMouseEvent *e)
     if (mUserAreaRect.contains(e->pos()))
         ;
     else
+    if (mQuoteUserAreaRect.contains(e->pos()))
+        ;
+    else
     if (mImageRect.contains(e->pos()))
         ;
+    else
+    if (mQuoteArea.contains(e->pos()))
+        mQuotePressedPos = e->pos();
     else
     if (e->button() == Qt::LeftButton)
         mPressedPos = e->pos();
@@ -345,7 +397,9 @@ void TrickItemDelegate::mousePressEvent(QMouseEvent *e)
             if (mPressedPos.isNull())
                 return;
 
-            Q_EMIT pressAndHold(mPressedPos);
+            if (mSelectedButton.rect.isNull())
+                Q_EMIT pressAndHold(mPressedPos);
+
             mPressAndHoldTimer->deleteLater();
             mPressAndHoldTimer = Q_NULLPTR;
             update();
@@ -363,6 +417,7 @@ void TrickItemDelegate::mouseReleaseEvent(QMouseEvent *e)
     e->accept();
 
     mPressedPos = QPointF();
+    mQuotePressedPos = QPointF();
     update();
 
     if (mPressAndHoldTimer)
@@ -382,8 +437,14 @@ void TrickItemDelegate::mouseReleaseEvent(QMouseEvent *e)
     if (mUserAreaRect.contains(e->pos()))
         Q_EMIT userClicked();
     else
+    if (mQuoteUserAreaRect.contains(e->pos()))
+        Q_EMIT quoteUserClicked();
+    else
     if (mImageRect.contains(e->pos()))
         Q_EMIT imageClicked();
+    else
+    if (mQuoteArea.contains(e->pos()))
+        Q_EMIT quoteClicked();
     else
         Q_EMIT clicked();
 }
@@ -431,6 +492,7 @@ void TrickItemDelegate::hoverMoveEvent(QHoverEvent *e)
 void TrickItemDelegate::mouseUngrabEvent()
 {
     mPressedPos = QPointF();
+    mQuotePressedPos = QPointF();
     if (mPressAndHoldTimer)
     {
         mPressAndHoldTimer->deleteLater();
@@ -550,12 +612,16 @@ QSize TrickItemDelegate::quoteImageSize() const
 
 QString TrickItemDelegate::quoteImage() const
 {
-    return mServerAddress + '/' +mQuoteImage;
+    if (mQuoteAvatar.isEmpty())
+        return mQuoteAvatar;
+    return mServerAddress + '/' + mQuoteImage;
 }
 
 QString TrickItemDelegate::quoteAvatar() const
 {
-    return mServerAddress + '/' +mQuoteAvatar;
+    if (mQuoteAvatar.isEmpty())
+        return mQuoteAvatar;
+    return mServerAddress + '/' + mQuoteAvatar;
 }
 
 qint32 TrickItemDelegate::quoteUserId() const
@@ -590,6 +656,8 @@ QString TrickItemDelegate::quote() const
 
 QString TrickItemDelegate::retrickAvatar() const
 {
+    if (mRetrickAvatar.isEmpty())
+        return mRetrickAvatar;
     return mServerAddress + '/' +mRetrickAvatar;
 }
 
@@ -749,7 +817,7 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mLanguage = m.value(QStringLiteral("programing_language")).toMap().value(QStringLiteral("name")).toString();
 
     auto image = m.value(QStringLiteral("filename")).toString();
-    if (!avatar.isEmpty())
+    if (!image.isEmpty())
         mImage = image;
     else
         mImage.clear();
@@ -876,8 +944,11 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mRetrickText = tr("%1 (@%2) Retricked...").arg(mRetrickFullname, mRetrickUsername);
     mReplyText = mParentOwnerId? tr("In reply to %1's (@%2) trick...").arg(mParentOwnerFullName, mParentOwnerUsername) : tr("In reply to a deleted trick...");
 
-    QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadImage, Qt::QueuedConnection);
-    QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadAvatar, Qt::QueuedConnection);
+    if (mImage.count()) QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadImage, Qt::QueuedConnection);
+    if (mAvatar.count()) QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadAvatar, Qt::QueuedConnection);
+    if (mQuoteAvatar.count()) QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadQuoteAvatar, Qt::QueuedConnection);
+    if (mQuoteImage.count()) QMetaObject::invokeMethod(this, &TrickItemDelegate::downloadQuoteImage, Qt::QueuedConnection);
+
     Q_EMIT itemDataChanged();
     Q_EMIT contentRectChanged();
 }
@@ -1254,10 +1325,11 @@ void TrickItemDelegate::paint(QPainter *painter)
 
 
     // Print Image
-    if (mImageSize.height() > 1)
+    if (mImageSize.height() > 1 && mImage.length())
     {
         rect = QRectF(rect.bottomLeft(), QSizeF(rect.width(), rect.width() * mImageSize.height() / mImageSize.width()));
         rect.setY(rect.y() + mSpacing);
+        rect.setHeight(rect.height() + mSpacing);
 
         auto cacheImage = mCacheImage->check(TrickItemDelegate::image());
         if (!cacheImage.isNull())
@@ -1296,15 +1368,133 @@ void TrickItemDelegate::paint(QPainter *painter)
         rect.setTop(rect.top() + mSpacing);
         rect.setHeight(quoteSize().height());
 
+        mQuoteArea = rect;
+
         color = mForegroundColor;
         color.setAlphaF(0.1);
 
+        QRectF drawedRect;
         QPainterPath path;
-        path.addRoundedRect(rect, 8, 8);
+        path.addRoundedRect(rect, mImageRoundness, mImageRoundness);
 
         painter->setPen(color);
-        painter->drawPath(path);
+
+        if (!mQuotePressedPos.isNull())
+            painter->fillPath(path, color);
+        else
+            painter->drawPath(path);
+
+        auto quoteSceneRect = rect.adjusted(mQuoteSpacing, mQuoteSpacing, -mQuoteSpacing, -mQuoteSpacing);
+        QRectF qrect = quoteSceneRect;
+
+        // Print Quote Avatar
+        auto avatarRect = QRectF(quoteSceneRect.left(), quoteSceneRect.top(), mQuoteAvatarSize, mQuoteAvatarSize);
+
+        QPainterPath avatar;
+        avatar.addRoundedRect(avatarRect, mQuoteAvatarSize/2, mQuoteAvatarSize/2);
+
+        auto cacheAvatar = mCacheQuoteAvatar->check(TrickItemDelegate::quoteAvatar());
+        if (!cacheAvatar.isNull())
+        {
+            painter->setClipPath(avatar);
+            painter->drawImage(avatarRect, cacheAvatar);
+            painter->setClipping(false);
+        }
+        else
+        {
+            fontIcon = mFontIcon;
+            fontIcon.setPixelSize(fontIcon.pixelSize() * 14 / 9);
+
+            painter->fillPath(avatar, mHighlightColor);
+            painter->setPen(QColor(QStringLiteral("#ffffff")));
+            painter->setFont(fontIcon);
+            painter->drawText(avatarRect, Qt::AlignCenter, MaterialIcons::mdi_account);
+        }
+        // End Quote Avatar
+
+        // Print Name
+        qrect = QRectF(avatarRect.topRight(), QPointF(quoteSceneRect.right(), avatarRect.bottom()));
+        qrect.setRight(qrect.right() - mSpacing);
+        qrect.setLeft(qrect.left() + mSpacing);
+
+        color = mForegroundColor;
+
+        font = mFont;
+        font.setBold(true);
+
+        painter->setPen(color);
+        painter->setFont(font);
+        painter->drawText(qrect, Qt::AlignVCenter|Qt::AlignLeft, mQuoteFullname, &drawedRect);
+
+        color = mForegroundColor;
+        color.setAlphaF(0.7);
+        font = mFont;
+
+        qrect.setLeft(drawedRect.right() + mSpacing);
+
+        painter->setPen(color);
+        painter->setFont(font);
+        painter->drawText(qrect, Qt::AlignVCenter|Qt::AlignLeft, '@' + mQuoteUsername, &drawedRect);
+        // End Name
+
+        mQuoteUserAreaRect = avatarRect;
+        mQuoteUserAreaRect.setRight(drawedRect.right());
+
+        // Paint Body
+        qrect = QRectF(avatarRect.bottomLeft(), quoteSceneRect.bottomRight());
+        qrect.setTop(qrect.top() + mSpacing);
+
+        font = mFont;
+        color = mForegroundColor;
+
+        painter->setPen(color);
+        painter->setFont(font);
+
+        painter->translate(qrect.topLeft());
+
+        auto doc = createQuoteTextDocument();
+        doc->drawContents(painter);
+
+        painter->translate(qrect.topLeft() * -1);
+        qrect = QRectF(qrect.topLeft(), doc->size());
+        delete doc;
+        // End Body
+
+        // Print Image
+        if (mQuoteImageSize.height() > 1)
+        {
+            qrect = QRectF(qrect.bottomLeft(), QSizeF(qrect.width(), qrect.width() * mQuoteImageSize.height() / mQuoteImageSize.width()));
+            qrect.setY(qrect.y() + mSpacing);
+            qrect.setHeight(qrect.height() + mSpacing);
+
+            auto cacheImage = mCacheQuoteImage->check(TrickItemDelegate::quoteImage());
+            if (!cacheImage.isNull())
+            {
+                QPainterPath path;
+                path.addRoundedRect(qrect, mImageRoundness, mImageRoundness);
+
+                painter->setClipPath(path);
+                painter->setClipping(true);
+                painter->drawImage(qrect, cacheImage);
+                painter->setClipping(false);
+            }
+            else
+            {
+                color = mForegroundColor;
+                color.setAlphaF(0.7);
+
+                font = mFont;
+                font.setPixelSize(mFont.pixelSize() * 8 / 9);
+
+                painter->setPen(color);
+                painter->setFont(font);
+                painter->drawText(qrect, Qt::AlignCenter, tr("Loading..."));
+            }
+        }
+        // End Image
     }
+    else
+        mQuoteArea = QRectF();
     // End Quote
 
 
@@ -1533,11 +1723,15 @@ QString TrickItemDelegate::body() const
 
 QString TrickItemDelegate::avatar() const
 {
-    return mServerAddress + '/' +mAvatar;
+    if (mAvatar.isEmpty())
+        return mAvatar;
+    return mServerAddress + '/' + mAvatar;
 }
 
 QString TrickItemDelegate::image() const
 {
+    if (mImage.isEmpty())
+        return mImage;
     return mServerAddress + '/' + mImage;
 }
 

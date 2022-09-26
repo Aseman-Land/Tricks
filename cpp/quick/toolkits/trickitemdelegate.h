@@ -215,6 +215,8 @@ Q_SIGNALS:
     void buttonClicked(ButtonActions action, const QRectF &rect);
     void userClicked();
     void clicked();
+    void quoteClicked();
+    void quoteUserClicked();
     void pressAndHold(const QPointF &point);
     void contextMenuRequest(const QPointF &point);
     void imageClicked();
@@ -246,6 +248,8 @@ private Q_SLOTS:
     void refreshWidth();
     void downloadImage();
     void downloadAvatar();
+    void downloadQuoteImage();
+    void downloadQuoteAvatar();
 
 protected:
     void setupLeftButtons();
@@ -290,17 +294,27 @@ private:
 
     TricksDownloaderEngine *mImageDownloader = Q_NULLPTR;
     TricksDownloaderEngine *mAvatarDownloader = Q_NULLPTR;
+    TricksDownloaderEngine *mQuoteImageDownloader = Q_NULLPTR;
+    TricksDownloaderEngine *mQuoteAvatarDownloader = Q_NULLPTR;
+
+    TrickItemCacheEngine *mCacheImage = Q_NULLPTR;
+    TrickItemCacheEngine *mCacheAvatar = Q_NULLPTR;
+    TrickItemCacheEngine *mCacheQuoteImage = Q_NULLPTR;
+    TrickItemCacheEngine *mCacheQuoteAvatar = Q_NULLPTR;
 
     QTimer *mPressAndHoldTimer = Q_NULLPTR;
     QPointF mPressedPos;
+    QPointF mQuotePressedPos;
 
     QMutex mMutex;
 
     qreal mSceneWidth = 450;
     qreal mSceneHeight = 450;
     qreal mAvatarSize = 42;
+    qreal mQuoteAvatarSize = 26;
     qreal mVerticalPadding = 16;
     qreal mSpacing = 10;
+    qreal mQuoteSpacing = 14;
     qreal mStateHeaderHeight = 32;
     qreal mButtonsHeight = 32;
     QFont mFont;
@@ -309,8 +323,6 @@ private:
     QColor mHighlightColor;
     QString mServerAddress;
     QString mCachePath;
-    TrickItemCacheEngine *mCacheImage = Q_NULLPTR;
-    TrickItemCacheEngine *mCacheAvatar = Q_NULLPTR;
     qreal mImageRoundness = 10;
 
     QList<Button> mLeftSideButtons;
@@ -340,6 +352,8 @@ private:
     QString mAvatar;
     QRectF mUserAreaRect;
     QRectF mImageRect;
+    QRectF mQuoteArea;
+    QRectF mQuoteUserAreaRect;
     QSize mImageSize;
     QString mCode;
     QVariantList mReferences;

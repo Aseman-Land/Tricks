@@ -57,6 +57,8 @@ TrickItem {
     onImageClicked: if (!globalViewMode) Viewport.controller.trigger("activity:/gallery", {"model": [image]})
     onContextMenuRequest: if (!globalViewMode) showMenu(point)
     onPressAndHold: if (!globalViewMode) showMenu(point)
+    onQuoteClicked: if (!globalViewMode) Viewport.controller.trigger("float:/tricks", {"trickId": quoteId})
+    onQuoteUserClicked: if (!globalViewMode) Viewport.controller.trigger("float:/users", {"userId": quoteUserId, "title": quoteFullname})
 
     readonly property bool myRetrick: GlobalSettings.userId == originalOwnerId && isRetrick
     readonly property real defaultHeight: contentRect.height
