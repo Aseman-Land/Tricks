@@ -44,7 +44,7 @@ TrickItemDelegate::~TrickItemDelegate()
 
 QRectF TrickItemDelegate::bodyRect() const
 {
-    auto doc = createTextDocument();
+    auto doc = createBodyTextDocument();
 
     QRectF r;
     r.setX( (width() - mSceneWidth) / 2 + mAvatarSize + mSpacing );
@@ -55,11 +55,31 @@ QRectF TrickItemDelegate::bodyRect() const
     return r;
 }
 
+QSizeF TrickItemDelegate::quoteSize() const
+{
+    QSizeF r;
+    r.setWidth(mSceneWidth - mAvatarSize - mSpacing);
+
+    auto height = mSpacing + mAvatarSize + mSpacing;
+    if (mQuote.length())
+    {
+        auto doc = createQuoteTextDocument();
+        const auto size = doc->size();
+        height += mSpacing + size.height();
+        delete doc;
+    }
+    if (!mQuoteImageSize.isEmpty())
+        height += (r.width() - mSpacing*2) * mQuoteImageSize.height() / mQuoteImageSize.width();
+
+    r.setHeight(height);
+    return r;
+}
+
 QRectF TrickItemDelegate::contentRect() const
 {
-    auto doc = createTextDocument();
+    auto doc = createBodyTextDocument();
 
-    int height = mSpacing + mAvatarSize + mSpacing + doc->size().height() + mSpacing;
+    int height = mSpacing + mAvatarSize + mSpacing + doc->size().height();
 
     if (!mCommentMode)
         height += mButtonsHeight + mSpacing;
@@ -69,6 +89,9 @@ QRectF TrickItemDelegate::contentRect() const
         height += mStateHeaderHeight;
     if (mParentId && mStateHeader && !mCommentMode && (mLinkId == 0 || mLinkId > mTrickId))
         height += mStateHeaderHeight;
+
+    if (mQuoteId)
+        height += quoteSize().height() + mSpacing;
 
     QRectF r;
     r.setX( (width() - mSceneWidth) / 2 );
@@ -192,7 +215,7 @@ void TrickItemDelegate::setupRightButtons()
     mRightSideButtons << moreBtn << favoriteBtn << tipBtn;
 }
 
-QTextDocument *TrickItemDelegate::createTextDocument() const
+QTextDocument *TrickItemDelegate::createBodyTextDocument() const
 {
     auto doc = new QTextDocument();
     doc->setUseDesignMetrics(true);
@@ -200,6 +223,17 @@ QTextDocument *TrickItemDelegate::createTextDocument() const
     doc->setDocumentMargin(0);
     doc->setTextWidth(mSceneWidth - mAvatarSize - mSpacing);
     doc->setHtml(mBody);
+    return doc;
+}
+
+QTextDocument *TrickItemDelegate::createQuoteTextDocument() const
+{
+    auto doc = new QTextDocument();
+    doc->setUseDesignMetrics(true);
+    doc->setDefaultFont(mFont);
+    doc->setDocumentMargin(0);
+    doc->setTextWidth(mSceneWidth - mAvatarSize - mSpacing * 3);
+    doc->setHtml(mQuote);
     return doc;
 }
 
@@ -273,6 +307,11 @@ QString TrickItemDelegate::dateToString(const QDateTime &date)
 QSize TrickItemDelegate::calculateImageSize() const
 {
     return QSize(bodyRect().width(), bodyRect().width() * mImageSize.height() / mImageSize.width());
+}
+
+QSize TrickItemDelegate::calculateQuoteImageSize() const
+{
+    return QSize(quoteSize().width(), quoteSize().width() * mQuoteImageSize.height() / mQuoteImageSize.width());
 }
 
 void TrickItemDelegate::mouseMoveEvent(QMouseEvent *e)
@@ -796,8 +835,8 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     if (m.value(QStringLiteral("quote")).toMap().count())
     { // It's quote
         const auto trk = m.value(QStringLiteral("quote")).toMap();
-        mQuote = styleText(m.value(QStringLiteral("body")).toString());
-        mQuotedReferences = m.value(QStringLiteral("references")).toList();
+        mQuote = styleText(trk.value(QStringLiteral("body")).toString());
+        mQuotedReferences = trk.value(QStringLiteral("references")).toList();
 
         mQuoteId = trk.value(QStringLiteral("id")).toInt();
         mQuoteUsername = trk.value(QStringLiteral("username")).toString();
@@ -805,27 +844,27 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
         mQuoteUserId = trk.value(QStringLiteral("owner")).toInt();
         mQuoteAvatar = trk.value(QStringLiteral("avatar")).toString();
 
-        mQuoteImage = mImage;
-        mQuoteImageSize = mImageSize;
-        mQuoteCodeFrameIsDark = mCodeFrameIsDark;
+//        mQuoteImage = mImage;
+//        mQuoteImageSize = mImageSize;
+//        mQuoteCodeFrameIsDark = mCodeFrameIsDark;
 
         if (trk.value(QStringLiteral("filename")).toString().count())
         {
-            mImage = trk.value(QStringLiteral("filename")).toString();
+            mQuoteImage = trk.value(QStringLiteral("filename")).toString();
             const auto trk_imageSize = trk.value("image_size").toMap();
-            mImageSize = QSize(trk_imageSize.value("width", 1000).toInt(), trk_imageSize.value("height", 1).toInt());
+            mQuoteImageSize = QSize(trk_imageSize.value("width", 1000).toInt(), trk_imageSize.value("height", 1).toInt());
 
             const auto trk_frame = trk.value(QStringLiteral("code_frame")).toMap();
-            mCodeFrameIsDark = trk_frame.value(QStringLiteral("id")).toInt() == 1;
+            mQuoteCodeFrameIsDark = trk_frame.value(QStringLiteral("id")).toInt() == 1;
         } else {
-            mImage.clear();
-            mImageSize = QSize(1000, 1);
-            mCodeFrameIsDark = 0;
+            mQuoteImage.clear();
+            mQuoteImageSize = QSize(1000, 1);
+            mQuoteCodeFrameIsDark = 0;
         }
 
-        mOriginalBody = trk.value(QStringLiteral("body")).toString();
-        mBody = styleText(mOriginalBody);
-        mReferences = trk.value(QStringLiteral("references")).toList();
+//        mOriginalBody = trk.value(QStringLiteral("body")).toString();
+//        mBody = styleText(mOriginalBody);
+//        mReferences = trk.value(QStringLiteral("references")).toList();
     }
 
     const auto parent_owner = m.value(QStringLiteral("parent_owner")).toMap();
@@ -1041,14 +1080,22 @@ void TrickItemDelegate::paint(QPainter *painter)
     QPainterPath avatar;
     avatar.addRoundedRect(avatarRect, mAvatarSize/2, mAvatarSize/2);
 
-    painter->fillPath(avatar, mHighlightColor);
-
     auto cacheAvatar = mCacheAvatar->check(TrickItemDelegate::avatar());
     if (!cacheAvatar.isNull())
     {
         painter->setClipPath(avatar);
         painter->drawImage(avatarRect, cacheAvatar);
         painter->setClipping(false);
+    }
+    else
+    {
+        fontIcon = mFontIcon;
+        fontIcon.setPixelSize(fontIcon.pixelSize() * 14 / 9);
+
+        painter->fillPath(avatar, mHighlightColor);
+        painter->setPen(QColor(QStringLiteral("#ffffff")));
+        painter->setFont(fontIcon);
+        painter->drawText(avatarRect, Qt::AlignCenter, MaterialIcons::mdi_account);
     }
     // End Avatar
 
@@ -1197,7 +1244,7 @@ void TrickItemDelegate::paint(QPainter *painter)
 
     painter->translate(rect.topLeft());
 
-    auto doc = createTextDocument();
+    auto doc = createBodyTextDocument();
     doc->drawContents(painter);
 
     painter->translate(rect.topLeft() * -1);
@@ -1240,6 +1287,25 @@ void TrickItemDelegate::paint(QPainter *painter)
     else
         mImageRect = QRectF();
     // End Image
+
+
+    // Print Quote
+    if (mQuoteId)
+    {
+        rect = QRectF(rect.bottomLeft(), QSizeF(rect.width(), 100));
+        rect.setTop(rect.top() + mSpacing);
+        rect.setHeight(quoteSize().height());
+
+        color = mForegroundColor;
+        color.setAlphaF(0.1);
+
+        QPainterPath path;
+        path.addRoundedRect(rect, 8, 8);
+
+        painter->setPen(color);
+        painter->drawPath(path);
+    }
+    // End Quote
 
 
     // Print Buttons

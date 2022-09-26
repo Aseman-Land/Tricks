@@ -36,6 +36,7 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged)
     Q_PROPERTY(QString image READ image NOTIFY itemDataChanged)
     Q_PROPERTY(QString avatar READ avatar NOTIFY itemDataChanged)
+    Q_PROPERTY(QSizeF quoteSize READ quoteSize NOTIFY quoteSizeChanged)
     Q_PROPERTY(QSize imageSize READ imageSize NOTIFY itemDataChanged)
     Q_PROPERTY(QString cachePath READ cachePath WRITE setCachePath NOTIFY cachePathChanged)
     Q_PROPERTY(qreal imageRoundness READ imageRoundness WRITE setImageRoundness NOTIFY imageRoundnessChanged)
@@ -147,6 +148,7 @@ public:
     void setParentId(qint32 parentId);
 
     QRectF bodyRect() const;
+    QSizeF quoteSize() const;
     QRectF contentRect() const;
 
     QString fullname() const;
@@ -238,6 +240,7 @@ Q_SIGNALS:
     void commentLineTopChanged();
     void commentLineBottomChanged();
     void parentIdChanged();
+    void quoteSizeChanged();
 
 private Q_SLOTS:
     void refreshWidth();
@@ -248,10 +251,12 @@ protected:
     void setupLeftButtons();
     void setupRightButtons();
 
-    QTextDocument *createTextDocument() const;
+    QTextDocument *createBodyTextDocument() const;
+    QTextDocument *createQuoteTextDocument() const;
     QString styleText(QString t) const;
     QString dateToString(const QDateTime &dateTime);
     QSize calculateImageSize() const;
+    QSize calculateQuoteImageSize() const;
 
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
