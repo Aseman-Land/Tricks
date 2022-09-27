@@ -270,6 +270,8 @@ protected:
     void hoverMoveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
     void mouseUngrabEvent() Q_DECL_OVERRIDE;
 
+    void checkButtonsHover(const QPointF &p);
+
 private:
     struct Button {
         QRectF rect;

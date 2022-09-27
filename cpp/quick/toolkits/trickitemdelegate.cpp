@@ -370,6 +370,7 @@ void TrickItemDelegate::mousePressEvent(QMouseEvent *e)
     forceActiveFocus();
     setFocus(true);
 
+    checkButtonsHover(e->pos());
     if (!mSelectedButton.rect.isNull())
         ;
     else
@@ -465,27 +466,12 @@ void TrickItemDelegate::hoverLeaveEvent(QHoverEvent *e)
 
 void TrickItemDelegate::hoverMoveEvent(QHoverEvent *e)
 {
-    const auto first_state = mSelectedButton;
-    mSelectedButton = Button();
-    for (const auto &b: mLeftSideButtons)
-        if (b.rect.contains(e->posF()))
-        {
-            e->accept();
-            mSelectedButton = b;
-            break;
-        }
-    for (const auto &b: mRightSideButtons)
-        if (b.rect.contains(e->posF()))
-        {
-            e->accept();
-            mSelectedButton = b;
-            break;
-        }
+    checkButtonsHover(e->pos());
+    if (mSelectedButton.rect.isEmpty())
+        e->ignore();
+    else
+        e->accept();
 
-    if (mSelectedButton != first_state)
-        update();
-
-    e->ignore();
     QQuickPaintedItem::hoverMoveEvent(e);
 }
 
@@ -501,6 +487,27 @@ void TrickItemDelegate::mouseUngrabEvent()
 
     QQuickPaintedItem::mouseUngrabEvent();
     update();
+}
+
+void TrickItemDelegate::checkButtonsHover(const QPointF &p)
+{
+    const auto first_state = mSelectedButton;
+    mSelectedButton = Button();
+    for (const auto &b: mLeftSideButtons)
+        if (b.rect.contains(p))
+        {
+            mSelectedButton = b;
+            break;
+        }
+    for (const auto &b: mRightSideButtons)
+        if (b.rect.contains(p))
+        {
+            mSelectedButton = b;
+            break;
+        }
+
+    if (mSelectedButton != first_state)
+        update();
 }
 
 TrickItemDelegate::Button *TrickItemDelegate::button(ButtonActions action)
