@@ -197,7 +197,7 @@ TPage {
 
     THeader {
         id: headerItem
-        y: timeLine.headerVisible || GlobalSettings.viewMode != 2 || findUser.visible? 0 : -Devices.standardTitleBarHeight
+        y: timeLine.headerVisible || GlobalSettings.viewMode != 2 || findUser.visible? 0 : -Devices.standardTitleBarHeight + 1
         anchors.left: parent.left
         anchors.right: parent.right
         height: GlobalSettings.viewMode == 2? defaultHeight : 42 * Devices.density

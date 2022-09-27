@@ -510,6 +510,7 @@ void TrickItemDelegate::hoverMoveEvent(QHoverEvent *e)
 
 void TrickItemDelegate::mouseUngrabEvent()
 {
+    mSelectedButton = Button();
     mPressedPos = QPointF();
     mQuotePressedPos = QPointF();
     if (mPressAndHoldTimer)
