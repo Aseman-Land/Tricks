@@ -8,6 +8,7 @@ import AsemanQml.Models 2.0
 import AsemanQml.MaterialIcons 2.0
 import QtQuick.Controls.IOSStyle 2.0
 import QtQuick.Controls.Material 2.0
+import QtGraphicalEffects 1.0
 import components 1.0
 import models 1.0
 import requests 1.0
@@ -18,6 +19,7 @@ TPage {
 
     property alias headerItem: headerItem
     property string keyword
+    readonly property bool blurHeader: !Devices.isAndroid
 
     onKeywordChanged: {
         if (GlobalSettings.homeCurrentTag.length == 0)
@@ -64,44 +66,59 @@ TPage {
         }
     }
 
-    TimeLine {
-        id: timeLine
+    Rectangle {
+        id: timeLineScene
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        visible: tabBar.currentIndex == 0 || !tabBar.visible
-        model: {
-            if (GlobalSettings.homeCurrentTag.length)
-                return tagModel;
+        color: Colors.background
 
-            switch (GlobalSettings.homeTabIndex) {
-            case 0:
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            y: headerItem.y
+            height: headerItem.height
+            color: Colors.header
+            visible: blurHeader
+        }
+
+        TimeLine {
+            id: timeLine
+            anchors.fill: parent
+            visible: tabBar.currentIndex == 0 || !tabBar.visible
+            model: {
+                if (GlobalSettings.homeCurrentTag.length)
+                    return tagModel;
+
+                switch (GlobalSettings.homeTabIndex) {
+                case 0:
+                    return tmodel;
+                case 1:
+                    return gmodel;
+                }
                 return tmodel;
-            case 1:
-                return gmodel;
             }
-            return tmodel;
-        }
-        unreadsCount: {
-            if (model == tmodel)
-                return tmodel.unreadCount;
-            return 0;
-        }
-        onModelChanged: {
-            if (timeLine.model == tagModel)
-                tagModel.keyword = keyword;
-            else if (timeLine.model == gmodel)
-                gmodel.keyword = keyword;
+            unreadsCount: {
+                if (model == tmodel)
+                    return tmodel.unreadCount;
+                return 0;
+            }
+            onModelChanged: {
+                if (timeLine.model == tagModel)
+                    tagModel.keyword = keyword;
+                else if (timeLine.model == gmodel)
+                    gmodel.keyword = keyword;
 
-            Tools.jsDelayCall(10, dis.refresh)
+                Tools.jsDelayCall(10, dis.refresh)
+            }
+            topMargin: headerItem.height + (tabBar.visible? tabBar.height : 0)
         }
-        topMargin: headerItem.height + (tabBar.visible? tabBar.height : 0)
     }
 
     FindUserView {
         id: findUser
-        anchors.fill: timeLine
+        anchors.fill: timeLineScene
         visible: tabBar.currentIndex == 1 && tabBar.visible
         listView.header: Item {
             height: headerItem.height + (tabBar.visible? tabBar.height : 0)
@@ -177,7 +194,17 @@ TPage {
         anchors.right: parent.right
         anchors.bottom: tabBar.visible? tabBar.bottom : headerItem.bottom
         anchors.top: headerItem.top
-        color: Colors.background
+        color: blurHeader? "transparent" : Colors.background
+        clip: true
+
+        FastBlur {
+            source: timeLineScene
+            radius: 32
+            cached: true
+            transparentBorder: false
+            width: timeLineScene.width
+            height: timeLineScene.height
+        }
     }
 
     TTabBar {
@@ -202,7 +229,7 @@ TPage {
         anchors.right: parent.right
         height: GlobalSettings.viewMode == 2? defaultHeight : 42 * Devices.density
         light: true
-        color: Colors.header
+        color: Qt.rgba(Colors.header.r, Colors.header.g, Colors.header.b, (blurHeader? 0.7 : 1))
 
         Behavior on y {
             NumberAnimation { easing.type: Easing.OutCubic; duration: 250 }
