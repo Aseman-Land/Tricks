@@ -56,6 +56,11 @@ QRectF TrickItemDelegate::bodyRect() const
     r.setY(mVerticalPadding + mAvatarSize + mSpacing);
     r.setSize(doc->size());
 
+    if (mIsRetrick && mStateHeader && !mCommentMode)
+        r.adjust(0, mStateHeaderHeight, 0, mStateHeaderHeight);
+    if (mParentId && mStateHeader && !mCommentMode && (mLinkId == 0 || mLinkId > mTrickId))
+        r.adjust(0, mStateHeaderHeight, 0, mStateHeaderHeight);
+
     delete doc;
     return r;
 }
@@ -473,6 +478,9 @@ void TrickItemDelegate::mouseReleaseEvent(QMouseEvent *e)
         Q_EMIT quoteClicked();
     else
         Q_EMIT clicked();
+
+    mSelectedButton = Button();
+    update();
 }
 
 void TrickItemDelegate::hoverEnterEvent(QHoverEvent *e)
@@ -892,9 +900,6 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     auto imageSize = m.value("image_size").toMap();
     mImageSize = QSize(imageSize.value("width", 1000).toInt(), imageSize.value("height", 1).toInt());
 
-    mCommentLineTop = false;
-    mCommentLineBottom = false;
-
     mLinkId = m.value("link_id").toInt();
     if (mLinkId != 0)
     {
@@ -1157,9 +1162,9 @@ void TrickItemDelegate::paint(QPainter *painter)
     mSceneHeight = height() - 2*mVerticalPadding;
 
     const auto sidePadding = (width() - mSceneWidth)/2;
-    const auto fullRect = QRectF(sidePadding, mVerticalPadding, mSceneWidth, mSceneHeight);
+    const auto fullRect = QRectF(sidePadding, 0, mSceneWidth, mSceneHeight);
 
-    QRectF drawedRect, rect;
+    QRectF drawedRect, rect = QRectF(fullRect.x(), fullRect.y(), fullRect.width(), 0);
     QColor color;
     QFont font, fontIcon;
 
@@ -1178,7 +1183,7 @@ void TrickItemDelegate::paint(QPainter *painter)
     // Paint State Header
     if (mIsRetrick && mStateHeader && !mCommentMode)
     {
-        rect = QRectF(fullRect.topLeft(), QPointF(fullRect.right(), 32));
+        rect = QRectF(rect.bottomLeft(), QPointF(rect.right(), mStateHeaderHeight));
 
         color = mHighlightColor;
         fontIcon = mFontIcon;
@@ -1200,13 +1205,11 @@ void TrickItemDelegate::paint(QPainter *painter)
         painter->setFont(font);
         painter->setPen(color);
         painter->drawText(rect, Qt::AlignVCenter, mRetrickText, &drawedRect);
-
-        painter->translate(0, 28);
     }
 
     if (mParentId && mStateHeader && !mCommentMode && (mLinkId == 0 || mLinkId > mTrickId))
     {
-        rect = QRectF(fullRect.topLeft(), QPointF(fullRect.right(), 32));
+        rect = QRectF(rect.bottomLeft(), QPointF(rect.right(), mStateHeaderHeight));
 
         color = mHighlightColor;
         fontIcon = mFontIcon;
@@ -1228,14 +1231,12 @@ void TrickItemDelegate::paint(QPainter *painter)
         painter->setFont(font);
         painter->setPen(color);
         painter->drawText(rect, Qt::AlignVCenter, mReplyText, &drawedRect);
-
-        painter->translate(0, 28);
     }
     // End State Header
 
 
     // Paint Avatar
-    const auto avatarRect = QRectF(fullRect.left(), fullRect.top(), mAvatarSize, mAvatarSize);
+    const auto avatarRect = QRectF(fullRect.left(), rect.bottom() + mVerticalPadding, mAvatarSize, mAvatarSize);
 
     QPainterPath avatar;
     avatar.addRoundedRect(avatarRect, mAvatarSize/2, mAvatarSize/2);
@@ -1279,7 +1280,7 @@ void TrickItemDelegate::paint(QPainter *painter)
 
 
     // Paint Fullname
-    rect = QRectF(avatarRect.topRight(), QPointF(fullRect.right(), fullRect.top()+30));
+    rect = QRectF(avatarRect.topRight(), QPointF(fullRect.right(), avatarRect.top()+30));
     rect.setLeft(rect.left() + mSpacing);
 
     font = mFont;

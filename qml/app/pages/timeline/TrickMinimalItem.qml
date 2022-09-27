@@ -30,6 +30,7 @@ TrickItem {
     favoriteColor: Colors.bookmarksColors
     imageRoundness: Constants.radius
     myUserId: GlobalSettings.userId
+    stateHeader: !commentMode
     z: 1000
     onButtonClicked: {
         switch (action) {

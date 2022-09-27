@@ -331,7 +331,7 @@ private:
     qreal mVerticalPadding = 16;
     qreal mSpacing = 10;
     qreal mQuoteSpacing = 14;
-    qreal mStateHeaderHeight = 32;
+    qreal mStateHeaderHeight = 28;
     qreal mButtonsHeight = 32;
     QFont mFont;
     QFont mFontIcon;
