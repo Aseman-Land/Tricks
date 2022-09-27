@@ -200,11 +200,12 @@ TPage {
 
         FastBlur {
             source: timeLineScene
-            radius: 32
+            radius: blurHeader? 32 : 0
             cached: true
             transparentBorder: false
             width: timeLineScene.width
             height: timeLineScene.height
+            visible: blurHeader
         }
     }
 
