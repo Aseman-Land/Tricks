@@ -29,6 +29,7 @@ TrickItem {
     rateColor: Colors.likeColors
     favoriteColor: Colors.bookmarksColors
     imageRoundness: Constants.radius
+    myUserId: GlobalSettings.userId
     z: 1000
     onButtonClicked: {
         switch (action) {

@@ -1,16 +1,18 @@
 #include "trickitemdelegate.h"
 #include "material/materialicons.h"
+#include "trickstools.h"
 
 #include <QPainter>
 #include <QPainterPath>
 #include <QTimer>
 #include <QScreen>
+#include <QJsonDocument>
+#include <QTextBlock>
 
 #include <QAsemanDevices>
 #include <QAsemanApplication>
 #include <QAsemanTools>
 #include <QAsemanCalendarConverter>
-#include <QJsonDocument>
 
 #include <math.h>
 
@@ -263,23 +265,46 @@ void TrickItemDelegate::setupRightButtons()
 QTextDocument *TrickItemDelegate::createBodyTextDocument() const
 {
     auto doc = new QTextDocument();
-    doc->setUseDesignMetrics(true);
-    doc->setDefaultFont(mFont);
-    doc->setDocumentMargin(0);
     doc->setTextWidth(mSceneWidth - mAvatarSize - mSpacing);
-    doc->setHtml(mBody);
+    setupTextDocument(doc, mBody);
     return doc;
 }
 
 QTextDocument *TrickItemDelegate::createQuoteTextDocument() const
 {
     auto doc = new QTextDocument();
+    doc->setTextWidth(mSceneWidth - mAvatarSize - mQuoteSpacing * 3);
+    setupTextDocument(doc, mQuote);
+    return doc;
+}
+
+void TrickItemDelegate::setupTextDocument(QTextDocument *doc, const QString &text) const
+{
     doc->setUseDesignMetrics(true);
     doc->setDefaultFont(mFont);
     doc->setDocumentMargin(0);
-    doc->setTextWidth(mSceneWidth - mAvatarSize - mQuoteSpacing * 3);
-    doc->setHtml(mQuote);
-    return doc;
+    doc->setHtml(text);
+
+    auto direction = TricksTools::directionOf(text);
+    switch (direction)
+    {
+    case Qt::LeftToRight:
+    {
+        auto opt = doc->defaultTextOption();
+        opt.setTextDirection(Qt::LeftToRight);
+        opt.setAlignment(Qt::AlignLeft);
+        doc->setDefaultTextOption(opt);
+    }
+        break;
+    case Qt::RightToLeft:
+    {
+        auto opt = doc->defaultTextOption();
+        opt.setTextDirection(Qt::RightToLeft);
+        opt.setAlignment(Qt::AlignLeft);
+        doc->setDefaultTextOption(opt);
+    }
+        break;
+    }
 }
 
 QString TrickItemDelegate::styleText(QString text) const
@@ -521,6 +546,19 @@ TrickItemDelegate::Button *TrickItemDelegate::button(ButtonActions action)
     return Q_NULLPTR;
 }
 
+qint32 TrickItemDelegate::myUserId() const
+{
+    return mMyUserId;
+}
+
+void TrickItemDelegate::setMyUserId(qint32 newMyUserId)
+{
+    if (mMyUserId == newMyUserId)
+        return;
+    mMyUserId = newMyUserId;
+    emit myUserIdChanged();
+}
+
 bool TrickItemDelegate::commentLineBottom() const
 {
     return mCommentLineBottom;
@@ -651,6 +689,14 @@ qint32 TrickItemDelegate::quoteId() const
     return mQuoteId;
 }
 
+void TrickItemDelegate::setQuoteId(qint32 quoteId)
+{
+    if (mQuoteId == quoteId)
+        return;
+    mQuote = quoteId;
+    Q_EMIT quoteIdChanged();
+}
+
 QVariantList TrickItemDelegate::quotedReferences() const
 {
     return mQuotedReferences;
@@ -716,6 +762,20 @@ QString TrickItemDelegate::shareLink() const
 int TrickItemDelegate::tipState() const
 {
     return mTipState;
+}
+
+void TrickItemDelegate::setTipState(int tipState)
+{
+    if (mTipState == tipState)
+        return;
+
+    mTipState = tipState;
+    auto btn = button(TipButton);
+    if (btn)
+        btn->highlighted = tipState;
+
+    update();
+    Q_EMIT tipStateChanged();
 }
 
 bool TrickItemDelegate::rateState() const
@@ -847,12 +907,17 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     mReferences = m.value(QStringLiteral("references")).toList();
 
     mRates = m.value(QStringLiteral("rates")).toInt();
-    mRatricks = m.value(QStringLiteral("retricks")).toInt();
-    mTipsSat = std::floor(m.value(QStringLiteral("tips")).toInt() / 1000);
+
     mComments = m.value(QStringLiteral("comments")).toInt();
+    auto btn = button(CommentButton);
+    if (btn)
+    {
+        btn->highlighted = mComments;
+        btn->counter = mComments;
+    }
 
     mRateState = m.value(QStringLiteral("rate_state")).toBool();
-    auto btn = button(RateButton);
+    btn = button(RateButton);
     if (btn)
     {
         btn->highlighted = mRateState;
@@ -860,6 +925,14 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     }
 
     mTipState = m.value(QStringLiteral("tip_state")).toInt();
+    mTipsSat = std::floor(m.value(QStringLiteral("tips")).toInt() / 1000);
+    btn = button(TipButton);
+    if (btn)
+    {
+        btn->highlighted = mTipState;
+        btn->counter = mTipsSat;
+    }
+
     mShareLink = m.value(QStringLiteral("share_link")).toString();
     mTags = m.value(QStringLiteral("tags")).toStringList();
     mBookmarked = m.value(QStringLiteral("bookmarked")).toBool();
@@ -895,7 +968,13 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     if (mOwnerRole & 1)
         mRoleIcon = MaterialIcons::mdi_check_decagram;
 
+    mRatricks = m.value(QStringLiteral("retricks")).toInt();
     mIsRetrick = false;
+
+    btn = button(RetrickButton);
+    if (btn)
+        btn->counter = mRatricks;
+
     if (m.value(QStringLiteral("retricker")).toMap().count())
     { // It's retrick
         const auto retricker = m.value(QStringLiteral("retricker")).toMap();
@@ -905,6 +984,9 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
         mRetrickUsername = retricker.value(QStringLiteral("username")).toString();
         mRetrickFullname = retricker.value(QStringLiteral("fullname")).toString();
         mRetrickAvatar = retricker.value(QStringLiteral("avatar")).toString();
+
+        if (btn)
+            btn->highlighted = (mRetrickUserId == mMyUserId);
     }
 
     if (m.value(QStringLiteral("quote")).toMap().count())

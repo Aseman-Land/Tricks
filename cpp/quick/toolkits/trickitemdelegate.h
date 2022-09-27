@@ -61,7 +61,7 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(qint32 tipsSat READ tipsSat NOTIFY itemDataChanged)
     Q_PROPERTY(qint32 comments READ comments NOTIFY itemDataChanged)
     Q_PROPERTY(bool rateState READ rateState WRITE setRateState NOTIFY rateStateChanged)
-    Q_PROPERTY(int tipState READ tipState NOTIFY itemDataChanged)
+    Q_PROPERTY(int tipState READ tipState WRITE setTipState NOTIFY tipStateChanged)
     Q_PROPERTY(QString shareLink READ shareLink NOTIFY itemDataChanged)
     Q_PROPERTY(bool bookmarked READ bookmarked WRITE setBookmarked NOTIFY bookmarkedChanged)
     Q_PROPERTY(qint32 retrickTrickId READ retrickTrickId NOTIFY itemDataChanged)
@@ -71,7 +71,7 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(QString retrickAvatar READ retrickAvatar NOTIFY itemDataChanged)
     Q_PROPERTY(QString quote READ quote NOTIFY itemDataChanged)
     Q_PROPERTY(QVariantList quotedReferences READ quotedReferences NOTIFY itemDataChanged)
-    Q_PROPERTY(qint32 quoteId READ quoteId NOTIFY itemDataChanged)
+    Q_PROPERTY(qint32 quoteId READ quoteId WRITE setQuoteId NOTIFY quoteIdChanged)
     Q_PROPERTY(QString quoteUsername READ quoteUsername NOTIFY itemDataChanged)
     Q_PROPERTY(QString quoteFullname READ quoteFullname NOTIFY itemDataChanged)
     Q_PROPERTY(qint32 quoteUserId READ quoteUserId NOTIFY itemDataChanged)
@@ -85,6 +85,7 @@ class TrickItemDelegate : public QQuickPaintedItem
     Q_PROPERTY(QColor rateColor READ rateColor WRITE setRateColor NOTIFY rateColorChanged)
     Q_PROPERTY(bool commentLineTop READ commentLineTop WRITE setCommentLineTop NOTIFY commentLineTopChanged)
     Q_PROPERTY(bool commentLineBottom READ commentLineBottom WRITE setCommentLineBottom NOTIFY commentLineBottomChanged)
+    Q_PROPERTY(qint32 myUserId READ myUserId WRITE setMyUserId NOTIFY myUserIdChanged)
 
 public:
     enum ButtonActions {
@@ -144,8 +145,14 @@ public:
     bool bookmarked() const;
     void setBookmarked(bool bookmarked);
 
+    int tipState() const;
+    void setTipState(int tipState);
+
     qint32 parentId() const;
     void setParentId(qint32 parentId);
+
+    qint32 quoteId() const;
+    void setQuoteId(qint32 quoteId);
 
     QRectF bodyRect() const;
     QSizeF quoteSize() const;
@@ -177,7 +184,6 @@ public:
     qint32 ratricks() const;
     qint32 tipsSat() const;
     qint32 comments() const;
-    int tipState() const;
     QString shareLink() const;
     qint32 retrickTrickId() const;
     qint32 retrickUserId() const;
@@ -186,7 +192,6 @@ public:
     QString retrickAvatar() const;
     QString quote() const;
     QVariantList quotedReferences() const;
-    qint32 quoteId() const;
     QString quoteUsername() const;
     QString quoteFullname() const;
     qint32 quoteUserId() const;
@@ -210,6 +215,9 @@ public:
 
     bool commentLineBottom() const;
     void setCommentLineBottom(bool newCommentLineBottom);
+
+    qint32 myUserId() const;
+    void setMyUserId(qint32 newMyUserId);
 
 Q_SIGNALS:
     void buttonClicked(ButtonActions action, const QRectF &rect);
@@ -242,7 +250,11 @@ Q_SIGNALS:
     void commentLineTopChanged();
     void commentLineBottomChanged();
     void parentIdChanged();
+    void tipStateChanged();
     void quoteSizeChanged();
+    void quoteIdChanged();
+
+    void myUserIdChanged();
 
 private Q_SLOTS:
     void refreshWidth();
@@ -257,6 +269,8 @@ protected:
 
     QTextDocument *createBodyTextDocument() const;
     QTextDocument *createQuoteTextDocument() const;
+    void setupTextDocument(QTextDocument *doc, const QString &text) const;
+
     QString styleText(QString t) const;
     QString dateToString(const QDateTime &dateTime);
     QSize calculateImageSize() const;
@@ -346,6 +360,7 @@ private:
     qint32 mRatricks = 0;
     qint32 mTipsSat = 0;
     qint32 mComments = 0;
+    qint32 mMyUserId = 0;
     bool mRateState = false;
     int mTipState = 0;
     QString mBody;
