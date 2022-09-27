@@ -8,6 +8,7 @@
 #include <QScreen>
 #include <QJsonDocument>
 #include <QTextBlock>
+#include <QAbstractTextDocumentLayout>
 
 #include <QAsemanDevices>
 #include <QAsemanApplication>
@@ -1407,7 +1408,9 @@ void TrickItemDelegate::paint(QPainter *painter)
     painter->translate(rect.topLeft());
 
     auto doc = createBodyTextDocument();
-    doc->drawContents(painter);
+    QAbstractTextDocumentLayout::PaintContext ctx;
+    ctx.palette.setColor(QPalette::Text, mForegroundColor);
+    doc->documentLayout()->draw(painter, ctx);
 
     painter->translate(rect.topLeft() * -1);
     rect = TrickItemDelegate::bodyRect();
@@ -1544,7 +1547,9 @@ void TrickItemDelegate::paint(QPainter *painter)
         painter->translate(qrect.topLeft());
 
         auto doc = createQuoteTextDocument();
-        doc->drawContents(painter);
+        QAbstractTextDocumentLayout::PaintContext ctx;
+        ctx.palette.setColor(QPalette::Text, mForegroundColor);
+        doc->documentLayout()->draw(painter, ctx);
 
         painter->translate(qrect.topLeft() * -1);
         qrect = QRectF(qrect.topLeft(), doc->size());
@@ -1745,6 +1750,7 @@ void TrickItemDelegate::setForegroundColor(const QColor &newForegroundColor)
 
     QMutexLocker locker(&mMutex);
     mForegroundColor = newForegroundColor;
+    update();
     Q_EMIT foregroundColorChanged();
 }
 

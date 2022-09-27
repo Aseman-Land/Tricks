@@ -26,6 +26,7 @@ TrickItem {
     fontIcon.family: MaterialIcons.family
     fontIcon.pixelSize: 9 * Devices.fontDensity
     highlightColor: Colors.primary
+    foregroundColor: Colors.foreground
     rateColor: Colors.likeColors
     favoriteColor: Colors.bookmarksColors
     imageRoundness: Constants.radius

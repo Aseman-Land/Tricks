@@ -77,7 +77,7 @@ TPage {
         Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
-            y: headerItem.y
+            y: headerItem.y + Devices.statusBarHeight
             height: headerItem.height
             color: Colors.header
             visible: blurHeader
@@ -192,8 +192,9 @@ TPage {
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: tabBar.visible? tabBar.bottom : headerItem.bottom
-        anchors.top: headerItem.top
+        anchors.top: parent.top
+        anchors.bottom: tabBar.visible? tabBar.bottom : headerScene.bottom
+        anchors.bottomMargin: -headerItem.y - Devices.statusBarHeight
         color: blurHeader? "transparent" : Colors.background
         clip: true
 
@@ -211,7 +212,7 @@ TPage {
         id: tabBar
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: headerItem.bottom
+        anchors.top: headerScene.bottom
         visible: GlobalSettings.homeTabIndex == 1
 
         TTabButton {
@@ -222,159 +223,168 @@ TPage {
         }
     }
 
-    THeader {
-        id: headerItem
-        y: timeLine.headerVisible || GlobalSettings.viewMode != 2 || findUser.visible? 0 : -Devices.standardTitleBarHeight + 1
+    Item {
+        id: headerScene
+        y: Devices.statusBarHeight
+        height: headerItem.height - Devices.statusBarHeight
         anchors.left: parent.left
         anchors.right: parent.right
-        height: GlobalSettings.viewMode == 2? defaultHeight : 42 * Devices.density
-        light: true
-        color: Qt.rgba(Colors.header.r, Colors.header.g, Colors.header.b, (blurHeader? 0.7 : 1))
+        clip: true
 
-        Behavior on y {
-            NumberAnimation { easing.type: Easing.OutCubic; duration: 250 }
-        }
-
-        ColumnLayout {
-            id: headerTitle
-            anchors.centerIn: parent
-            visible: !searchField.visible
-            spacing: -2 * Devices.density
-
-            TLabel {
-                Layout.alignment: Qt.AlignHCenter
-                font.pixelSize: 10 * Devices.fontDensity
-                visible: text.length
-                text: {
-                    if (GlobalSettings.homeCurrentTag.length)
-                        return GlobalSettings.homeCurrentTag;
-
-                    switch (GlobalSettings.homeTabIndex) {
-                    case 0:
-                        return qsTr("Home") + Translations.refresher;
-                    case 1:
-                        return qsTr("Global") + Translations.refresher;
-                    case 2:
-                        return GlobalSettings.fullname;
-                    }
-                    return Bootstrap.title;
-                }
-                color: Colors.headerText
-            }
-
-            CommunityCombo {
-                id: comCombo
-                Layout.alignment: Qt.AlignHCenter
-                comboWidth: headerItem.width * 0.5
-
-                Connections {
-                    target: GlobalSignals
-                    function onCommunityChooseRequest() {
-                        comCombo.show();
-                    }
-                }
-            }
-        }
-
-        TSearchField {
-            id: searchField
+        THeader {
+            id: headerItem
+            y: (timeLine.headerVisible || GlobalSettings.viewMode != 2 || findUser.visible? 0 : -Devices.standardTitleBarHeight + 1) - Devices.statusBarHeight
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.margins: 6 * Devices.density
-            height: 38 * Devices.density
-            visible: GlobalSettings.homeTabIndex == 1 && GlobalSettings.viewMode == 2
-            onSearchRequest: dis.keyword = GlobalMethods.fixUrlProperties(keyword)
-            IOSStyle.theme: Colors.headerIsDark? IOSStyle.Dark : IOSStyle.Light
-            Material.theme: Colors.headerIsDark? Material.Dark : Material.Light
-        }
+            height: GlobalSettings.viewMode == 2? defaultHeight : 42 * Devices.density
+            light: true
+            color: Qt.rgba(Colors.header.r, Colors.header.g, Colors.header.b, (blurHeader? 0.7 : 1))
 
-        TAvatar {
-            height: 24 * Devices.density
-            width: height
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 14 * Devices.density
-            visible: GlobalSettings.homeTabIndex == 0 && GlobalSettings.viewMode == 2
-            remoteUrl: GlobalSettings.avatar
-
-            TMouseArea {
-                anchors.fill: parent
-                onClicked: Viewport.controller.trigger("float:/users/me")
+            Behavior on y {
+                NumberAnimation { easing.type: Easing.OutCubic; duration: 250 }
             }
-        }
 
-        RowLayout {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.margins: GlobalSettings.homeCurrentTag.length && GlobalSettings.viewMode != 2? 0 : (searchField.visible? 50 * Devices.density : 10 * Devices.density)
-            spacing: 10 * Devices.density
+            ColumnLayout {
+                id: headerTitle
+                anchors.centerIn: parent
+                visible: !searchField.visible
+                spacing: -2 * Devices.density
 
-            TBusyIndicator {
-                Layout.preferredWidth: 18 * Devices.density
-                Layout.preferredHeight: 18 * Devices.density
-                running: timeLine.model.refreshing || findUsersModel.refreshing
-                IOSStyle.foreground: Colors.headerText
-                Material.accent: Colors.headerText
+                TLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    font.pixelSize: 10 * Devices.fontDensity
+                    visible: text.length
+                    text: {
+                        if (GlobalSettings.homeCurrentTag.length)
+                            return GlobalSettings.homeCurrentTag;
+
+                        switch (GlobalSettings.homeTabIndex) {
+                        case 0:
+                            return qsTr("Home") + Translations.refresher;
+                        case 1:
+                            return qsTr("Global") + Translations.refresher;
+                        case 2:
+                            return GlobalSettings.fullname;
+                        }
+                        return Bootstrap.title;
+                    }
+                    color: Colors.headerText
+                }
+
+                CommunityCombo {
+                    id: comCombo
+                    Layout.alignment: Qt.AlignHCenter
+                    comboWidth: headerItem.width * 0.5
+
+                    Connections {
+                        target: GlobalSignals
+                        function onCommunityChooseRequest() {
+                            comCombo.show();
+                        }
+                    }
+                }
+            }
+
+            TSearchField {
+                id: searchField
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: 6 * Devices.density
+                height: 38 * Devices.density
+                visible: GlobalSettings.homeTabIndex == 1 && GlobalSettings.viewMode == 2
+                onSearchRequest: dis.keyword = GlobalMethods.fixUrlProperties(keyword)
+                IOSStyle.theme: Colors.headerIsDark? IOSStyle.Dark : IOSStyle.Light
+                Material.theme: Colors.headerIsDark? Material.Dark : Material.Light
+            }
+
+            TAvatar {
+                height: 24 * Devices.density
+                width: height
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 14 * Devices.density
+                visible: GlobalSettings.homeTabIndex == 0 && GlobalSettings.viewMode == 2
+                remoteUrl: GlobalSettings.avatar
+
+                TMouseArea {
+                    anchors.fill: parent
+                    onClicked: Viewport.controller.trigger("float:/users/me")
+                }
             }
 
             RowLayout {
-                spacing: 0
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: GlobalSettings.homeCurrentTag.length && GlobalSettings.viewMode != 2? 0 : (searchField.visible? 50 * Devices.density : 10 * Devices.density)
+                spacing: 10 * Devices.density
 
-                TIconButton {
-                    id: bookmarksBtn
-                    Layout.preferredHeight: 40 * Devices.density
-                    Layout.preferredWidth: 30 * Devices.density
-                    visible: GlobalSettings.homeTabIndex == 0
-                    materialIcon: MaterialIcons.mdi_star_outline
-                    flat: true
-                    materialColor: Colors.headerText
-                    onClicked: Viewport.controller.trigger("float:/bookmarks");
+                TBusyIndicator {
+                    Layout.preferredWidth: 18 * Devices.density
+                    Layout.preferredHeight: 18 * Devices.density
+                    running: timeLine.model.refreshing || findUsersModel.refreshing
+                    IOSStyle.foreground: Colors.headerText
+                    Material.accent: Colors.headerText
                 }
 
-                TIconButton {
-                    id: editBtn
-                    Layout.preferredHeight: 40 * Devices.density
-                    Layout.preferredWidth: 30 * Devices.density
-                    visible: GlobalSettings.homeTabIndex == 0
-                    materialIcon: MaterialIcons.mdi_dots_vertical
-                    flat: true
-                    materialColor: Colors.headerText
-                    onClicked: {
-                        var pos = Qt.point(dis.LayoutMirroring.enabled? Constants.radius : editBtn.width - Constants.radius, editBtn.height);
-                        var parent = editBtn;
-                        while (parent && parent != Viewport.viewport) {
-                            pos.x += parent.x;
-                            pos.y += parent.y;
-                            parent = parent.parent;
+                RowLayout {
+                    spacing: 0
+
+                    TIconButton {
+                        id: bookmarksBtn
+                        Layout.preferredHeight: 40 * Devices.density
+                        Layout.preferredWidth: 30 * Devices.density
+                        visible: GlobalSettings.homeTabIndex == 0
+                        materialIcon: MaterialIcons.mdi_star_outline
+                        flat: true
+                        materialColor: Colors.headerText
+                        onClicked: Viewport.controller.trigger("float:/bookmarks");
+                    }
+
+                    TIconButton {
+                        id: editBtn
+                        Layout.preferredHeight: 40 * Devices.density
+                        Layout.preferredWidth: 30 * Devices.density
+                        visible: GlobalSettings.homeTabIndex == 0
+                        materialIcon: MaterialIcons.mdi_dots_vertical
+                        flat: true
+                        materialColor: Colors.headerText
+                        onClicked: {
+                            var pos = Qt.point(dis.LayoutMirroring.enabled? Constants.radius : editBtn.width - Constants.radius, editBtn.height);
+                            var parent = editBtn;
+                            while (parent && parent != Viewport.viewport) {
+                                pos.x += parent.x;
+                                pos.y += parent.y;
+                                parent = parent.parent;
+                            }
+
+                            Viewport.viewport.append(menuComponent, {"pointPad": pos}, "menu");
                         }
-
-                        Viewport.viewport.append(menuComponent, {"pointPad": pos}, "menu");
                     }
                 }
-            }
 
-            TFollowButton {
-                Layout.rightMargin: 2 * Devices.density
-                Layout.preferredWidth: refreshing? 40 :90 * Devices.density
-                visible: GlobalSettings.homeCurrentTag.length
-                highlighted: !Colors.lightHeader
-                IOSStyle.background: Colors.lightHeader? Colors.background : IOSStyle.accent
+                TFollowButton {
+                    Layout.rightMargin: 2 * Devices.density
+                    Layout.preferredWidth: refreshing? 40 :90 * Devices.density
+                    visible: GlobalSettings.homeCurrentTag.length
+                    highlighted: !Colors.lightHeader
+                    IOSStyle.background: Colors.lightHeader? Colors.background : IOSStyle.accent
 
-                followed: GlobalSettings.followedTags.count && GlobalSettings.followedTags.contains(GlobalSettings.homeCurrentTag)
+                    followed: GlobalSettings.followedTags.count && GlobalSettings.followedTags.contains(GlobalSettings.homeCurrentTag)
 
-                followReq: FollowTagRequest {
-                    tag: GlobalSettings.homeCurrentTag
-                    onSuccessfull: {
-                        GlobalSettings.followedTags.insert(tag, true);
-                        GlobalSignals.tagsRefreshed();
+                    followReq: FollowTagRequest {
+                        tag: GlobalSettings.homeCurrentTag
+                        onSuccessfull: {
+                            GlobalSettings.followedTags.insert(tag, true);
+                            GlobalSignals.tagsRefreshed();
+                        }
                     }
-                }
-                unfollowReq: UnfollowTagRequest {
-                    _tag: GlobalSettings.homeCurrentTag
-                    onSuccessfull: {
-                        GlobalSettings.followedTags.remove(_tag);
-                        GlobalSignals.tagsRefreshed();
+                    unfollowReq: UnfollowTagRequest {
+                        _tag: GlobalSettings.homeCurrentTag
+                        onSuccessfull: {
+                            GlobalSettings.followedTags.remove(_tag);
+                            GlobalSignals.tagsRefreshed();
+                        }
                     }
                 }
             }
