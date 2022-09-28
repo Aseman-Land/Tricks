@@ -54,13 +54,15 @@ QRectF TrickItemDelegate::bodyRect() const
 
     QRectF r;
     r.setX( (width() - mSceneWidth) / 2 + mAvatarSize + mSpacing );
-    r.setY(mVerticalPadding + mAvatarSize + mSpacing);
+    r.setY(mSpacing + mAvatarSize + mSpacing);
     r.setSize(doc->size());
 
     if (mIsRetrick && mStateHeader && !mCommentMode)
         r.adjust(0, mStateHeaderHeight, 0, mStateHeaderHeight);
     if (mParentId && mStateHeader && !mCommentMode && (mLinkId == 0 || mLinkId > mTrickId))
         r.adjust(0, mStateHeaderHeight, 0, mStateHeaderHeight);
+    if (mTags.isEmpty() && mParentId != 0)
+        r.adjust(0, -(mAvatarSize/2), 0, -(mAvatarSize/2));
 
     delete doc;
     return r;
@@ -92,9 +94,11 @@ QRectF TrickItemDelegate::contentRect() const
 
     int height = mSpacing + mAvatarSize + mSpacing + doc->size().height() + mSpacing;
 
+    if (mTags.isEmpty() && mParentId != 0)
+        height -= (mAvatarSize / 2);
     if (!mCommentMode)
         height += mButtonsHeight + mSpacing;
-    if (!mImage.isEmpty())
+    if (mImageSize.height() > 1)
         height += calculateImageSize().height() + mSpacing;
     if (mIsRetrick && mStateHeader && !mCommentMode)
         height += mStateHeaderHeight;
@@ -1008,10 +1012,6 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
         mQuoteUserId = trk.value(QStringLiteral("owner")).toInt();
         mQuoteAvatar = trk.value(QStringLiteral("avatar")).toString();
 
-//        mQuoteImage = mImage;
-//        mQuoteImageSize = mImageSize;
-//        mQuoteCodeFrameIsDark = mCodeFrameIsDark;
-
         if (trk.value(QStringLiteral("filename")).toString().count())
         {
             mQuoteImage = trk.value(QStringLiteral("filename")).toString();
@@ -1025,10 +1025,6 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
             mQuoteImageSize = QSize(1000, 1);
             mQuoteCodeFrameIsDark = 0;
         }
-
-//        mOriginalBody = trk.value(QStringLiteral("body")).toString();
-//        mBody = styleText(mOriginalBody);
-//        mReferences = trk.value(QStringLiteral("references")).toList();
     }
 
     const auto parent_owner = m.value(QStringLiteral("parent_owner")).toMap();
@@ -1323,79 +1319,82 @@ void TrickItemDelegate::paint(QPainter *painter)
     // End DateTime
 
 
-    // Paint Tags
-    rect = QRectF(QPointF(avatarRect.right() + mSpacing, avatarRect.bottom() - 30), QPointF(fullRect.right(), avatarRect.bottom()));
-
-    fontIcon = mFontIcon;
-    fontIcon.setPixelSize(mFontIcon.pixelSize() * 8 / 9);
-
-    painter->setPen(mHighlightColor);
-    painter->setFont(fontIcon);
-    painter->drawText(rect, Qt::AlignLeft | Qt::AlignBottom, mTagIcon, &drawedRect);
-
-    color = mForegroundColor;
-    color.setAlphaF(0.7);
-
-    font = mFont;
-    font.setPixelSize(mFont.pixelSize() * 8 / 9);
-
-    bool first_one = true;
-
-    QStringList tagsList;
-    tagsList << mTags;
-    if (!tagsList.contains(mLanguage, Qt::CaseInsensitive))
-        tagsList.prepend(mLanguage);
-
-    for (const auto &t: tagsList)
+    if (mTags.length() || mParentId == 0)
     {
-        if (t.isEmpty())
-            continue;
+        // Paint Tags
+        rect = QRectF(QPointF(avatarRect.right() + mSpacing, avatarRect.bottom() - 30), QPointF(fullRect.right(), avatarRect.bottom()));
 
-        if (!first_one)
+        fontIcon = mFontIcon;
+        fontIcon.setPixelSize(mFontIcon.pixelSize() * 8 / 9);
+
+        painter->setPen(mHighlightColor);
+        painter->setFont(fontIcon);
+        painter->drawText(rect, Qt::AlignLeft | Qt::AlignBottom, mTagIcon, &drawedRect);
+
+        color = mForegroundColor;
+        color.setAlphaF(0.7);
+
+        font = mFont;
+        font.setPixelSize(mFont.pixelSize() * 8 / 9);
+
+        bool first_one = true;
+
+        QStringList tagsList;
+        tagsList << mTags;
+        if (!tagsList.contains(mLanguage, Qt::CaseInsensitive))
+            tagsList.prepend(mLanguage);
+
+        for (const auto &t: tagsList)
         {
+            if (t.isEmpty())
+                continue;
+
+            if (!first_one)
+            {
+                rect = QRectF(drawedRect.topRight(), QPointF(fullRect.right(), drawedRect.bottom()));
+
+                painter->setPen(mHighlightColor);
+                painter->setFont(fontIcon);
+                painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, mTagDelimiterIcon, &drawedRect);
+            }
+
             rect = QRectF(drawedRect.topRight(), QPointF(fullRect.right(), drawedRect.bottom()));
+            if (first_one)
+            {
+                rect.setLeft(rect.left() + 4);
+                first_one = false;
+            }
 
-            painter->setPen(mHighlightColor);
-            painter->setFont(fontIcon);
-            painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, mTagDelimiterIcon, &drawedRect);
+            painter->setPen(color);
+            painter->setFont(font);
+            painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, t[0].toUpper() + t.mid(1).toLower(), &drawedRect);
         }
+        // End Tags
 
+
+        // Paint Views
         rect = QRectF(drawedRect.topRight(), QPointF(fullRect.right(), drawedRect.bottom()));
-        if (first_one)
-        {
-            rect.setLeft(rect.left() + 4);
-            first_one = false;
-        }
+        color = mForegroundColor;
+        color.setAlphaF(0.7);
+
+        font = mFont;
+        font.setPixelSize(mFont.pixelSize() * 8 / 9);
 
         painter->setPen(color);
         painter->setFont(font);
-        painter->drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, t[0].toUpper() + t.mid(1).toLower(), &drawedRect);
+        painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(mViewCount), &drawedRect);
+
+        rect.setRight(drawedRect.left() - 4);
+
+        painter->setPen(mHighlightColor);
+        painter->setFont(fontIcon);
+        painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, mViewIcon, &drawedRect);
+        // End Views
     }
-    // End Tags
-
-
-    // Paint Views
-    rect = QRectF(drawedRect.topRight(), QPointF(fullRect.right(), drawedRect.bottom()));
-    color = mForegroundColor;
-    color.setAlphaF(0.7);
-
-    font = mFont;
-    font.setPixelSize(mFont.pixelSize() * 8 / 9);
-
-    painter->setPen(color);
-    painter->setFont(font);
-    painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, QString::number(mViewCount), &drawedRect);
-
-    rect.setRight(drawedRect.left() - 4);
-
-    painter->setPen(mHighlightColor);
-    painter->setFont(fontIcon);
-    painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, mViewIcon, &drawedRect);
-    // End Views
 
 
     // Paint Body
-    rect = QRectF(avatarRect.bottomRight(), fullRect.bottomRight());
+    rect = QRectF(QPointF(avatarRect.right(), rect.bottom()), fullRect.bottomRight());
     rect.setTop(rect.top() + mSpacing);
     rect.setLeft(rect.left() + mSpacing);
 

@@ -232,6 +232,18 @@ TPage {
         anchors.right: parent.right
         clip: true
 
+        Rectangle {
+            anchors.top: headerItem.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: Devices.standardTitleBarHeight
+            visible: GlobalSettings.viewMode < 2
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Colors.header }
+                GradientStop { position: 0.5; color: "transparent" }
+            }
+        }
+
         THeader {
             id: headerItem
             y: (timeLine.headerVisible || GlobalSettings.viewMode != 2 || findUser.visible? 0 : -Devices.standardTitleBarHeight + 1) - Devices.statusBarHeight
