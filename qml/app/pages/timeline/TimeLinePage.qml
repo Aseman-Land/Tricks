@@ -193,7 +193,7 @@ TPage {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: tabBar.visible? tabBar.bottom : headerScene.bottom
+        anchors.bottom: headerScene.bottom
         anchors.bottomMargin: -headerItem.y - Devices.statusBarHeight
         color: blurHeader? "transparent" : Colors.background
         clip: true
@@ -209,11 +209,18 @@ TPage {
         }
     }
 
+    Rectangle {
+        anchors.fill: tabBar
+        color: Colors.background
+        visible: tabBar.visible
+    }
+
     TTabBar {
         id: tabBar
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: headerScene.bottom
+        anchors.top: headerScene.top
+        anchors.topMargin: headerItem.y + headerItem.height
         visible: GlobalSettings.homeTabIndex == 1
 
         TTabButton {
