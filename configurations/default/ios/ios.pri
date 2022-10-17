@@ -10,6 +10,11 @@ ios {
     Q_ENABLE_BITCODE.name = ENABLE_BITCODE
     Q_ENABLE_BITCODE.value = NO
     QMAKE_MAC_XCODE_SETTINGS += Q_ENABLE_BITCODE
+
+    Q_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
+    Q_ENTITLEMENTS.value = $$PWD/Entitlements.plist
+    QMAKE_MAC_XCODE_SETTINGS += Q_ENTITLEMENTS
+
     QMAKE_IOS_DEPLOYMENT_TARGET = 14.0
 
     app_launch_images.files = $$PWD/Launch.xib $$files($$PWD/splash/LaunchImage*.png)
