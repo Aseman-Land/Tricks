@@ -2,6 +2,8 @@
 
 Tricks is a social network for programmers to share their tricks and tips with each others. It's free, open-source and released under the GPLv3 license.
 
+![](https://raw.githubusercontent.com/Aseman-Land/Tricks/main/images/image.jpeg)
+
 You can build and run tricks on smart phones like iOS and Androids or on the Linux, Windows or macOS.
 
 ## How to Build
