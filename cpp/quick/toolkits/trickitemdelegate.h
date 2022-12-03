@@ -271,7 +271,7 @@ protected:
     QTextDocument *createQuoteTextDocument() const;
     void setupTextDocument(QTextDocument *doc, const QString &text) const;
 
-    QString styleText(QString t) const;
+    QString styleText(QString t, const QVariantList &refrences) const;
     QString dateToString(const QDateTime &dateTime);
     QSize calculateImageSize() const;
     QSize calculateQuoteImageSize() const;

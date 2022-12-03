@@ -317,7 +317,7 @@ void TrickItemDelegate::setupTextDocument(QTextDocument *doc, const QString &tex
     }
 }
 
-QString TrickItemDelegate::styleText(QString text) const
+QString TrickItemDelegate::styleText(QString text, const QVariantList &refrences) const
 {
     Qt::TextFormat textFormat = Qt::RichText;
     const auto &tags = QAsemanTools::stringRegExp(text, QStringLiteral("\\#[\\w\\+\\-\\#]+"), false);
@@ -339,6 +339,14 @@ QString TrickItemDelegate::styleText(QString text) const
         else
             text = QAsemanTools::stringReplace(text, t, QStringLiteral("<a href=\"user:/%1\">").arg(QString(t).remove('@')) + t + QStringLiteral("</a>"));
     }
+
+    int i = 0;
+    for (const auto &r: refrences)
+    {
+        const auto m = r.toMap();
+        text = QAsemanTools::stringReplace(text, QStringLiteral("[r:%1]").arg(i), "<a href=\"" + m.value("link").toString() + "\">" + m.value("name").toString() + "</a>");
+        i++;
+    };
 
     return text;
 }
@@ -954,7 +962,7 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
 
     mCode = m.value(QStringLiteral("code")).toString();
     mOriginalBody = m.value(QStringLiteral("body")).toString();
-    mBody = styleText(mOriginalBody);
+    mBody = styleText(mOriginalBody, mReferences);
 
     const auto type_id = type.value(QStringLiteral("id")).toInt();
     if (type_id > 100000)
@@ -1003,8 +1011,8 @@ void TrickItemDelegate::setItemData(const QVariantMap &m)
     if (m.value(QStringLiteral("quote")).toMap().count())
     { // It's quote
         const auto trk = m.value(QStringLiteral("quote")).toMap();
-        mQuote = styleText(trk.value(QStringLiteral("body")).toString());
         mQuotedReferences = trk.value(QStringLiteral("references")).toList();
+        mQuote = styleText(trk.value(QStringLiteral("body")).toString(), mQuotedReferences);
 
         mQuoteId = trk.value(QStringLiteral("id")).toInt();
         mQuoteUsername = trk.value(QStringLiteral("username")).toString();

@@ -290,7 +290,7 @@ TrickItem {
                 var d = menuModel.get(index);
                 switch (d.command) {
                 case "copy_link":
-                    Devices.clipboard = dis.share_link;
+                    Devices.clipboard = dis.shareLink;
                     GlobalSignals.snackRequest(qsTr("Link copied to the clipboard"));
                     break;
                 case "copy_message":
