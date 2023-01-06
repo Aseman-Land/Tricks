@@ -208,7 +208,11 @@ void TricksDownloaderEngine::doStart()
             e->setDownloaded(bytesReceived);
         }
     });
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     connect(u.reply, static_cast<void(QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error), [u](){
+#else
+    connect(u.reply, &QNetworkReply::errorOccurred, [u](){
+#endif
         if (!u.file)
             return;
 

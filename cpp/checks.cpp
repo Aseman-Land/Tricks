@@ -13,7 +13,7 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QDebug>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QPalette>
 
 #ifndef Q_OS_IOS
@@ -90,9 +90,7 @@ void Checks::checkLinuxDesktopIcon()
             auto data = QString::fromUtf8(f_in.readAll());
             for (const auto &[k, v]: entries.toStdMap())
             {
-                QRegExp rx(k + "=.+\\n");
-                rx.setMinimal(true);
-
+                QRegularExpression rx(k + "=.+\\n");
                 data.remove(rx);
                 data += k + "=" + v + "\n";
             }

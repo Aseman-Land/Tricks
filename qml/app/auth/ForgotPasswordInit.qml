@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.14
 import AsemanQml.Base 2.0
 import AsemanQml.Controls 2.0
 import AsemanQml.MaterialIcons 2.0
@@ -90,7 +90,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
-                        validator: RegExpValidator { regExp: /[a-z0-9\._]+\@[a-z0-9\._]+/ }
+                        validator: RegularExpressionValidator { regularExpression: /[a-z0-9\._]+\@[a-z0-9\._]+/ }
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
                         onAccepted: regReq.doRequest()
 

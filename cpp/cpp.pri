@@ -1,4 +1,4 @@
-QT += quick widgets svg asemancore asemangui
+QT += quick widgets svg asemancore asemangui quickcontrols2
 
 CONFIG += c++17
 

@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.14
 import AsemanQml.Base 2.0
 import AsemanQml.Controls 2.0
 import AsemanQml.Viewport 2.0
@@ -203,7 +203,7 @@ TPage {
                                 TTextField {
                                     id: usernameField
                                     Layout.fillWidth: true
-                                    validator: RegExpValidator { regExp: /[a-z0-9_]+/ }
+                                    validator: RegularExpressionValidator { regularExpression: /[a-z0-9_]+/ }
                                     inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
                                     minimumCharacters: Bootstrap.user.username_min_length
                                     maximumCharacters: Bootstrap.user.username_max_length

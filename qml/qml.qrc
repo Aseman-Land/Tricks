@@ -254,5 +254,6 @@
         <file>imports/requests/AppleConnectRequest.qml</file>
         <file>imports/requests/AppleGetLinkRequest.qml</file>
         <file>imports/requests/AppleRegisterRequest.qml</file>
+        <file>imports/globals/fonts/materialdesignicons-webfont.ttf</file>
     </qresource>
 </RCC>

@@ -39,11 +39,12 @@ void TricksTools::setupWindowColor(QColor color)
 QVariantList TricksTools::stringLinks(const QString &str)
 {
     QVariantList links;
-    QRegExp links_rxp(QStringLiteral("((?:(?:\\w\\S*\\/\\S*|\\/\\S+|\\:\\/)(?:\\/\\S*\\w|\\w|\\/+))|(?:\\w+\\.(?:com|org|co|net)\\/*))"));
-    int pos = 0;
-    while ((pos = links_rxp.indexIn(str, pos)) != -1)
+    QRegularExpression links_rxp(QStringLiteral("((?:(?:\\w\\S*\\/\\S*|\\/\\S+|\\:\\/)(?:\\/\\S*\\w|\\w|\\/+))|(?:\\w+\\.(?:com|org|co|net)\\/*))"));
+    auto i = links_rxp.globalMatch(str);
+    while (i.hasNext())
     {
-        QString link = links_rxp.cap(1);
+        auto mi = i.next();
+        QString link = mi.captured(1);
 
         QVariantMap m;
         m[QStringLiteral("link")] = link;
@@ -55,7 +56,6 @@ QVariantList TricksTools::stringLinks(const QString &str)
             m[QStringLiteral("fixed")] = link;
 
         links << m;
-        pos += links_rxp.matchedLength();
     }
 
     return links;

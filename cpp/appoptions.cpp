@@ -21,7 +21,9 @@ void AppOptions::reloadSettings()
     {
 #ifndef QT_NO_SSL
         QSslCertificate cert(sslCert.toUtf8());
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QSslSocket::addDefaultCaCertificate(cert);
+#endif
         QSslConfiguration configs = QSslConfiguration::defaultConfiguration();
         configs.setCaCertificates({cert});
 #if QT_CONFIG(dtls) || defined(Q_CLANG_QDOC)

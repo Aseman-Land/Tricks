@@ -715,7 +715,7 @@ void TrickItemDelegate::setQuoteId(qint32 quoteId)
 {
     if (mQuoteId == quoteId)
         return;
-    mQuote = quoteId;
+    mQuoteId = quoteId;
     Q_EMIT quoteIdChanged();
 }
 

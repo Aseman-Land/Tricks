@@ -4,6 +4,8 @@
 #include <QQmlContext>
 #include <QTimer>
 #include <QAsemanCoreVersion>
+#include <QQuickStyle>
+#include <QFontDatabase>
 
 #include "appoptions.h"
 #include "trickstools.h"
@@ -38,6 +40,12 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Ceil);
 #endif
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QQuickStyle::setStyle("QtQuick.Controls.IOSStyle");
+#else
+    QQuickStyle::setStyle("IOSStyle");
 #endif
 
     qmlRegisterType<AppOptions>("Tricks", 1, 0, "AppOptions");

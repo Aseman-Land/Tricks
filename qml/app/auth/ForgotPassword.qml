@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.14
 import AsemanQml.Base 2.0
 import AsemanQml.Controls 2.0
 import AsemanQml.MaterialIcons 2.0
@@ -87,7 +87,7 @@ Page {
                         leftPadding: GTranslations.reverseLayout? 0 : 40 * Devices.density
                         rightPadding: GTranslations.reverseLayout? 40 * Devices.density : 0
                         Layout.preferredHeight: 50 * Devices.density
-                        validator: RegExpValidator { regExp: /[a-z0-9_]+/ }
+                        validator: RegularExpressionValidator { regularExpression: /[a-z0-9_]+/ }
                         inputMethodHints: Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         minimumCharacters: Bootstrap.user.username_min_length
                         maximumCharacters: Bootstrap.user.username_max_length
