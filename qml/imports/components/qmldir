@@ -49,3 +49,4 @@ TNumberField 1.0 TNumberField.qml
 TPriceField 1.0 TPriceField.qml
 TSpinBox 1.0 TSpinBox.qml
 TWindowMovable 1.0 TWindowMovable.qml
+TextInputHandler 1.0 TextInputHandler.qml

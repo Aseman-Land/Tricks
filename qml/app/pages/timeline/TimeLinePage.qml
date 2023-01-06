@@ -19,7 +19,7 @@ TPage {
 
     property alias headerItem: headerItem
     property string keyword
-    readonly property bool blurHeader: !Devices.isAndroid
+    readonly property bool blurHeader: !Devices.isAndroid && !Devices.isWebAssembly
 
     onKeywordChanged: {
         if (GlobalSettings.homeCurrentTag.length == 0)

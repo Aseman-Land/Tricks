@@ -2,6 +2,10 @@
 #include <QRegularExpression>
 #include <QTimer>
 
+#ifdef Q_OS_WASM
+#include <emscripten/bind.h>
+#endif
+
 #ifdef Q_OS_MACX
 #include "objective-c/macmanager.h"
 #endif
@@ -140,4 +144,21 @@ bool TricksTools::iosOpenUrl(const QString &url)
     return false;
 #endif
 
+}
+
+void TricksTools::loadWebAsmFont(const QString &link)
+{
+#ifdef Q_OS_WASM
+    emscripten::val document = emscripten::val::global("document");
+    auto linkElement = document.call<emscripten::val>("createElement", std::string("link"));
+    linkElement.set("type", "text/css");
+    linkElement.set("rel","stylesheet");
+
+    emscripten::val head = document["head"];
+    head.call<void>("appendChild", linkElement);
+
+    linkElement.set("href",link.toStdString().c_str());
+#else
+    Q_UNUSED(link)
+#endif
 }

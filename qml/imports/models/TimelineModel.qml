@@ -61,10 +61,10 @@ AsemanListModel {
         onSuccessfull: {
             var counter = 0;
 
+            console.debug(model.cachePath)
             response.result.forEach(function(t){
                 if (t.id == GlobalSettings.lastTimelineId)
                     unreadCount = counter;
-
                 let rid = t.refred_trick_id? t.refred_trick_id : t.id;
                 let rid2 = t.refred_trick_id? t.refred_trick_id+1 : t.id;
                 let sortId = (rid + "").padStart(20, '0') + (rid2 + "").padStart(20, '0');
@@ -78,9 +78,10 @@ AsemanListModel {
                 inited = true;
             }
 
-            let list = sortingMap.values.reverse();
-            let linkes = new Array;
-            let last_link_id = 0;
+            var list = new Array; sortingMap.values.forEach(function(l){ list.unshift(l); });
+
+            var linkes = new Array;
+            var last_link_id = 0;
             list.forEach(function(l){
                 var m = l;
                 m["link_id"] = null;

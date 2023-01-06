@@ -16,6 +16,7 @@ AsemanObject {
     signal tagReaded(string tag)
     signal communityChooseRequest()
     signal unsuspend()
-    signal closeAllPages();
+    signal waitLoginDialog()
+    signal closeAllPages()
 }
 

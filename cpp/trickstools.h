@@ -22,6 +22,8 @@ public Q_SLOTS:
 
     bool iosOpenUrl(const QString &url);
 
+    void loadWebAsmFont(const QString &link);
+
 protected:
     QString linkName(const QString &name);
 };

@@ -41,6 +41,8 @@ TextField {
         readonly property real maxWidth: dis.width - 2*x
     }
 
+    TextInputHandler {}
+
     QmlWidgetMenu {
         id: menu
 

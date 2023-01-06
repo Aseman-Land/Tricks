@@ -284,6 +284,7 @@ Item {
                         TIconButton {
                             materialIcon: MaterialIcons.mdi_image
                             materialText: qsTr("Image") + Translations.refresher
+                            enabled: !Devices.isWebAssembly
                             onClicked: openImage()
                         }
 

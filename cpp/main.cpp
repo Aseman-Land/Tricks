@@ -19,7 +19,9 @@
 #if !defined(APP_SECRET_ID) && defined(APP_SECRET_ID_INCLUDE)
 #include APP_SECRET_ID_INCLUDE
 #else
+#if !defined(APP_SECRET_ID)
 #define APP_SECRET_ID ""
+#endif
 #endif
 
 static QObject *create_trickstoole_singleton(QQmlEngine *, QJSEngine *)
@@ -32,6 +34,7 @@ int main(int argc, char *argv[])
     qputenv("QT_ANDROID_ENABLE_WORKAROUND_TO_DISABLE_PREDICTIVE_TEXT", "1");
     qputenv("QT_LOGGING_RULES", "qt.qml.connections=false");
 
+#ifndef Q_OS_WASM
 #if !defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -39,6 +42,7 @@ int main(int argc, char *argv[])
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #ifdef Q_OS_ANDROID
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Ceil);
+#endif
 #endif
 #endif
 

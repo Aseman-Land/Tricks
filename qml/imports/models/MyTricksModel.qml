@@ -39,7 +39,7 @@ AsemanListModel {
                 sortingMap.insert(sortId, t);
             });
 
-            let list = sortingMap.values.reverse();
+            var list = new Array; sortingMap.values.forEach(function(l){ list.unshift(l); });
             model.change(list);
         }
     }

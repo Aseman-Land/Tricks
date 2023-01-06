@@ -26,7 +26,7 @@ bool SystemColors::defaultLightHeader()
     if (desktop == "gnome")
         return true;
     return false;
-#elif defined(Q_OS_WIN32) || defined(Q_OS_MACOS)
+#elif defined(Q_OS_WIN32) || defined(Q_OS_MACOS) || defined(Q_OS_WASM)
     return true;
 #else
     return false;

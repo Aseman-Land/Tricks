@@ -25,6 +25,10 @@ TPage {
 
     property alias viewport: mainViewport
 
+    property Item loginMessageDialog
+
+    onLoginMessageDialogChanged: if (!loginMessageDialog) GlobalSignals.unsuspend()
+
     Connections {
         target: GlobalSignals
         function onSnackRequest(text) {
@@ -38,13 +42,24 @@ TPage {
                 "title": qsTr("Fatal"),
                 "body" : text
             };
-            Viewport.controller.trigger("dialog:/general/warning", args);
+            GlobalMethods.viewController.trigger("dialog:/general/warning", args);
         }
         function onCloseAllPages() {
             mainViewport.list.forEach(function(i){
                 i.open = false;
             });
         }
+        function onWaitLoginDialog() {
+            if (Devices.isWebAssembly)
+                loginMessageDialog = mainController.trigger("dialog:/general/warning", {"title": qsTr("Authenticate"), "body": qsTr("Tap OK if done.")});
+        }
+    }
+
+    Component.onCompleted: {
+        if (Devices.isWebAssembly)
+            mainController.trigger("dialog:/general/warning", {"title": qsTr("It's Beta"), "body": qsTr("It's a <b>beta</b> test of the Tricks app that built on a <b>beta</b> technology that\n" +
+                                                                                                                      "also built on a <b>beta</b> technology. It's slow, It's buggy.\n" +
+                                                                                                                      "It's not a typical web app. It's web assembly. So be careful. it's super <b>beta</b> :)")});
     }
 
     Viewport {

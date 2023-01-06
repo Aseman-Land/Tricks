@@ -15,7 +15,9 @@
 
 QHash<QUrl, TricksDownloaderEngine::DownloadUnit> TricksDownloaderEngine::mDownloadUnits;
 QRecursiveMutex TricksDownloaderEngine::mMutex;
+#ifndef Q_OS_WASM
 QThreadPool *TricksDownloaderEngine::mThreadPool = Q_NULLPTR;
+#endif
 
 TricksDownloaderEngine::TricksDownloaderEngine(QObject *parent)
     : QObject(parent)
@@ -270,8 +272,10 @@ void TricksDownloaderEngine::emitFinished(const QSet<TricksDownloaderEngine *> &
         Q_EMIT e->finished(path);
     }
 
+#ifndef Q_OS_WASM
     if (!mThreadPool)
         mThreadPool = new QThreadPool;
+#endif
 
     QHashIterator<QString, QSet<TricksDownloaderEngine*>> i(sizes);
     while (i.hasNext())
@@ -301,7 +305,11 @@ void TricksDownloaderEngine::emitFinished(const QSet<TricksDownloaderEngine *> &
             QMetaObject::invokeMethod(finisher, "finished", Qt::QueuedConnection, Q_ARG(QImage, img));
         };
 
+#ifdef Q_OS_WASM
+        runnable();
+#else
         mThreadPool->start(runnable);
+#endif
     }
 }
 

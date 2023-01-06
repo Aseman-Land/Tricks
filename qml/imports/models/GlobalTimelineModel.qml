@@ -62,7 +62,7 @@ AsemanListModel {
                 sortingMap.insert(sortId, t);
             });
 
-            let list = (reversed? sortingMap.values : sortingMap.values.reverse());
+            var list = (reversed? sortingMap.values : sortingMap.values.reverse());
             model.change(list);
         }
     }

@@ -88,7 +88,7 @@ Item {
 
             model: AsemanListModel {
                 data: {
-                    let list = new Array;
+                    var list = new Array;
                     for (var i=0; i<cmodel.count; i++) {
                         var c = cmodel.get(i);
                         list[list.length] = {

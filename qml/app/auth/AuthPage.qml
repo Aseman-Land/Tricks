@@ -40,8 +40,10 @@ TPage {
             GlobalSettings.googleRegisterSessionId = response.result.session_id;
             if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
-            else
+            else {
                 Qt.openUrlExternally(response.result.authorize_url);
+                GlobalSignals.waitLoginDialog();
+            }
         }
     }
 
@@ -52,8 +54,10 @@ TPage {
             GlobalSettings.githubRegisterSessionId = response.result.session_id;
             if (Devices.isIOS && Bootstrap.bultInBrowser && TricksTools.iosOpenUrl(response.result.authorize_url))
                 GlobalSignals.unsuspend();
-            else
+            else {
                 Qt.openUrlExternally(response.result.authorize_url);
+                GlobalSignals.waitLoginDialog();
+            }
         }
     }
 
@@ -64,8 +68,10 @@ TPage {
             GlobalSettings.appleRegisterSessionId = response.result.session_id;
             if (Devices.isIOS)
                 TricksTools.iosOpenUrl(response.result.authorize_url);
-            else
+            else {
                 Qt.openUrlExternally(response.result.authorize_url);
+                GlobalSignals.waitLoginDialog();
+            }
         }
     }
 

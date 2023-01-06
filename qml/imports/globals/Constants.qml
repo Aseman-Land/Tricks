@@ -13,8 +13,9 @@ AsemanObject {
     readonly property int refreshDelay: 1
     readonly property real headerHeight: GlobalSettings.viewMode == 2 || !Devices.isDesktop? Devices.standardTitleBarHeight + Devices.statusBarHeight : 42 * Devices.density + Devices.statusBarHeight
 
-    readonly property string cachePath: AsemanApp.homePath + "/cache"
+    readonly property string cachePath: Devices.isWebAssembly? "cache" : AsemanApp.homePath + "/cache"
     readonly property string baseUrl: App.domain + "/api/v1"
+    readonly property string webAppUrl: "https://tricks-web.aseman.io"
 
     readonly property int version: 0
 

@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import AsemanQml.Base 2.0
 import AsemanQml.Controls 2.0
+import Tricks 1.0
 import globals 1.0
 import requests 1.0
 import models 1.0
@@ -30,6 +31,7 @@ AsemanApplication {
         if (Devices.isAndroid) Devices.fontScale = 1;
         if (Devices.isIOS) Devices.fontScale = 1.15;
 
+        TricksTools.loadWebAsmFont(Constants.webAppUrl + "/misc/Farsi-Digits-Non-Latin/Vazirmatn-FD-NL-font-face.css")
         Fonts.init();
         GTranslations.init();
         Bootstrap.init();

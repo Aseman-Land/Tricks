@@ -7,12 +7,15 @@
 #include <QNetworkRequest>
 #include <QUrl>
 #include <QMutex>
-#include <QThread>
 #include <QFile>
 #include <QSize>
-#include <QThreadPool>
 #include <QPointer>
 #include <QTimer>
+
+#ifndef Q_OS_WASM
+#include <QThread>
+#include <QThreadPool>
+#endif
 
 class TricksDownloaderEngineFinisher: public QObject
 {
@@ -109,7 +112,9 @@ private:
 
     static QHash<QUrl, DownloadUnit> mDownloadUnits;
     static QRecursiveMutex mMutex;
+#ifndef Q_OS_WASM
     static QThreadPool *mThreadPool;
+#endif
 };
 
 #endif // TRICKSDOWNLOADERENGINE_H
